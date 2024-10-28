@@ -41,6 +41,7 @@ class Conversation(SMBaseModel):
     messages: List[Message] = []
     llm_model: Optional[str] = None
     llm_provider: Optional[str] = None
+    plugins: List[Any] = []
 
     def __str__(self):
         return f"<Conversation id={self.id!r}>"
@@ -53,8 +54,15 @@ class Conversation(SMBaseModel):
         self, llm_model: Optional[str] = None, llm_provider: Optional[str] = None
     ) -> Message:
         """Send the conversation to the LLM."""
+        for plugin in self.plugins:
+            plugin.send_hook(self)
+
         provider = find_provider(llm_provider or self.llm_provider)
         response = provider.send_conversation(self)
 
         self.add_message(role="assistant", text=response.text, meta=response.meta)
         return response
+
+    def add_plugin(self, plugin: Any):
+        """Add a plugin to the conversation."""
+        self.plugins.append(plugin)
