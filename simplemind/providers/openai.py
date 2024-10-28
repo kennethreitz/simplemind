@@ -1,7 +1,6 @@
 import openai as oa
 import instructor
 
-# from ..models import Conversation, Message
 from ..settings import settings
 
 PROVIDER_NAME = "openai"
@@ -49,9 +48,13 @@ class OpenAI:
             llm_provider=PROVIDER_NAME,
         )
 
-    def structured_response(self, model, response_model, **kwargs):
-        client = instructor.patch(oa.OpenAI(api_key=self.api_key))
-        response = client.chat.completions.create(
-            model=model, response_model=response_model, **kwargs
+    def structured_response(self, prompt, response_model, *, llm_model):
+        # Ensure messages are provided in kwargs
+        messages = [
+            {"role": "user", "content": prompt},
+        ]
+
+        response = self.structured_client.chat.completions.create(
+            messages=messages, model=llm_model, response_model=response_model
         )
         return response

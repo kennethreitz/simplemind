@@ -1,8 +1,17 @@
 import simplemind as sm
+from pydantic import BaseModel
 
-conversation = sm.create_conversation()
-conversation.add_message(role="user", text="Hello, how are you? Do you like poetry?")
-r = conversation.send(llm_provider="openai")
 
-print(r.text)
-print(conversation.messages)
+class Poem(BaseModel):
+    title: str
+    content: str
+
+
+output = sm.structured_response(
+    "Write a poem about love",
+    llm_model="gpt-4o-mini",
+    llm_provider="openai",
+    response_model=Poem,
+)
+
+print(output)
