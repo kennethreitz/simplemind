@@ -3,4 +3,6 @@ import simplemind
 context = None
 
 openai = simplemind.integrations.OpenAI()
-print(openai.login())
+openai.login()
+
+print(openai.available_models)

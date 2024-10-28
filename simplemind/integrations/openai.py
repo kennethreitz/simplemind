@@ -1,7 +1,7 @@
 import os
 
 import instructor
-from openai import OpenAI
+from openai import OpenAI as BaseOpenAI
 
 from .base import BaseClientProvider
 
@@ -9,10 +9,8 @@ from .base import BaseClientProvider
 class OpenAI(BaseClientProvider):
 
     def __init__(self, *args, **kwargs):
-        return super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.login()
-
-
 
     def login(self):
         """Initialize OpenAI client, with Instructor enabled."""
@@ -21,19 +19,20 @@ class OpenAI(BaseClientProvider):
         if self._api_key is None:
             self._api_key = os.getenv("OPENAI_API_KEY")
 
-        base_client = OpenAI(api_key=self._api_key)
+        base_client = BaseOpenAI(api_key=self._api_key)
         self.client = instructor.from_openai(base_client)
         self.test_connection()
 
 
+    @property
     def available_models(self):
-        pass
+        """Returns the available models from the OpenAI client."""
+
+        def gen():
+            for model in self.client.models.list():
+                yield model.id
+
+        return [g for g in gen()]
 
     def test_connection(self):
-        try:
-            # openai.api_key = self._api_key
-            self.client.models.list()
-            # self.logger.info("OpenAI connection test successful")
-        except Exception as e:
-            # self.logger.error(f"OpenAI connection test failed: {str(e)}")
-            raise
+       pass

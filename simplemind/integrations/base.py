@@ -1,5 +1,6 @@
 # import logging
 
+from pydantic import BaseModel
 
 class BaseClientProvider:
 
@@ -34,6 +35,7 @@ class BaseClientProvider:
         msg = "This method must be implemented by the AI provider client."
         raise NotImplementedError(msg)
 
+    @property
     def available_models(self):
         """Returns the available models from the AI provider client."""
 
