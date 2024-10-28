@@ -9,7 +9,7 @@ from ..models import AIResponse, Conversation
 from ..logger import logger
 
 
-DEFAULT_MODEL = "claude-3-5-sonnet-20240620"
+DEFAULT_MODEL = "claude-3-5-sonnet-20241022"
 
 
 class Anthropic(BaseClientProvider):

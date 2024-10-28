@@ -1,4 +1,4 @@
-from simplemind.plugins.base import BasePlugin
+from .base import BasePlugin
 
 
 class KVPlugin(BasePlugin):
