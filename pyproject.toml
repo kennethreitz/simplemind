@@ -6,6 +6,10 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = ["pydantic", "instructor"]
 
+[dependency-groups]
+openai = ["openai"]
+claude = ["anthropic"]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"

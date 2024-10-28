@@ -2,4 +2,7 @@ from .base import BaseClientProvider
 
 
 class OpenAI(BaseClientProvider):
-    pass
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def test_connection(self):
