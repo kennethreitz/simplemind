@@ -1,0 +1,10 @@
+services:
+  simplemind:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./simplemind:/src/simplemind
+      - ./build.py:/src/build.py
+    env_file:
+      - .env
