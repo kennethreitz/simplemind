@@ -1,69 +1,57 @@
-from typing import List, Optional
-import openai
-from ..core.errors import AuthenticationError, ProviderError
-from ..core.config import settings
-from ..core.logger import logger
-from .base import BaseClientProvider
+import openai as oa
+import instructor
 
-DEFAULT_MODEL = "gpt-4o"
+# from ..models import Conversation, Message
+from ..settings import settings
+
+PROVIDER_NAME = "openai"
+DEFAULT_MODEL = "gpt-4o-mini"
 
 
-class OpenAI(BaseClientProvider):
-    def __init__(self, model: str = DEFAULT_MODEL, api_key: Optional[str] = None):
-        super().__init__(model=model, api_key=api_key)
-        self.login()
+class OpenAI:
+    __name__ = PROVIDER_NAME
+    DEFAULT_MODEL = DEFAULT_MODEL
 
-    def login(self) -> None:
-        if not self._api_key:
-            self._api_key = settings.openai_api_key
-        if not self._api_key:
-            raise AuthenticationError("OpenAI API key not provided")
-
-        try:
-            openai.api_key = self._api_key
-            if not self.test_connection():
-                raise ProviderError("Failed to connect to OpenAI API")
-            logger.info("Successfully connected to OpenAI")
-        except Exception as e:
-            raise ProviderError(f"OpenAI initialization failed: {str(e)}")
+    def __init__(self, api_key: str = None):
+        self.api_key = api_key or settings.OPENAI_API_KEY
 
     @property
-    def available_models(self) -> List[str]:
-        try:
-            models = openai.models.list()
-            return [model.id for model in models["data"]]
-        except Exception as e:
-            logger.error(f"Error fetching models: {e}")
-            return []
+    def client(self):
+        """The raw OpenAI client."""
+        return oa.OpenAI(api_key=self.api_key)
 
-    def test_connection(self):
-        """Test the connection to OpenAI API."""
-        try:
-            openai.models.list()
-            return True
-        except Exception as e:
-            logger.error(f"Connection test failed: {e}")
-            return False
+    @property
+    def structured_client(self):
+        """A client patched with Instructor."""
+        return instructor.patch(oa.OpenAI(api_key=self.api_key))
 
-    def _handle_api_error(self, e: Exception) -> None:
-        """Handle API errors."""
-        logger.error(f"OpenAI API error: {e}")
-        raise ProviderError(f"OpenAI API error: {e}")
+    def send_conversation(self, conversation: "Conversation"):
+        """Send a conversation to the OpenAI API."""
+        from ..models import Message
 
-    def add_message(self, conversation_id, message, *args, **kwargs) -> str:
-        """Generate a response using the OpenAI API."""
-        try:
-            # Create a client instance using the API key
-            client = openai.OpenAI(api_key=self._api_key)
+        messages = [
+            {"role": msg.role, "content": msg.text} for msg in conversation.messages
+        ]
 
-            # Create the message for the conversation
-            messages = [{"role": "user", "content": message}]
+        response = self.client.chat.completions.create(
+            model=conversation.llm_model or DEFAULT_MODEL, messages=messages
+        )
 
-            # Use the new API syntax
-            response = client.chat.completions.create(
-                model=self.model, messages=messages, *args, **kwargs
-            )
+        # Get the response content from the OpenAI response
+        assistant_message = response.choices[0].message
 
-            return response.choices[0].message.content
-        except Exception as e:
-            self._handle_api_error(e)
+        # Create and return a properly formatted Message instance
+        return Message(
+            role="assistant",
+            text=assistant_message.content,
+            raw=response,
+            llm_model=conversation.llm_model or DEFAULT_MODEL,
+            llm_provider=PROVIDER_NAME,
+        )
+
+    def structured_response(self, model, response_model, **kwargs):
+        client = instructor.patch(oa.OpenAI(api_key=self.api_key))
+        response = client.chat.completions.create(
+            model=model, response_model=response_model, **kwargs
+        )
+        return response

@@ -1,9 +1,7 @@
-from simplemind import SimpleMind
+import simplemind as sm
 
-sm = SimpleMind()
-
-# The provider will automatically use OPENAI_API_KEY from environment
 conversation = sm.create_conversation()
-r = sm.add_message(conversation.id, "Who is Kenneth Reitz?")
+conversation.add_message(role="user", text="Hello, how are you?")
+r = conversation.send(llm_model="gpt-4o-mini", llm_provider="openai")
+
 print(r)
-#
