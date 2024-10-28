@@ -10,6 +10,7 @@ from ..core.logger import logger
 
 
 DEFAULT_MODEL = "claude-3-5-sonnet-20241022"
+DEFAULT_MAX_TOKENS = 4096
 
 
 class Anthropic(BaseClientProvider):
@@ -22,6 +23,8 @@ class Anthropic(BaseClientProvider):
             self._api_key = os.getenv("ANTHROPIC_API_KEY")
         if not self._api_key:
             raise ValueError("Anthropic API key not provided.")
+        logger.debug(f"API key length: {len(self._api_key) if self._api_key else 0}")
+
         base_client = BaseAnthropic(api_key=self._api_key)
         self.client = instructor.from_anthropic(base_client)
         if not self.test_connection():
@@ -55,12 +58,17 @@ class Anthropic(BaseClientProvider):
         params = {
             "messages": messages,
             "model": self.model,
+            "max_tokens": DEFAULT_MAX_TOKENS,
         }
         if conversation.context:
-            params["context"] = conversation.context
+            params["context"] = (
+                vars(conversation.context)
+                if hasattr(conversation.context, "__dict__")
+                else dict(conversation.context)
+            )
 
         try:
-            completion = self.client.completions.create(**params)
+            completion = self.client.completions.create(response_model=str, **params)
             response_text = completion.completion
             metadata = {"model": completion.model, "usage": completion.usage}
             logger.info("Generated response from Anthropic.")

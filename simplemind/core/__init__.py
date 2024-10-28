@@ -3,6 +3,8 @@ from .models import AIResponse
 from ..concepts.context import Context
 from ..providers.base import BaseClientProvider
 
+from .config import settings
+
 
 class SimpleMind:
     """Main class for SimpleMind functionality."""

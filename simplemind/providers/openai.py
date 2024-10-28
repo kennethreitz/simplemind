@@ -1,9 +1,11 @@
 from typing import List, Optional
 from openai import OpenAI as BaseOpenAI
 from ..core.errors import AuthenticationError, ProviderError
-from simplemind.core.config import settings
+from ..core.config import settings
 from ..core.logger import logger
 from .base import BaseClientProvider
+
+DEFAULT_MODEL = "gpt-4"
 
 
 class OpenAI(BaseClientProvider):
@@ -47,7 +49,7 @@ class OpenAI(BaseClientProvider):
         logger.error(f"OpenAI API error: {e}")
         raise ProviderError(f"OpenAI API error: {e}")
 
-    def generate_response(self, conversation) -> str:
+    def generate_response(self, conversation, **kwargs) -> str:
         """Generate a response using the OpenAI API."""
         try:
             messages = [
@@ -55,10 +57,24 @@ class OpenAI(BaseClientProvider):
                 for msg in conversation.messages
             ]
 
-            response = self.client.chat.completions.create(
-                model=self.model, messages=messages
-            )
+            # Ensure we're using a valid model name, not the API key
+            if not isinstance(self.model, str) or self.model.startswith("sk-"):
+                logger.warning(
+                    f"Invalid model name detected. Falling back to {DEFAULT_MODEL!r}"
+                )
+                model_name = DEFAULT_MODEL
+            else:
+                model_name = self.model
 
-            return response.choices[0].message.content
+            r = self.client.chat.completions.create(
+                model=model_name,  # Use the validated model name
+                messages=messages,
+                **kwargs,
+            )
+            return r
         except Exception as e:
             self._handle_api_error(e)
+
+    def generate_text(self, conversation, **kwargs) -> str:
+        """Generate a text response using the OpenAI API."""
+        return self.generate_response(conversation, **kwargs).choices[0].message.content

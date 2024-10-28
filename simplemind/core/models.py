@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import Any, Dict, List, Optional
-import uuid
+from ..concepts.context import Context
 from datetime import datetime
 
 
@@ -12,24 +12,30 @@ class AIRequest(BaseModel):
         return self.text
 
 
-class AIResponse(BaseModel):
-    text: str
-    response: Any
-    metadata: Dict[str, Any] = {}
-
-    def __str__(self):
-        return self.text
-
-
 class Message(BaseModel):
     role: str  # "user", "assistant", "system"
     content: str
     created_at: datetime = datetime.now()
 
 
+class Choice(BaseModel):
+    message: Message
+    index: int = 0
+
+
+class AIResponse(BaseModel):
+    choices: List[Choice]
+
+    @property
+    def content(self) -> str:
+        """Helper to get the first message content directly."""
+        return self.choices[0].message.content
+
+
 class Conversation(BaseModel):
     id: str
     messages: List[Message] = []
+    context: Optional[Context] = None
     created_at: datetime = datetime.now()
     updated_at: datetime = datetime.now()
 
@@ -43,6 +49,10 @@ class Conversation(BaseModel):
         self.messages.append(message)
         self.updated_at = datetime.now()
         return message
+
+    def set_context(self, context: Context):
+        """Sets the context for the conversation."""
+        self.context = context
 
 
 class ConversationRequest(BaseModel):

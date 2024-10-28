@@ -1,32 +1,48 @@
+import os
 from typing import Optional
-from simplemind.core.models import Conversation, AIResponse
-from simplemind.concepts.context import Context
-from simplemind.providers.openai import OpenAI
-from simplemind.providers.anthropic import Anthropic
-import logging
+
+from .models import Conversation, AIResponse
+from ..concepts.context import Context
+
 from .errors import ProviderError
 from .logger import logger
 
 
 class Client:
-    def __init__(self, api_key: str, context: Optional[Context] = None):
-        self.api_key = api_key
-        self.context = context or Context()
-        self.providers = self._initialize_providers()
+    def __init__(self, api_key=None):
+        self.providers = {}
 
-    def _initialize_providers(self):
-        return {
-            "openai": OpenAI(api_key=self.api_key),
-            "anthropic": Anthropic(api_key=self.api_key),
+        # Auto-detect available API keys from environment
+        api_keys = {
+            "openai": os.getenv("OPENAI_API_KEY"),
+            "anthropic": os.getenv("ANTHROPIC_API_KEY"),
+            # Add other providers as needed
         }
+
+        # Initialize providers for which we have API keys
+        for provider, key in api_keys.items():
+            if key:
+                self.providers[provider] = self._initialize_provider(provider, key)
+
+    def _initialize_provider(self, provider_name, api_key):
+        if provider_name == "openai":
+            from ..providers.openai import OpenAI
+
+            return OpenAI(api_key)
+        elif provider_name == "anthropic":
+            from ..providers.anthropic import Anthropic
+
+            return Anthropic(api_key)
+        # Add other providers as needed
 
     def create_conversation(
         self, provider: str = "openai", context: Optional[Context] = None
     ) -> Conversation:
         if provider not in self.providers:
             raise ValueError(f"Provider '{provider}' not supported.")
+        conversation_context = context or Context()
         return self.providers[provider].create_conversation(
-            initial_message="Hello!", context=self.context.model_dump()
+            initial_message="Hello!", context=conversation_context.model_dump()
         )
 
     def _handle_api_error(self, error: Exception, operation: str):

@@ -22,3 +22,8 @@ class Conversation:
             self.add_message(response.text, role="assistant")
 
         return response
+
+    def set_model(self, model: str):
+        """Set the model for the conversation."""
+        self.client.set_model(model)
+        return True

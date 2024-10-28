@@ -20,27 +20,32 @@ class BaseClientProvider:
 
     def login(self):
         """Initializes the AI provider client."""
+
         msg = "This method must be implemented by the AI provider client."
         raise NotImplementedError(msg)
 
     def test_connection(self) -> bool:
         """Tests the connection to the AI provider client."""
+
         msg = "This method must be implemented by the AI provider client."
         raise NotImplementedError(msg)
 
     def health_check(self):
         """Checks the health of the AI provider client."""
+
         msg = "This method must be implemented by the AI provider client."
         raise NotImplementedError(msg)
 
     @property
     def available_models(self) -> List[str]:
         """Returns the available models from the AI provider client."""
+
         msg = "This method must be implemented by the AI provider client."
         raise NotImplementedError(msg)
 
     def message(self, message: str, **kwargs) -> AIResponse:
         """Generates a response from the AI provider client."""
+
         msg = "This method must be implemented by the AI provider client."
         raise NotImplementedError(msg)
 
