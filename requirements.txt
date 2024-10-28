@@ -1,0 +1,4 @@
+instructor
+anthropic
+requests
+openai

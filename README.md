@@ -89,6 +89,11 @@ To get started:
 3. Make your changes.
 4. Submit a pull request.
 
+## Building
+1. Clone the repository.
+2. `cd` to the root directory.
+3. Run `docker-compose up --build`
+
 ## License
 SimpleMind is licensed under the MIT License.
 
