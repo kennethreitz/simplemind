@@ -58,15 +58,7 @@ class XAI:
         )
 
     def structured_response(self, prompt, response_model, *, llm_model):
-        # Ensure messages are provided in kwargs
-        messages = [
-            {"role": "user", "content": prompt},
-        ]
-
-        response = self.structured_client.chat.completions.create(
-            messages=messages, model=llm_model, response_model=response_model
-        )
-        return response
+        raise NotImplementedError("XAI does not support structured responses")
 
     def generate_text(self, prompt, *, llm_model):
         messages = [
