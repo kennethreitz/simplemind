@@ -1,12 +1,13 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 
 class BasePlugin(ABC):
     """Base class for all SimpleMind plugins."""
 
     def __init__(self):
-        self.is_enabled = True
+        self.enabled: bool = True
+        self.name: str = self.__class__.__name__
 
     @abstractmethod
     def process(self, context: Dict[str, Any]) -> Dict[str, Any]:
@@ -20,10 +21,14 @@ class BasePlugin(ABC):
         """
         pass
 
-    def enable(self):
+    def enable(self) -> None:
         """Enable the plugin."""
-        self.is_enabled = True
+        self.enabled = True
 
-    def disable(self):
+    def disable(self) -> None:
         """Disable the plugin."""
-        self.is_enabled = False
+        self.enabled = False
+
+    @property
+    def is_enabled(self) -> bool:
+        return self.enabled

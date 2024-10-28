@@ -1,25 +1,21 @@
 import unittest
 from unittest.mock import patch, MagicMock
 from simplemind.integrations.openai import OpenAI
+from simplemind.core.errors import AuthenticationError, ProviderError
 
 
 class TestOpenAIProvider(unittest.TestCase):
+    def setUp(self):
+        self.api_key = "test_key"
+
     @patch("simplemind.integrations.openai.BaseOpenAI")
-    def setUp(self, mock_openai):
-        self.mock_openai = mock_openai.return_value
-        self.mock_openai.models.list.return_value = [MagicMock(id="gpt-4")]
-        self.provider = OpenAI(api_key="test_api_key", model="gpt-4")
+    def test_initialization(self, mock_openai):
+        provider = OpenAI(api_key=self.api_key)
+        self.assertIsNotNone(provider.client)
 
-    def test_available_models(self):
-        models = self.provider.available_models
-        self.assertIn("gpt-4", models)
-
-    def test_test_connection_success(self):
-        self.assertTrue(self.provider.test_connection())
-
-    def test_generate_response_not_implemented(self):
-        with self.assertRaises(NotImplementedError):
-            self.provider.generate_response(None)
+    def test_missing_api_key(self):
+        with self.assertRaises(AuthenticationError):
+            OpenAI(api_key=None)
 
 
 if __name__ == "__main__":

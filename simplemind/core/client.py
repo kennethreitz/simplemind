@@ -1,6 +1,6 @@
 from typing import Optional
-from simplemind.models import Conversation, AIResponse
-from simplemind.concepts import Context
+from simplemind.core.models import Conversation, AIResponse
+from simplemind.concepts.context import Context
 from simplemind.integrations.openai import OpenAI
 from simplemind.integrations.anthropic import Anthropic
 import logging
@@ -24,7 +24,7 @@ class Client:
         if provider not in self.providers:
             raise ValueError(f"Provider '{provider}' not supported.")
         return self.providers[provider].create_conversation(
-            initial_message="Hello!", context=self.context.dict()
+            initial_message="Hello!", context=self.context.model_dump()
         )
 
     def _handle_api_error(self, error: Exception, operation: str):

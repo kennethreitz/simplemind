@@ -3,7 +3,7 @@ import os
 from ollama import Client as BaseOllama
 
 from .base import BaseClientProvider
-from ..models import AIResponse
+from ..core.models import AIResponse
 from ..conversation import Conversation
 
 TIMEOUT = 60
@@ -19,7 +19,7 @@ class Ollama(BaseClientProvider):
         """Initialize Ollama client, with Instructor enabled."""
         if not os.environ.get('OLLAMA_HOST_URL'):
            raise ValueError("Please set the OLLAMA_HOST_URL environment variable")
-        
+
         if not os.environ.get('OLLAMA_MODEL'):
             raise ValueError("Please set the OLLAMA_MODEL environment variable")
         else:

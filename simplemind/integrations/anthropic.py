@@ -5,8 +5,8 @@ import instructor
 from anthropic import Anthropic as BaseAnthropic
 
 from .base import BaseClientProvider
-from ..models import AIResponse, Conversation
-from ..logger import logger
+from ..core.models import AIResponse, Conversation
+from ..core.logger import logger
 
 
 DEFAULT_MODEL = "claude-3-5-sonnet-20241022"

@@ -2,11 +2,11 @@ import os
 from pprint import pprint
 from pydantic import BaseModel
 import simplemind
-from simplemind.concepts import Context
+from simplemind.concepts.context import Context
 from simplemind.plugins.kv import KVPlugin
 from simplemind.plugins.basic_memory import BasicMemoryPlugin
 from simplemind.chains.reverse_text import ReverseTextChain
-from simplemind.client import Client
+from simplemind.core.client import Client
 
 
 class CustomContext(Context):
@@ -27,12 +27,15 @@ aiclient = Client(
 print(aiclient.available_models)
 
 # Example usage
-conversation = aiclient.create_conversation(provider="openai")
+conversation = aiclient.create_conversation(provider="anthropic", context=ctx)
 response = aiclient.send_message(
-    conversation, "Who is Kenneth Reitz?", provider="openai"
+    conversation, "Who is Kenneth Reitz?", provider="anthropic"
 )
-print(response)
+# response = aiclient.send_message(
+#     conversation, "Who is Kenneth Reitz?", provider="openai"
+# )
+# print(response)
 
-reverse_chain = ReverseTextChain()
-result = reverse_chain.run("Hello, World!")
-print(result)  # Output: !dlroW ,olleH
+# reverse_chain = ReverseTextChain()
+# result = reverse_chain.run("Hello, World!")
+# print(result)  # Output: !dlroW ,olleH

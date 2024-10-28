@@ -2,7 +2,7 @@
 
 from pydantic import BaseModel
 from typing import Any, Dict, List, Optional
-from ..models import AIResponse, Conversation, Message
+from ..core.models import AIResponse, Conversation, Message
 import uuid
 
 

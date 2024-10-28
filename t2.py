@@ -47,22 +47,3 @@ message = "who is kenneth reitz?"
 
 print(f"> {message}")
 pprint(openai.message(message, response_model=BioData))
-
-# claude = simplemind.integrations.Anthropic()
-
-# # print(claude.test_connection())
-# # print(claude.available_models)
-
-# claude.login()
-
-vector_store = FAISSStore(dimension=768)  # Example dimension for embeddings
-
-# Add embeddings
-embeddings = np.random.random((10, 768)).astype('float32')
-ids = [f"doc_{i}" for i in range(10)]
-vector_store.add_embeddings(embeddings, ids)
-
-# Search
-query_embedding = np.random.random((1, 768)).astype('float32')
-results = vector_store.search(query_embedding, top_k=3)
-print(results)
