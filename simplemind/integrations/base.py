@@ -48,6 +48,12 @@ class BaseClientProvider:
 
         raise NotImplementedError(msg)
 
+    def message(self, message, **kwargs):
+        """Generates a response from the AI provider client."""
+
+        msg = "This method must be implemented by the AI provider client."
+        raise NotImplementedError(msg)
+
     # def features(self):
     #     """Returns the features of the AI provider client."""
 
