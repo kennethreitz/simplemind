@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch, MagicMock
-from simplemind.integrations.openai import OpenAI
+from simplemind.providers.openai import OpenAI
 from simplemind.core.errors import AuthenticationError, ProviderError
 
 

@@ -1,11 +1,11 @@
 from typing import Optional
 from simplemind.core.models import Conversation, AIResponse
 from simplemind.concepts.context import Context
-from simplemind.integrations.openai import OpenAI
-from simplemind.integrations.anthropic import Anthropic
+from simplemind.providers.openai import OpenAI
+from simplemind.providers.anthropic import Anthropic
 import logging
-
-logger = logging.getLogger(__name__)
+from .errors import ProviderError
+from .logger import logger
 
 
 class Client:
@@ -20,7 +20,9 @@ class Client:
             "anthropic": Anthropic(api_key=self.api_key),
         }
 
-    def create_conversation(self, provider: str = "openai") -> Conversation:
+    def create_conversation(
+        self, provider: str = "openai", context: Optional[Context] = None
+    ) -> Conversation:
         if provider not in self.providers:
             raise ValueError(f"Provider '{provider}' not supported.")
         return self.providers[provider].create_conversation(
@@ -30,7 +32,7 @@ class Client:
     def _handle_api_error(self, error: Exception, operation: str):
         """Handle API errors in a consistent way."""
         logger.error(f"Error during {operation}: {str(error)}")
-        raise RuntimeError(f"Failed to {operation}: {str(error)}")
+        raise ProviderError(f"Failed to {operation}: {str(error)}") from error
 
     def send_message(
         self, conversation: Conversation, message: str, provider: str = "openai"

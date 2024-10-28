@@ -1,7 +1,7 @@
 from typing import Dict, Any, Optional
 from .models import AIResponse
 from ..concepts.context import Context
-from ..integrations.base import BaseClientProvider
+from ..providers.base import BaseClientProvider
 
 
 class SimpleMind:

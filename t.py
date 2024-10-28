@@ -27,7 +27,8 @@ aiclient = Client(
 print(aiclient.available_models)
 
 # Example usage
-conversation = aiclient.create_conversation(provider="anthropic", context=ctx)
+conversation = aiclient.create_conversation(provider="anthropic")
+conversation.set_context(ctx)
 response = aiclient.send_message(
     conversation, "Who is Kenneth Reitz?", provider="anthropic"
 )
