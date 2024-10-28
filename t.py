@@ -1,7 +1,7 @@
 import simplemind as sm
 
 conversation = sm.create_conversation()
-conversation.add_message(role="user", text="Hello, how are you?")
-r = conversation.send(llm_model="gpt-4o-mini", llm_provider="openai")
+conversation.add_message(role="user", text="Hello, how are you? Do you like poetry?")
+r = conversation.send(llm_provider="anthropic")
 
-print(r)
+print(r.text)
