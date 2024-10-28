@@ -1,4 +1,4 @@
 from .base import BaseClientProvider
 
-class OpenAI(BaseClientProvider):
+class Claude(BaseClientProvider):
     pass

@@ -1,20 +1,39 @@
+import os
+
+import instructor
+from openai import OpenAI
+
 from .base import BaseClientProvider
 
 
 class OpenAI(BaseClientProvider):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.initialize()
 
-    def initialize(self):
-        assert self._api_key, "API key is required for OpenAI client"
-        assert self._api_key.startswith("sk-"), "OpenAI API key must start with 'sk-'"
+    def __init__(self, *args, **kwargs):
+        return super().__init__(*args, **kwargs)
+        self.login()
 
-        self.logger.info("Initializing OpenAI client")
-        self.logger.debug(f"API key: {self._api_key}")
 
+
+    def login(self):
+        """Initialize OpenAI client, with Instructor enabled."""
+
+        # Default to environment variable if not provided.
+        if self._api_key is None:
+            self._api_key = os.getenv("OPENAI_API_KEY")
+
+        base_client = OpenAI(api_key=self._api_key)
+        self.client = instructor.from_openai(base_client)
         self.test_connection()
 
 
+    def available_models(self):
+        pass
 
     def test_connection(self):
+        try:
+            # openai.api_key = self._api_key
+            self.client.models.list()
+            # self.logger.info("OpenAI connection test successful")
+        except Exception as e:
+            # self.logger.error(f"OpenAI connection test failed: {str(e)}")
+            raise

@@ -162,3 +162,5 @@ cython_debug/
 #.idea/
 
 .vscode/**
+.envrc
+.env
