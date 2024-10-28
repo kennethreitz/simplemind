@@ -77,6 +77,10 @@ SimpleMind also allows for easy conversational flows:
 - **Anthropic's Claude**
 - **X.AI's Grok**
 
+To specify a provider, you can use the `llm_provider` parameter when calling `generate_text`, `generate_data`, or `create_conversation`.
+
+To specify a model, you can use the `llm_model` parameter when calling `generate_text`, `generate_data`, or `create_conversation`.
+
 ## Why SimpleMind?
 - **Intuitive**: Built with Pythonic simplicity and readability in mind.
 - **For Humans**: Emphasizes a human-friendly interface, just like `requests` for HTTP.
