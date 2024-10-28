@@ -1,32 +1,54 @@
 import os
 import logging
 
+
 class BaseClientProvider:
 
-    def __init__(self, *, api_key=None, api_key_environ_name=None):
+    def __init__(self, *, api_key_environ_key=None, api_key=None):
         self.logger = logging.getLogger(self.__class__.__name__)
-
-        self._api_key_environ_name = api_key_environ_name
+        self.client = None
 
         # Load API key from environment if not provided
-        self._api_key = api_key or self._load_from_environ()
+        self._api_key = api_key or self._load_from_environ(self._api_key_environ_name)
 
-    def _load_from_environ(self):
-        if self._api_key_environ_name:
-            return os.environ.get(self._api_key_environ_name)
-        return None
+    @classmethod
+    def from_environ(cls, environ_key):
+        """Loads the API key from the environment (recommended)."""
+        return cls(api_key=os.environ.get(environ_key))
+
+    def initialize(self):
+        """Initializes the AI provider client."""
+
+        msg = "This method must be implemented by the AI provider client."
+        raise NotImplementedError(msg)
 
     def test_connection(self):
-        raise NotImplementedError("This method must be implemented by the AI provider client.")
+        """Tests the connection to the AI provider client."""
+
+        msg = "This method must be implemented by the AI provider client."
+        raise NotImplementedError(msg)
 
     def generate_response(self, request):
-        raise NotImplementedError("This method must be implemented by the AI provider client.")
+        """Generates a response from the AI provider client."""
+
+        msg = "This method must be implemented by the AI provider client."
+        raise NotImplementedError(msg)
 
     def health_check(self):
-        raise NotImplementedError("This method must be implemented by the AI provider client.")
+        """Checks the health of the AI provider client."""
+
+        msg = "This method must be implemented by the AI provider client."
+        raise NotImplementedError(msg)
 
     def available_models(self):
-        raise NotImplementedError("This method must be implemented by the AI provider client.")
+        """Returns the available models from the AI provider client."""
+
+        msg = "This method must be implemented by the AI provider client."
+
+        raise NotImplementedError(msg)
 
     def features(self):
-        raise NotImplementedError("This method must be implemented by the AI provider client.")
+        """Returns the features of the AI provider client."""
+
+        msg = "This method must be implemented by the AI provider client."
+        raise NotImplementedError(msg)
