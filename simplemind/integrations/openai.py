@@ -39,18 +39,30 @@ class OpenAI(BaseClientProvider):
 
         return bool(len(self.available_models))
 
-    def single_message(self, message, *, response_model=False, **kwargs):
+    def message(self, message, *, response_model=False, **kwargs):
         """Generates a response from the OpenAI client."""
+        use_instructor = bool(response_model)
 
-        client = self.client if not response_model else self.instructor_client
+        client = self.instructor_client if use_instructor else self.client
 
-        completion = self.client.chat.completions.create(
-            model=self.model,
-            messages=[{"role": "user", "content": message}],
-            **kwargs,
-        )
+        # Parameters for the OpenAI client.
+        params = {
+            "messages": [{"role": "user", "content": message}],
+            "model": self.model,
+        }
+        params.update(kwargs)
 
-        return AIResponse(
-            response=completion,
-            text=completion.choices[0].message.content,
-        )
+        if use_instructor:
+            params["response_model"] = response_model
+
+        # Make the request to OpenAI.
+        completion = client.chat.completions.create(**params)
+
+        if use_instructor:
+            return completion.model_dump()
+
+        else:
+            return AIResponse(
+                response=completion,
+                text=completion.choices[0].message.content,
+            )
