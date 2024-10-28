@@ -109,3 +109,16 @@ SimpleMind is inspired by the philosophy of "code for humans" and aims to make w
 ---
 
 SimpleMind: Keep it simple, keep it human.
+
+------------------------
+
+
+## Plugins
+
+
+SimpleMind supports a plugin system to extend its functionality. Currently available plugins:
+
+- **KVPlugin**: Key-Value storage for context management.
+- **BasicMemoryPlugin**: Simple memory storage for conversations.
+
+**Adding a Plugin:**

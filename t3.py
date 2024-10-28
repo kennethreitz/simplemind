@@ -1,3 +1,4 @@
+
 import simplemind
 
 aiclient = simplemind.Ollama()
@@ -26,3 +27,4 @@ conversation.say("What number did I ask you to remember?")
 # Get the AI's response
 reply = conversation.get_reply()
 print(reply)
+
