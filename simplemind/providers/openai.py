@@ -5,8 +5,6 @@ from ..core.config import settings
 from ..core.logger import logger
 from .base import BaseClientProvider
 
-DEFAULT_MODEL = "gpt-4"
-
 
 class OpenAI(BaseClientProvider):
     def __init__(self, model: str = "gpt-4", api_key: Optional[str] = None):
@@ -49,7 +47,7 @@ class OpenAI(BaseClientProvider):
         logger.error(f"OpenAI API error: {e}")
         raise ProviderError(f"OpenAI API error: {e}")
 
-    def generate_response(self, conversation, **kwargs) -> str:
+    def generate_response(self, conversation) -> str:
         """Generate a response using the OpenAI API."""
         try:
             messages = [
@@ -57,24 +55,10 @@ class OpenAI(BaseClientProvider):
                 for msg in conversation.messages
             ]
 
-            # Ensure we're using a valid model name, not the API key
-            if not isinstance(self.model, str) or self.model.startswith("sk-"):
-                logger.warning(
-                    f"Invalid model name detected. Falling back to {DEFAULT_MODEL!r}"
-                )
-                model_name = DEFAULT_MODEL
-            else:
-                model_name = self.model
-
-            r = self.client.chat.completions.create(
-                model=model_name,  # Use the validated model name
-                messages=messages,
-                **kwargs,
+            response = self.client.chat.completions.create(
+                model=self.model, messages=messages
             )
-            return r
+
+            return response.choices[0].message.content
         except Exception as e:
             self._handle_api_error(e)
-
-    def generate_text(self, conversation, **kwargs) -> str:
-        """Generate a text response using the OpenAI API."""
-        return self.generate_response(conversation, **kwargs).choices[0].message.content

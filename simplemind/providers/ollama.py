@@ -4,7 +4,7 @@ from ollama import Client as BaseOllama
 
 from .base import BaseClientProvider
 from ..core.models import AIResponse
-from ..conversation import Conversation
+from ..concepts.conversation import Conversation
 
 TIMEOUT = 60
 

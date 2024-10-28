@@ -1,15 +1,9 @@
-import simplemind
+from simplemind import SimpleMind
 
-from simplemind.core import settings
-
-print(settings)
-
-# Initialize client without explicit API key
-ai = simplemind.Client()
-
-print(ai.available_models)
+sm = SimpleMind()
 
 # The provider will automatically use OPENAI_API_KEY from environment
-conversation = ai.create_conversation(provider="openai")
-response = ai.send_message(conversation, "Who is Kenneth Reitz?")
-print(response)
+conversation = sm.create_conversation()
+r = conversation.send_message("Who is Kenneth Reitz?", model="gpt-4o")
+print(r)
+#
