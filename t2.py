@@ -1,49 +1,6 @@
-from pprint import pprint
-from pydantic import BaseModel
-import simplemind
-from simplemind.vector_store.faiss_store import FAISSStore
-import numpy as np
+import simplemind as sm
 
-context = None
-
-openai = simplemind.integrations.OpenAI()
-
-
-class YearlyData(BaseModel):
-    year: int
-    events: list[str]
-
-
-class ProjectData(BaseModel):
-    name: str
-    description: str
-    url: str
-    github_url: str
-
-
-class BioData(BaseModel):
-    bio: str
-    spouse_name: str
-    history: list[YearlyData]
-    fun_facts: list[str]
-    # age: int
-    # occupation: str
-    # bio: str
-    # affiliations: list[str]
-
-
-class PersonData(BaseModel):
-    bio: BioData
-    projects: list[ProjectData]
-    yearly_breakdown: list[YearlyData]
-
-
-print(openai.test_connection())
-print(openai.available_models)
-
-print()
-print()
-message = "who is kenneth reitz?"
-
-print(f"> {message}")
-pprint(openai.message(message, response_model=BioData))
+conversation = sm.create_conversation(llm_model="gpt-4o-mini", llm_provider="openai")
+conversation.add_message("user", "Hi there, how are you?")
+reply = conversation.send()
+print(reply)

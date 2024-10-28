@@ -11,25 +11,20 @@ SimpleMind is an AI library designed to simplify your experience with AI APIs in
 
 ## Installation
 
-To install SimpleMind, use pip:
+To install SimpleMind, use pip, eventually—
 
 ```bash
 pip install simplemind
 ```
+
+
 
 ## Quickstart
 
 Here's how easy it is to use SimpleMind to interact with an AI model:
 
 ```python
-import simplemind
-
-# Initialize a client
-aiclient = simplemind.Client(api_key="YOUR_API_KEY")
-
-# Generate text
-generated_text = aiclient.generate_text(prompt="Once upon a time in a land far away...")
-print(generated_text)
+import simplemind as sm
 ```
 
 SimpleMind takes care of the complex API calls so you can focus on what matters—building, experimenting, and creating.
@@ -40,9 +35,26 @@ SimpleMind takes care of the complex API calls so you can focus on what matters�
 
 Generate a response from an AI model based on a given prompt:
 
+```pycon
+>>> sm.generate_text(prompt="What is the meaning of life?", provider="anthropic")
+```
+
+### Structured Response
+
 ```python
-response = aiclient.generate_text(prompt="What is the meaning of life?")
-print(response)
+class Poem(BaseModel):
+    title: str
+    content: str
+```
+
+```pycon
+>>> sm.generate_data(
+        "Write a poem about love",
+        llm_model="gpt-4o-mini",
+        llm_provider="openai",
+        response_model=Poem,
+    )
+title='Eternal Embrace' content='In the quiet hours of the night,\nWhen stars whisper secrets bright,\nTwo hearts beat in a gentle rhyme,\nDancing through the sands of time.\n\nWith every glance, a spark ignites,\nA flame that warms the coldest nights,\nIn laughter shared and whispers sweet,\nLove paints the world, a masterpiece.\n\nThrough stormy skies and sunlit days,\nIn myriad forms, it finds its ways,\nA tender touch, a knowing sigh,\nIn love’s embrace, we learn to fly.\n\nAs seasons change and moments fade,\nIn the tapestry of dreams we’ve laid,\nLove’s threads endure, forever bind,\nA timeless bond, two souls aligned.\n\nSo here’s to love, both bright and true,\nA gift we give, anew, anew,\nIn every heartbeat, every prayer,\nA story written in the air.'
 ```
 
 ### Conversational AI
@@ -50,29 +62,21 @@ print(response)
 SimpleMind also allows for easy conversational flows:
 
 ```python
-conversation = aiclient.start_conversation()
+conversation = sm.create_conversation(llm_model="gpt-4o-mini", llm_provider="openai")
 
 # Add a message to the conversation
-conversation.say("Hi there, how are you?")
+conversation.add_message("user", "Hi there, how are you?")
+```
 
-# Get the AI's response
-reply = conversation.get_reply()
-print(reply)
+```pycon
+>>> reply = conversation.send()
+>>> print(reply)
+<Message role=assistant text="Hello! I'm just a computer program, so I don't have feelings, but I'm here and ready to help you. How can I assist you today?">
 ```
 
 ## Supported APIs
 - **OpenAI GPT**
-- **Cohere**
-- **Hugging Face Transformers**
-
-More integrations coming soon!
-
-## Configuration
-To use SimpleMind, you'll need an API key from the supported AI provider. Just pass it when initializing the `Client`:
-
-```python
-aiclient = simplemind.Client(api_key="YOUR_API_KEY")
-```
+= **Anthropic**
 
 ## Why SimpleMind?
 - **Intuitive**: Built with Pythonic simplicity and readability in mind.

@@ -58,3 +58,14 @@ class OpenAI:
             messages=messages, model=llm_model, response_model=response_model
         )
         return response
+
+    def generate_text(self, prompt, *, llm_model):
+        messages = [
+            {"role": "user", "content": prompt},
+        ]
+
+        response = self.client.chat.completions.create(
+            messages=messages, model=llm_model
+        )
+
+        return response.choices[0].message.content

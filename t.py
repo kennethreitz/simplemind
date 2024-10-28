@@ -7,7 +7,7 @@ class Poem(BaseModel):
     content: str
 
 
-output = sm.structured_response(
+output = sm.generate_data(
     "Write a poem about love",
     llm_model="gpt-4o-mini",
     llm_provider="openai",

@@ -58,3 +58,14 @@ class Anthropic:
             model=model, response_model=response_model, **kwargs
         )
         return response
+
+    def generate_text(self, prompt, *, llm_model):
+        messages = [
+            {"role": "user", "content": prompt},
+        ]
+
+        response = self.client.messages.create(
+            model=llm_model, messages=messages, max_tokens=DEFAULT_MAX_TOKENS
+        )
+
+        return response.content[0].text
