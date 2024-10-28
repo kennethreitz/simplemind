@@ -61,16 +61,13 @@ title='Eternal Embrace' content='In the quiet hours of the night,\nWhen stars wh
 
 SimpleMind also allows for easy conversational flows:
 
-```python
-conversation = sm.create_conversation(llm_model="gpt-4o-mini", llm_provider="openai")
-
-# Add a message to the conversation
-conversation.add_message("user", "Hi there, how are you?")
-```
-
 ```pycon
->>> reply = conversation.send()
->>> print(reply)
+>>> conversation = sm.create_conversation(llm_model="gpt-4o-mini", llm_provider="openai")
+
+>>> # Add a message to the conversation
+>>> conversation.add_message("user", "Hi there, how are you?")
+
+>>> conversation.send()
 <Message role=assistant text="Hello! I'm just a computer program, so I don't have feelings, but I'm here and ready to help you. How can I assist you today?">
 ```
 
