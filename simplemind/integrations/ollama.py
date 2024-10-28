@@ -32,7 +32,7 @@ class Ollama(BaseClientProvider):
 
     @property
     def available_models(self):
-        """Returns the available models from the OpenAI client."""
+        """Returns the available models from the Ollama client."""
 
         def gen():
             for model in self.client.list().get('models'):
@@ -41,7 +41,7 @@ class Ollama(BaseClientProvider):
         return [g for g in gen()]
 
     def test_connection(self):
-        """Test the connection to ollama. Returns True if successful."""
+        """Test the connection to Ollama. Returns True if successful."""
 
         return bool(len(self.available_models))
 
@@ -72,7 +72,7 @@ class Ollama(BaseClientProvider):
             )
 
     def message(self, message=None, message_history=None, response_model=False, **kwargs):
-        """Generates a response from the OpenAI client."""
+        """Generates a response from the Ollama client."""
         use_instructor = bool(response_model)
 
         client = self.instructor_client if use_instructor else self.client
