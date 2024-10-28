@@ -9,6 +9,9 @@ from ..models import AIResponse, Conversation
 from ..logger import logger
 
 
+DEFAULT_MODEL = "claude-3-5-sonnet-20240620"
+
+
 class Anthropic(BaseClientProvider):
     def __init__(self, model: str = DEFAULT_MODEL, api_key: Optional[str] = None):
         super().__init__(model=model, api_key=api_key)

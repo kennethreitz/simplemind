@@ -4,6 +4,7 @@ from simplemind.plugins.base import BasePlugin
 
 
 class Context(BaseModel):
+    model_config = {"arbitrary_types_allowed": True}
     plugins: Dict[str, BasePlugin] = {}
 
     def add_plugin(self, name: str, plugin: BasePlugin):

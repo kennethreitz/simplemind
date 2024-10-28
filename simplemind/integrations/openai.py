@@ -8,6 +8,10 @@ from ..models import AIResponse, Conversation
 from ..logger import logger
 from simplemind.config import settings
 
+
+DEFAULT_MODEL = "gpt-4o"
+
+
 class OpenAI(BaseClientProvider):
     def __init__(self, model: str = DEFAULT_MODEL, api_key: Optional[str] = None):
         super().__init__(model=model, api_key=api_key)
@@ -46,22 +50,25 @@ class OpenAI(BaseClientProvider):
             return False
 
     def generate_response(self, conversation: Conversation) -> AIResponse:
-        messages = [
-            {"role": msg.role, "content": msg.content} for msg in conversation.messages
-        ]
+        messages = conversation.get_messages()
         params = {
-            "messages": messages,
             "model": self.model,
+            "messages": [
+                {
+                    "role": msg.role,
+                    "content": [{"type": "text", "text": msg.content}],  # New format
+                }
+                for msg in messages
+            ],
+            "temperature": getattr(
+                self, "temperature", 0.7
+            ),  # Use 0.7 as default if not set
         }
-        if conversation.context:
-            params["context"] = conversation.context
 
         try:
             completion = self.client.chat.completions.create(**params)
-            response_text = completion.choices[0].message.content
-            metadata = {"model": completion.model, "usage": completion.usage}
-            logger.info("Generated response from OpenAI.")
-            return AIResponse(text=response_text, response=completion, metadata=metadata)
+            return completion
         except Exception as e:
-            logger.error(f"Error generating response: {e}")
-            raise e
+            # Enhanced error handling (optional)
+            logger.error(f"OpenAI API Error: {e}")
+            raise RuntimeError(f"Failed to generate response: {e}")

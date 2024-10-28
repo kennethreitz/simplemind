@@ -1,3 +1,4 @@
+import os
 from pprint import pprint
 from pydantic import BaseModel
 import simplemind
@@ -8,16 +9,19 @@ from simplemind.chains.reverse_text import ReverseTextChain
 from simplemind.client import Client
 
 
-class MyContext(Context):
+class CustomContext(Context):
     def __init__(self):
         super().__init__()
         self.add_plugin("kv", KVPlugin())
-        self.add_plugin("basic_memory", BasicMemoryPlugin())
+        # self.add_plugin("basic_memory", BasicMemoryPlugin())
 
 
 # Initialize context and client
-context = MyContext()
-aiclient = Client(api_key="YOUR_API_KEY", context=context)
+ctx = CustomContext()
+aiclient = Client(
+    context=ctx,
+    api_key=os.environ["OPENAI_API_KEY"],
+)
 
 # Test connection and available models
 print(aiclient.available_models)

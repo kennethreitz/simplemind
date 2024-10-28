@@ -4,7 +4,6 @@ from pydantic import BaseModel
 from typing import Any, Dict, List, Optional
 from ..models import AIResponse, Conversation, Message
 import uuid
-from abc import ABC, abstractmethod
 
 
 DEFAULT_MODEL = "gpt-4o"
@@ -19,31 +18,27 @@ class BaseClientProvider:
         self._api_key = api_key
         self.conversations: Dict[str, Conversation] = {}
 
-    @abstractmethod
     def login(self):
         """Initializes the AI provider client."""
         msg = "This method must be implemented by the AI provider client."
         raise NotImplementedError(msg)
 
-    @abstractmethod
     def test_connection(self) -> bool:
         """Tests the connection to the AI provider client."""
         msg = "This method must be implemented by the AI provider client."
         raise NotImplementedError(msg)
 
-    @abstractmethod
     def health_check(self):
         """Checks the health of the AI provider client."""
         msg = "This method must be implemented by the AI provider client."
         raise NotImplementedError(msg)
 
-    @abstractmethod
+    @property
     def available_models(self) -> List[str]:
         """Returns the available models from the AI provider client."""
         msg = "This method must be implemented by the AI provider client."
         raise NotImplementedError(msg)
 
-    @abstractmethod
     def message(self, message: str, **kwargs) -> AIResponse:
         """Generates a response from the AI provider client."""
         msg = "This method must be implemented by the AI provider client."
@@ -95,7 +90,9 @@ class BaseClientProvider:
             conversation.context.update(context_update)
 
         response = self.generate_response(conversation)
-        conversation.messages.append(Message(role="assistant", content=response.text))
+        conversation.messages.append(
+            Message(role="assistant", content=response.choices[0].message.content)
+        )
         return response
 
     def generate_response(self, conversation: Conversation) -> AIResponse:
@@ -108,9 +105,3 @@ class BaseClientProvider:
         if conversation_id not in self.conversations:
             raise ValueError("Conversation ID does not exist.")
         return self.conversations[conversation_id]
-
-
-class BasePlugin(ABC):
-    @abstractmethod
-    def execute(self, context, *args, **kwargs):
-        pass
