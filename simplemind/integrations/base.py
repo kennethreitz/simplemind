@@ -1,6 +1,6 @@
 import os
 
-class AIProviderClient:
+class BaseClientProvider:
 
     def __init__(self, *, api_key=None, environ_name=None):
         self._environ_name = environ_name
@@ -22,6 +22,8 @@ class AIProviderClient:
     def health_check(self):
         raise NotImplementedError("This method must be implemented by the AI provider client.")
 
+    def available_models(self):
+        raise NotImplementedError("This method must be implemented by the AI provider client.")
 
     # TODO: logging provider.
     #
