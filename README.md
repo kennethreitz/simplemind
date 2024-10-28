@@ -95,13 +95,7 @@ To get started:
 3. Run `docker-compose up --build`
 
 ## License
-SimpleMind is licensed under the MIT License.
-
-## Community
-Join our community to share ideas, get help, or just hang out:
-
-- [GitHub Discussions](https://github.com/simplemind-ai/simplemind/discussions)
-- [Discord](https://discord.gg/simplemind)
+SimpleMind is licensed under the Apache 2.0 License.
 
 ## Acknowledgements
 SimpleMind is inspired by the philosophy of "code for humans" and aims to make working with AI models accessible to all. Special thanks to the open-source community for their contributions and inspiration.
