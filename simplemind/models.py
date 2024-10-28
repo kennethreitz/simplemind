@@ -13,6 +13,9 @@ class SMBaseModel(BaseModel):
     def __str__(self):
         return f"<{self.__class__.__name__} {self.model_dump_json()}>"
 
+    def __repr__(self):
+        return str(self)
+
 
 class Message(SMBaseModel):
     role: str
@@ -51,4 +54,7 @@ class Conversation(SMBaseModel):
     ) -> Message:
         """Send the conversation to the LLM."""
         provider = find_provider(llm_provider or self.llm_provider)
-        return provider.send_conversation(self)
+        response = provider.send_conversation(self)
+
+        self.add_message(role="assistant", text=response.text, meta=response.meta)
+        return response
