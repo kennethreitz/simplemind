@@ -72,8 +72,9 @@ SimpleMind also allows for easy conversational flows:
 ```
 
 ## Supported APIs
-- **OpenAI GPT**
-= **Anthropic**
+- **OpenAI's GPT**
+- **Anthropic's Claude**
+- **X.AI's Grok**
 
 ## Why SimpleMind?
 - **Intuitive**: Built with Pythonic simplicity and readability in mind.

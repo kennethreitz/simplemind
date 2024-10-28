@@ -2,16 +2,12 @@ import simplemind as sm
 from pydantic import BaseModel
 
 
-class Poem(BaseModel):
-    title: str
-    content: str
+conversation = sm.create_conversation(llm_model="grok-beta", llm_provider="xai")
 
-
-output = sm.generate_data(
-    "Write a poem about love",
-    llm_model="gpt-4o-mini",
-    llm_provider="openai",
-    response_model=Poem,
+conversation.add_message(
+    role="user",
+    text="Write a poem about love",
 )
+r = conversation.send()
 
-print(output)
+print(r)
