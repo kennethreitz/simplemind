@@ -32,20 +32,22 @@ class SimpleMind:
                 f"Provider '{self.provider}' not supported. Available providers: {list(providers.keys())}"
             )
 
-        return providers[self.provider](api_key=self.api_key)
+        return providers[self.provider]()
 
     def generate(self, prompt: str, **kwargs) -> AIResponse:
         """Generate a response using the configured provider."""
 
         return self._client.message(prompt, **kwargs)
 
-    def create_conversation(self, initial_message: str) -> str:
+    def create_conversation(self) -> str:
         """Create a new conversation and return its ID."""
 
-        conversation = self._client.create_conversation(initial_message)
-        return conversation.id
+        initial_message = "You are a helpful assistant."
 
-    def send_message(self, conversation_id: str, message: str) -> AIResponse:
+        conversation = self._client.create_conversation(initial_message)
+        return conversation
+
+    def add_message(self, conversation_id: str, message: str) -> AIResponse:
         """Send a message in an existing conversation."""
 
-        return self._client.send_message(conversation_id, message)
+        return self._client.add_message(conversation_id, message)

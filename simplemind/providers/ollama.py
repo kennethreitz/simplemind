@@ -1,12 +1,13 @@
 import os
-
-from ollama import Client as BaseOllama
-
+import uuid
+from typing import List, Optional, Dict, Any
+from ..core.errors import ProviderError
+from ..core.logger import logger
 from .base import BaseClientProvider
-from ..core.models import AIResponse
-from ..concepts.conversation import Conversation
+from some_module import BaseOllama  # Replace 'some_module' with the actual module name
 
 TIMEOUT = 60
+
 
 class Ollama(BaseClientProvider):
 
@@ -17,17 +18,17 @@ class Ollama(BaseClientProvider):
 
     def login(self):
         """Initialize Ollama client, with Instructor enabled."""
-        if not os.environ.get('OLLAMA_HOST_URL'):
-           raise ValueError("Please set the OLLAMA_HOST_URL environment variable")
+        if not os.environ.get("OLLAMA_HOST_URL"):
+            raise ValueError("Please set the OLLAMA_HOST_URL environment variable")
 
-        if not os.environ.get('OLLAMA_MODEL'):
+        if not os.environ.get("OLLAMA_MODEL"):
             raise ValueError("Please set the OLLAMA_MODEL environment variable")
         else:
-            self.model = os.environ.get('OLLAMA_MODEL')
+            self.model = os.environ.get("OLLAMA_MODEL")
 
         self.client = BaseOllama(
-            timeout=TIMEOUT,
-            host=os.environ.get('OLLAMA_HOST_URL'))
+            timeout=TIMEOUT, host=os.environ.get("OLLAMA_HOST_URL")
+        )
         assert self.test_connection()
 
     @property
@@ -35,7 +36,7 @@ class Ollama(BaseClientProvider):
         """Returns the available models from the Ollama client."""
 
         def gen():
-            for model in self.client.list().get('models'):
+            for model in self.client.list().get("models"):
                 yield model
 
         return [g for g in gen()]
@@ -68,10 +69,12 @@ class Ollama(BaseClientProvider):
         else:
             return AIResponse(
                 response=completion,
-                text=completion.get('response'),
+                text=completion.get("response"),
             )
 
-    def message(self, message=None, message_history=None, response_model=False, **kwargs):
+    def message(
+        self, message=None, message_history=None, response_model=False, **kwargs
+    ):
         """Generates a response from the Ollama client."""
         use_instructor = bool(response_model)
 
@@ -82,7 +85,7 @@ class Ollama(BaseClientProvider):
         if message_history:
             all_messages.extend(message_history)
         if message:
-            all_messages.append({'role': 'user', 'content': message})
+            all_messages.append({"role": "user", "content": message})
         params = {
             "messages": all_messages,
             "model": self.model,
@@ -100,7 +103,7 @@ class Ollama(BaseClientProvider):
         else:
             return AIResponse(
                 response=completion,
-                text=completion.get('message').get('content'),
+                text=completion.get("message").get("content"),
             )
 
     def start_conversation(self):

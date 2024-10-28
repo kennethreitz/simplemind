@@ -1,13 +1,15 @@
 from typing import List, Optional
-from openai import OpenAI as BaseOpenAI
+import openai
 from ..core.errors import AuthenticationError, ProviderError
 from ..core.config import settings
 from ..core.logger import logger
 from .base import BaseClientProvider
 
+DEFAULT_MODEL = "gpt-4o"
+
 
 class OpenAI(BaseClientProvider):
-    def __init__(self, model: str = "gpt-4", api_key: Optional[str] = None):
+    def __init__(self, model: str = DEFAULT_MODEL, api_key: Optional[str] = None):
         super().__init__(model=model, api_key=api_key)
         self.login()
 
@@ -18,7 +20,7 @@ class OpenAI(BaseClientProvider):
             raise AuthenticationError("OpenAI API key not provided")
 
         try:
-            self.client = BaseOpenAI(api_key=self._api_key)
+            openai.api_key = self._api_key
             if not self.test_connection():
                 raise ProviderError("Failed to connect to OpenAI API")
             logger.info("Successfully connected to OpenAI")
@@ -28,7 +30,8 @@ class OpenAI(BaseClientProvider):
     @property
     def available_models(self) -> List[str]:
         try:
-            return [model.id for model in self.client.models.list()]
+            models = openai.models.list()
+            return [model.id for model in models["data"]]
         except Exception as e:
             logger.error(f"Error fetching models: {e}")
             return []
@@ -36,10 +39,10 @@ class OpenAI(BaseClientProvider):
     def test_connection(self):
         """Test the connection to OpenAI API."""
         try:
-            # A simple test call to verify API key works
-            self.client.models.list()
+            openai.models.list()
             return True
         except Exception as e:
+            logger.error(f"Connection test failed: {e}")
             return False
 
     def _handle_api_error(self, e: Exception) -> None:
@@ -47,16 +50,18 @@ class OpenAI(BaseClientProvider):
         logger.error(f"OpenAI API error: {e}")
         raise ProviderError(f"OpenAI API error: {e}")
 
-    def generate_response(self, conversation) -> str:
+    def add_message(self, conversation_id, message, *args, **kwargs) -> str:
         """Generate a response using the OpenAI API."""
         try:
-            messages = [
-                {"role": msg.role, "content": msg.content}
-                for msg in conversation.messages
-            ]
+            # Create a client instance using the API key
+            client = openai.OpenAI(api_key=self._api_key)
 
-            response = self.client.chat.completions.create(
-                model=self.model, messages=messages
+            # Create the message for the conversation
+            messages = [{"role": "user", "content": message}]
+
+            # Use the new API syntax
+            response = client.chat.completions.create(
+                model=self.model, messages=messages, *args, **kwargs
             )
 
             return response.choices[0].message.content
