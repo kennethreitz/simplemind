@@ -1,4 +1,6 @@
+import os
 import unittest
+from unittest import mock
 import simplemind as sm
 from pydantic import BaseModel
 
@@ -58,11 +60,6 @@ class TestOllama(unittest.TestCase):
               llm_provider="ollama",
               llm_model="llama3.2",
               response_model=Poem)
-      
-      # If implementation is added later, uncomment and modify:
-      # data_obj = sm.generate_data(...)
-      # self.assertIsNotNone(data_obj)
-      # self.assertIsInstance(data_obj, Poem)
 
 
 if __name__ == '__main__':
