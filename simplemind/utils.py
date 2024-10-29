@@ -1,5 +1,6 @@
 from typing import Union
-from .providers import providers
+
+from simplemind.providers import providers
 
 
 def find_provider(provider_name: Union[str, None]):

@@ -1,4 +1,5 @@
 from typing import Optional, Union
+
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 

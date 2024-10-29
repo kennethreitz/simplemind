@@ -4,8 +4,7 @@ from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field
 
-from .utils import find_provider
-
+from simplemind.utils import find_provider
 
 MESSAGE_ROLE = Literal["system", "user", "assistant"]
 
@@ -53,8 +52,12 @@ class Conversation(SMBaseModel):
     def __str__(self):
         return f"<Conversation id={self.id!r}>"
 
-    def add_message(self, role: MESSAGE_ROLE, text: str, meta: Dict[str, Any] = {}):
+    def add_message(
+        self, role: MESSAGE_ROLE, text: str, meta: Optional[Dict[str, Any]] = None
+    ):
         """Add a new message to the conversation."""
+        if meta is None:
+            meta = {}
         self.messages.append(Message(role=role, text=text, meta=meta))
 
     def send(
