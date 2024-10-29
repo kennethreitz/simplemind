@@ -165,8 +165,8 @@ To get started:
 3. Run `docker-compose up --build`
 
 Two containers will run in sequence:
-1) `simplemind` - Builds and runs the tests
-2) `simplemind-test` - Runs the tests again, if the 1st container suceeds.
+1) `simplemind-test` - Builds and runs the tests
+2) `simplemind` - Runs if the test container succeeds
 
 ## License
 SimpleMind is licensed under the Apache 2.0 License.
