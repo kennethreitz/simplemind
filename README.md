@@ -75,7 +75,7 @@ SimpleMind also allows for easy conversational flows:
 ## Supported APIs
 - **OpenAI's GPT**
 - **Anthropic's Claude**
-- **X.AI's Grok**
+- **xAI's Grok**
 
 To specify a provider, you can use the `llm_provider` parameter when calling `generate_text`, `generate_data`, or `create_conversation`.
 
