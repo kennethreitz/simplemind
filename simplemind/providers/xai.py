@@ -3,9 +3,8 @@ from typing import Union
 import instructor
 import openai as oa
 
-from simplemind.models import Conversation, Message
-from simplemind.providers._base import BaseProvider
-from simplemind.settings import settings
+from ._base import BaseProvider
+from ..settings import settings
 
 PROVIDER_NAME = "xai"
 DEFAULT_MODEL = "grok-beta"
@@ -14,7 +13,7 @@ DEFAULT_MAX_TOKENS = 1000
 
 
 class XAI(BaseProvider):
-    __name__ = PROVIDER_NAME
+    NAME = PROVIDER_NAME
     DEFAULT_MODEL = DEFAULT_MODEL
 
     def __init__(self, api_key: Union[str, None] = None):
@@ -37,6 +36,7 @@ class XAI(BaseProvider):
 
     def send_conversation(self, conversation: "Conversation"):
         """Send a conversation to the OpenAI API."""
+        from ..models import Message
 
         messages = [
             {"role": msg.role, "content": msg.text} for msg in conversation.messages

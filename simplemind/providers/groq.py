@@ -3,16 +3,15 @@ from typing import Union
 import groq
 import instructor
 
-from simplemind.models import Conversation, Message
-from simplemind.providers._base import BaseProvider
-from simplemind.settings import settings
+from ._base import BaseProvider
+from ..settings import settings
 
 PROVIDER_NAME = "groq"
 DEFAULT_MODEL = "llama3-8b-8192"
 
 
 class Groq(BaseProvider):
-    __name__ = PROVIDER_NAME
+    NAME = PROVIDER_NAME
     DEFAULT_MODEL = DEFAULT_MODEL
 
     def __init__(self, api_key: Union[str, None] = None):
@@ -30,8 +29,10 @@ class Groq(BaseProvider):
         """A client patched with Instructor."""
         return instructor.from_groq(self.client)
 
-    def send_conversation(self, conversation: Conversation) -> Message:
+    def send_conversation(self, conversation: "Conversation") -> "Message":
         """Send a conversation to the Groq API."""
+        from ..models import Message
+
         messages = [
             {"role": msg.role, "content": msg.text} for msg in conversation.messages
         ]

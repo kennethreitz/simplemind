@@ -2,13 +2,13 @@ from abc import ABC, abstractmethod
 
 from instructor import Instructor
 
-from simplemind.models import Conversation, Message
+# from ..models import Conversation, Message
 
 
 class BaseProvider(ABC):
     """The base provider class."""
 
-    __name__: str
+    NAME: str
     DEFAULT_MODEL: str
 
     @property
@@ -24,7 +24,7 @@ class BaseProvider(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def send_conversation(self, conversation: Conversation) -> Message:
+    def send_conversation(self, conversation: "Conversation") -> "Message":
         """Send a conversation to the provider."""
         raise NotImplementedError
 
