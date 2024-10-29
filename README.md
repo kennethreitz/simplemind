@@ -15,11 +15,10 @@ $ pip install simplemind
 
 ## Supported APIs
 
-- **OpenAI's GPT**
-- **Anthropic's Claude**
-- **xAI's Grok**
-- **Groq's Groq**
-- **Ollama's Ollama**
+- **[OpenAI's GPT](https://openai.com/gpt)**
+- **[Anthropic's Claude](https://www.anthropic.com/claude)**
+- **[xAI's Grok](https://x.ai/)**
+- **[Groq's Groq](https://groq.com/)**
 
 To specify a specific provider or model, you can use the `llm_provider` and `llm_model` parameters when calling: `generate_text`, `generate_data`, or `create_conversation`.
 
