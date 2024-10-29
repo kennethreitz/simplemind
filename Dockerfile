@@ -9,4 +9,4 @@ WORKDIR /src
 
 RUN pip install -r requirements.txt
 
-ENTRYPOINT ["python", "build.py"]
+ENTRYPOINT ["python", "main.py"]

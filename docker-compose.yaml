@@ -1,10 +1,22 @@
 services:
   simplemind:
+    depends_on:
+      simplemind-test:
+        condition: service_completed_successfully
     build:
       context: .
       dockerfile: Dockerfile
     volumes:
       - ./simplemind:/src/simplemind
-      - ./build.py:/src/build.py
+      - ./test_ollama.py:/src/main.py
+    env_file:
+      - .env
+  simplemind-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./simplemind:/src/simplemind
+      - ./test_ollama.py:/src/main.py
     env_file:
       - .env

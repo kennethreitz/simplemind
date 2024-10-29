@@ -166,3 +166,4 @@ cython_debug/
 .env
 
 src/**
+requirements.txt

@@ -159,9 +159,15 @@ To get started:
 4. Submit a pull request.
 
 ## Building
+
 1. Clone the repository.
 2. `cd` to the root directory.
+3. Generate the requirements.txt file `python -m piptools compile pyproject.toml`
 3. Run `docker-compose up --build`
+
+Two containers will run in sequence:
+1) `simplemind` - Builds and runs the tests
+2) `simplemind-test` - Runs the tests again, if the 1st container suceeds.
 
 ## License
 SimpleMind is licensed under the Apache 2.0 License.
