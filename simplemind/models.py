@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 import uuid
 from datetime import datetime
 from typing import Any, Dict, List, Literal, Optional
@@ -17,31 +18,36 @@ class SMBaseModel(BaseModel):
         return str(self)
 
 
-class BaseProvider(SMBaseModel):
+class BaseProvider(SMBaseModel, ABC):
     """The base provider class."""
 
     __name__ = "BaseProvider"
     DEFAULT_MODEL = "DEFAULT_MODEL"
 
     @property
+    @abstractmethod
     def client(self):
         """The instructor client for the provider."""
         raise NotImplementedError
 
     @property
+    @abstractmethod
     def structured_client(self):
         """The structured client for the provider."""
         raise NotImplementedError
 
-    def send_conversation(self, conversation: "Conversation"):
+    @abstractmethod
+    def send_conversation(self, conversation: "Conversation") -> "Message":
         """Send a conversation to the provider."""
         raise NotImplementedError
 
+    @abstractmethod
     def structured_response(self, prompt: str, response_model, **kwargs):
         """Get a structured response."""
         raise NotImplementedError
 
-    def generate_text(self, prompt: str, **kwargs):
+    @abstractmethod
+    def generate_text(self, prompt: str, **kwargs) -> str:
         """Generate text from a prompt."""
         raise NotImplementedError
 
