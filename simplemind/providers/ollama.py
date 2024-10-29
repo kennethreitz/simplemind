@@ -1,6 +1,7 @@
 import ollama as ol
 
 from ..settings import settings
+from simplemind.models import BaseProvider
 
 PROVIDER_NAME = "ollama"
 DEFAULT_MODEL = "llama3.2"
@@ -9,13 +10,14 @@ NOT_IMPLEMENTED_REASON = """
 # TODO: instructor does not natively support ollama.
 # Alternate python dependency may be required
 """
-class Ollama:
+
+class Ollama(BaseProvider):
     __name__ = PROVIDER_NAME
-    DEFAULT_MODEL = DEFAULT_MODEL
     DEFAULT_MODEL: str = DEFAULT_MODEL
+    host_url: str = None
 
     def __init__(self, host_url: str = None):
-        self.host_url = host_url or settings.OLLAMA_HOST_URL
+        super().__init__(host_url=host_url or settings.OLLAMA_HOST_URL)
 
     @property
     def client(self):
