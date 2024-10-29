@@ -18,7 +18,7 @@ class XAI(BaseProvider):
     DEFAULT_MODEL = DEFAULT_MODEL
 
     def __init__(self, api_key: Union[str, None] = None):
-        self.api_key = api_key or settings.XAI_API_KEY
+        self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
 
     @property
     def client(self):
