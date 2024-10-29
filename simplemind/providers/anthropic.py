@@ -21,6 +21,8 @@ class Anthropic(BaseProvider):
     @property
     def client(self):
         """The raw Anthropic client."""
+        if not self.api_key:
+            raise ValueError("Anthropic API key is required")
         return anthropic.Anthropic(api_key=self.api_key)
 
     @property

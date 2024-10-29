@@ -20,6 +20,8 @@ class Groq(BaseProvider):
     @property
     def client(self):
         """The raw Groq client."""
+        if not self.api_key:
+            raise ValueError("Groq API key is required")
         return groq.Groq(api_key=self.api_key)
 
     @property
@@ -43,7 +45,7 @@ class Groq(BaseProvider):
         # Create and return a properly formatted Message instance
         return Message(
             role="assistant",
-            text=assistant_message.content,
+            text=assistant_message.content or "",
             raw=response,
             llm_model=conversation.llm_model or DEFAULT_MODEL,
             llm_provider=PROVIDER_NAME,

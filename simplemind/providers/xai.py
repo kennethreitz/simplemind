@@ -22,10 +22,11 @@ class XAI(BaseProvider):
     @property
     def client(self):
         """The raw OpenAI client."""
-
+        if not self.api_key:
+            raise ValueError("XAI API key is required")
         return oa.OpenAI(
-            api_key=settings.XAI_API_KEY,
-            base_url="https://api.x.ai/v1",
+            api_key=self.api_key,
+            base_url=BASE_URL,
         )
 
     @property

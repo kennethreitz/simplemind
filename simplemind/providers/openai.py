@@ -20,6 +20,8 @@ class OpenAI(BaseProvider):
     @property
     def client(self):
         """The raw OpenAI client."""
+        if not self.api_key:
+            raise ValueError("OpenAI API key is required")
         return oa.OpenAI(api_key=self.api_key)
 
     @property
