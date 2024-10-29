@@ -159,7 +159,6 @@ To get started:
 4. Submit a pull request.
 
 ## Building
-
 1. Clone the repository.
 2. `cd` to the root directory.
 3. Generate the requirements.txt file `python -m piptools compile pyproject.toml`
