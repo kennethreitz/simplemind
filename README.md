@@ -14,7 +14,7 @@ SimpleMind is an AI library designed to simplify your experience with AI APIs in
 To install SimpleMind, use pip, eventually—
 
 ```bash
-pip install simplemind
+$ pip install simplemind
 ```
 
 
@@ -107,13 +107,6 @@ SimpleMind is licensed under the Apache 2.0 License.
 ## Acknowledgements
 SimpleMind is inspired by the philosophy of "code for humans" and aims to make working with AI models accessible to all. Special thanks to the open-source community for their contributions and inspiration.
 
----
+---------------
 
 SimpleMind: Keep it simple, keep it human.
-
-------------------------
-
-
-## Goals
-
-
