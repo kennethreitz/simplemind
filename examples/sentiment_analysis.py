@@ -17,3 +17,4 @@ print(
         response_model=SentimentAnalysis,
     )
 )
+# Output: SentimentAnalysis(sentiment='negative', confidence=0.95)
