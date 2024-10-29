@@ -169,6 +169,7 @@ A reminder that in tales and fun,
 The universe is never done.
 ```
 
+Please see the [examples](examples) directory for executable examples.
 
 ## Contributing
 We welcome contributions of all kinds. Feel free to open issues for bug reports or feature requests, and submit pull requests to make SimpleMind even better.
