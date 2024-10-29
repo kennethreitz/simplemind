@@ -10,4 +10,4 @@ def translate_to_french(text: str) -> str:
     return conversation.send().text
 
 
-print(translate_to_french("Hello, world!"))
+print(translate_to_french("an omlette with cheese"))
