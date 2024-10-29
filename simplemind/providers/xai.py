@@ -14,7 +14,7 @@ DEFAULT_MAX_TOKENS = 1000
 
 class XAI(BaseProvider):
     __name__ = PROVIDER_NAME
-    DEFAULT_MODEL = DEFAULT_MODEL
+    DEFAULT_MODEL: str = DEFAULT_MODEL
 
     def __init__(self, api_key: Union[str, None] = None):
         self.api_key = api_key or settings.XAI_API_KEY

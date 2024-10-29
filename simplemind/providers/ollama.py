@@ -12,6 +12,7 @@ NOT_IMPLEMENTED_REASON = """
 class Ollama:
     __name__ = PROVIDER_NAME
     DEFAULT_MODEL = DEFAULT_MODEL
+    DEFAULT_MODEL: str = DEFAULT_MODEL
 
     def __init__(self, host_url: str = None):
         self.host_url = host_url or settings.OLLAMA_HOST_URL
