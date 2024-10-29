@@ -81,6 +81,10 @@ class Conversation(SMBaseModel):
         self.add_message(role="assistant", text=response.text, meta=response.meta)
         return response
 
+    def get_last_message(self, role: MESSAGE_ROLE) -> Optional[Message]:
+        """Get the last message with the given role."""
+        return next((m for m in reversed(self.messages) if m.role == role), None)
+
     def add_plugin(self, plugin: Any):
         """Add a plugin to the conversation."""
         self.plugins.append(plugin)
