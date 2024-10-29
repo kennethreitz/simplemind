@@ -6,6 +6,7 @@ class TestOllama(unittest.TestCase):
 
   def test_generate_text(self):
     result = sm.generate_text(prompt="What is the meaning of life?", llm_provider="ollama", llm_model="llama3.2")
+    self.assertGreater(len(result), 0)
     self.assertIsNotNone(result)
 
   def test_create_conversation(self):
@@ -13,14 +14,15 @@ class TestOllama(unittest.TestCase):
     conversation.add_message("user", "Remember the number 42.")
     result = conversation.send()
     self.assertIsNotNone(result)
+    self.assertGreaterEqual(len(result.text), 0)
     self.assertIsInstance(result, sm.models.Message)
 
+  # @unittest.skip('Not working...')
   def test_memory(self):
-    conversation = sm.create_conversation(llm_provider="ollama", llm_model="llama3.2")
     class SimpleMemoryPlugin:
       def __init__(self):
           self.memories = [
-              "the earth has fictionally beeen destroyed.",
+              "the earth has fictionally been destroyed.",
               "the moon is made of cheese.",
           ]
 
@@ -29,15 +31,21 @@ class TestOllama(unittest.TestCase):
 
       def send_hook(self, conversation: sm.Conversation):
           for m in self.yield_memories():
-              conversation.add_message(role="system", text=m)
+              conversation.prepend_system_message(role="system", text=m)
     
-    conversation.add_plugin(SimpleMemoryPlugin())
+    conversation = sm.create_conversation(llm_provider="ollama", llm_model="llama3.2")
+
     conversation.add_message(
         role="user",
         text="Write a poem about the moon",
     )
+    self.assertGreater(len(conversation.messages), 0)
+    conversation.add_plugin(SimpleMemoryPlugin())
     result = conversation.send()
+    self.assertGreater(len(conversation.messages), 2)
     self.assertIsNotNone(result)
+    self.assertIsNotNone(result.text)
+    self.assertGreater(len(result.text), 0)
     self.assertIsInstance(result, sm.models.Message)
 
   def test_structure_response(self):

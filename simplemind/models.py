@@ -46,6 +46,9 @@ class Conversation(SMBaseModel):
     def __str__(self):
         return f"<Conversation id={self.id!r}>"
 
+    def prepend_system_message(self, role: str, text: str, meta: Dict[str, Any] = {}):
+        self.messages = [Message(role=role, text=text, meta=meta)] + self.messages
+
     def add_message(self, role: str, text: str, meta: Dict[str, Any] = {}):
         """Add a new message to the conversation."""
         self.messages.append(Message(role=role, text=text, meta=meta))
