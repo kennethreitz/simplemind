@@ -83,7 +83,7 @@ class Groq(BaseProvider):
             {"role": "user", "content": prompt},
         ]
 
-        response = self.structured_client.chat.completions.create(
+        response = self.client.chat.completions.create(
             messages=messages,
             model=llm_model,
             **kwargs,
