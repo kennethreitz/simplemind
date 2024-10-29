@@ -32,6 +32,3 @@ def generate_text(prompt, *, llm_model=None, llm_provider=None):
     provider = find_provider(llm_provider)
 
     return provider.generate_text(prompt=prompt, llm_model=llm_model)
-
-
-globals().update(locals())
