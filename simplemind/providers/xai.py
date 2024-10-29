@@ -3,7 +3,8 @@ from typing import Union
 import instructor
 import openai as oa
 
-from simplemind.models import BaseProvider, Conversation, Message
+from simplemind.models import Conversation, Message
+from simplemind.providers._base import BaseProvider
 from simplemind.settings import settings
 
 PROVIDER_NAME = "xai"
@@ -17,15 +18,16 @@ class XAI(BaseProvider):
     DEFAULT_MODEL = DEFAULT_MODEL
 
     def __init__(self, api_key: Union[str, None] = None):
-        self.api_key = api_key or settings.XAI_API_KEY
+        self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
 
     @property
     def client(self):
         """The raw OpenAI client."""
-
+        if not self.api_key:
+            raise ValueError("XAI API key is required")
         return oa.OpenAI(
-            api_key=settings.XAI_API_KEY,
-            base_url="https://api.x.ai/v1",
+            api_key=self.api_key,
+            base_url=BASE_URL,
         )
 
     @property

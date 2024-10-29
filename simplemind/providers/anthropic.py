@@ -3,7 +3,8 @@ from typing import Union
 import anthropic
 import instructor
 
-from simplemind.models import BaseProvider, Conversation, Message
+from simplemind.models import Conversation, Message
+from simplemind.providers._base import BaseProvider
 from simplemind.settings import settings
 
 PROVIDER_NAME = "anthropic"
@@ -16,11 +17,13 @@ class Anthropic(BaseProvider):
     DEFAULT_MODEL = DEFAULT_MODEL
 
     def __init__(self, api_key: Union[str, None] = None):
-        self.api_key = api_key or settings.ANTHROPIC_API_KEY
+        self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
 
     @property
     def client(self):
         """The raw Anthropic client."""
+        if not self.api_key:
+            raise ValueError("Anthropic API key is required")
         return anthropic.Anthropic(api_key=self.api_key)
 
     @property
