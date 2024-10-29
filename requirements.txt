@@ -1,5 +1,0 @@
-instructor
-anthropic
-requests
-openai
-ollama
