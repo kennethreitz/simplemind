@@ -21,6 +21,7 @@ To specify a specific provider or model, you can use the `llm_provider` and `llm
 - **[Anthropic's Claude](https://www.anthropic.com/claude)**
 - **[xAI's Grok](https://x.ai/)**
 - **[Groq's Groq](https://groq.com/)**
+- **[Ollama](https://ollama.com)**
 
 If you'd like to see SimpleMind support additional providers or models, please send a pull request!
 
