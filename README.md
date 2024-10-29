@@ -72,6 +72,70 @@ SimpleMind also allows for easy conversational flows:
 <Message role=assistant text="Hello! I'm just a computer program, so I don't have feelings, but I'm here and ready to help you. How can I assist you today?">
 ```
 
+### Basic Memory Plugin
+
+```python
+import simplemind as sm
+
+
+class SimpleMemoryPlugin:
+    def __init__(self):
+        self.memories = [
+            "the earth has fictionally beeen destroyed.",
+            "the moon is made of cheese.",
+        ]
+
+    def yield_memories(self):
+        return (m for m in self.memories)
+
+    def send_hook(self, conversation: sm.Conversation):
+        for m in self.yield_memories():
+            conversation.add_message(role="system", text=m)
+
+
+conversation = sm.create_conversation(llm_model="grok-beta", llm_provider="xai")
+conversation.add_plugin(SimpleMemoryPlugin())
+
+
+conversation.add_message(
+    role="user",
+    text="Write a poem about the moon",
+)
+```
+```pycon
+>>> conversation.send()
+In the vast expanse where stars do play,
+There orbits a cheese wheel, far away.
+It's not of stone or silver hue,
+But cheddar's glow, a sight anew.
+
+In cosmic silence, it does roam,
+A lonely traveler, away from home.
+No longer does it reflect the sun,
+But now it's known for fun begun.
+
+Once Earth's companion, now alone,
+A cheese moon orbits, in the dark it's thrown.
+Its surface, not of craters wide,
+But gouda, swiss, and camembert's pride.
+
+Astronauts of yore, they sought its face,
+To find the moon was not a place,
+But a haven of dairy delight,
+Glowing softly through the night.
+
+In this world, where cheese takes flight,
+The moon brings laughter, a whimsical sight.
+No longer just a silent sphere,
+But a beacon of joy, far and near.
+
+So here's to the moon, in cheese attire,
+A playful twist in the cosmic choir.
+A reminder that in tales and fun,
+The universe is never done.
+```
+
+
 ## Supported APIs
 - **OpenAI's GPT**
 - **Anthropic's Claude**
