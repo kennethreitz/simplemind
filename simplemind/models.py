@@ -1,10 +1,15 @@
 import uuid
+from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Any, Dict, List, Literal, Optional
+
 
 from pydantic import BaseModel, Field
 
 from .utils import find_provider
+
+
+MESSAGE_ROLE = Literal["system", "user", "assistant"]
 
 
 class SMBaseModel(BaseModel):
@@ -17,41 +22,17 @@ class SMBaseModel(BaseModel):
         return str(self)
 
 
-class BaseProvider(SMBaseModel):
-    """The base provider class."""
+class BasePlugin(ABC):
+    """The base conversation plugin class."""
 
-    __name__ = "BaseProvider"
-    DEFAULT_MODEL = "DEFAULT_MODEL"
-
-    @property
-    def client(self):
-        """The instructor client for the provider."""
+    @abstractmethod
+    def send_hook(self, conversation: "Conversation"):
+        """Send a hook to the plugin."""
         raise NotImplementedError
-
-    @property
-    def structured_client(self):
-        """The structured client for the provider."""
-        raise NotImplementedError
-
-    def send_conversation(self, conversation: "Conversation"):
-        """Send a conversation to the provider."""
-        raise NotImplementedError
-
-    def structured_response(self, prompt: str, response_model, **kwargs):
-        """Get a structured response."""
-        raise NotImplementedError
-
-    def generate_text(self, prompt: str, **kwargs):
-        """Generate text from a prompt."""
-        raise NotImplementedError
-
-
-class BasePlugin(SMBaseModel):
-    """The base plugin class."""
 
 
 class Message(SMBaseModel):
-    role: Literal["system", "user", "assistant"]
+    role: MESSAGE_ROLE
     text: str
     meta: Dict[str, Any] = {}
     raw: Optional[Any] = None
@@ -62,7 +43,7 @@ class Message(SMBaseModel):
         return f"<Message role={self.role} text={self.text!r}>"
 
     @classmethod
-    def from_raw_response(cls, *, text, raw):
+    def from_raw_response(cls, *, text: str, raw):
         self = cls()
         self.text = text
         self.raw = raw
@@ -81,8 +62,13 @@ class Conversation(SMBaseModel):
 
     def prepend_system_message(self, role: str, text: str, meta: Optional[Dict[str, Any]] = None):
         self.messages = [Message(role=role, text=text, meta=meta or {})] + self.messages
-    def add_message(self, role: str, text: str, meta: Dict[str, Any] = {}):
+
+    def add_message(
+        self, role: MESSAGE_ROLE, text: str, meta: Optional[Dict[str, Any]] = None
+    ):
         """Add a new message to the conversation."""
+        if meta is None:
+            meta = {}
         self.messages.append(Message(role=role, text=text, meta=meta))
 
     def send(
@@ -97,6 +83,10 @@ class Conversation(SMBaseModel):
 
         self.add_message(role="assistant", text=response.text, meta=response.meta)
         return response
+
+    def get_last_message(self, role: MESSAGE_ROLE) -> Optional[Message]:
+        """Get the last message with the given role."""
+        return next((m for m in reversed(self.messages) if m.role == role), None)
 
     def add_plugin(self, plugin: Any):
         """Add a plugin to the conversation."""

@@ -1,35 +1,57 @@
 # SimpleMind: AI for Humans™
 
-**Please Note**: This is a work-in-progress project that needs a lot of work to work properly. Coming soon!
+[![Auto Wiki](https://img.shields.io/badge/Auto_Wiki-Mutable.ai-blue)](https://mutable.ai/kennethreitz/simplemind)
 
 SimpleMind is an AI library designed to simplify your experience with AI APIs in Python. Inspired by a "for humans" philosophy, it abstracts away complexity, giving developers an intuitive and human-friendly way to interact with powerful AI capabilities. With SimpleMind, tapping into AI is as easy as a friendly conversation.
+
+```bash
+$ pip install simplemind
+```
 
 ## Features
 - **Easy-to-use AI tools**: SimpleMind provides simple interfaces to popular AI services.
 - **Human-centered design**: The library prioritizes readability and usability—no need to be an expert to start experimenting.
 - **Minimal configuration**: Get started quickly, without worrying about configuration headaches.
 
-## Installation
+## Supported APIs
 
-To install SimpleMind, use pip, eventually—
+To specify a specific provider or model, you can use the `llm_provider` and `llm_model` parameters when calling: `generate_text`, `generate_data`, or `create_conversation`.
 
-```bash
-$ pip install simplemind
-```
+- **[OpenAI's GPT](https://openai.com/gpt)**
+- **[Anthropic's Claude](https://www.anthropic.com/claude)**
+- **[xAI's Grok](https://x.ai/)**
+- **[Groq's Groq](https://groq.com/)**
 
+If you'd like to see SimpleMind support additional providers or models, please send a pull request!
+
+## Why SimpleMind?
+- **Intuitive**: Built with Pythonic simplicity and readability in mind.
+- **For Humans**: Emphasizes a human-friendly interface, just like `requests` for HTTP.
+- **Open Source**: SimpleMind is open source, and contributions are always welcome!
 
 
 ## Quickstart
 
-Here's how easy it is to use SimpleMind to interact with an AI model:
+SimpleMind takes care of the complex API calls so you can focus on what matters—building, experimenting, and creating.
+
+First, authenticate your API keys by setting them in the environment variables:
+
+```bash
+$ export OPENAI_API_KEY="sk-..."
+```
+
+This pattern allows you to keep your API keys private and out of your codebase. Other supported environment variables: `ANTHROPIC_API_KEY`, `GROK_API_KEY`, `XAI_API_KEY`, and `GROQ_API_KEY`.
+
+Next, import SimpleMind and start using it:
 
 ```python
 import simplemind as sm
 ```
 
-SimpleMind takes care of the complex API calls so you can focus on what matters—building, experimenting, and creating.
 
 ## Examples
+
+Here are some examples of how to use SimpleMind:
 
 ### Text Completion
 
@@ -40,7 +62,9 @@ Generate a response from an AI model based on a given prompt:
 "The meaning of life is a profound philosophical question that has been explored by cultures, religions, and philosophers for centuries. Different people and belief systems offer varying interpretations:\n\n1. **Religious Perspectives:** Many religions propose that the meaning of life is to fulfill a divine purpose, serve God, or reach an afterlife. For example, Christianity often emphasizes love, faith, and service to God and others as central to life’s meaning.\n\n2. **Philosophical Views:** Philosophers offer diverse answers. Existentialists like Jean-Paul Sartre argue that life has no inherent meaning, and it is up to individuals to create their own purpose. Others, like Aristotle, suggest that achieving eudaimonia (flourishing or happiness) through virtuous living is the key to a meaningful life.\n\n3. **Scientific and Secular Approaches:** Some people find meaning through understanding the natural world, contributing to human knowledge, or through personal accomplishments and happiness. They may view life's meaning as a product of connection, legacy, or the pursuit of knowledge and creativity.\n\n4. **Personal Perspective:** For many, the meaning of life is deeply personal, involving their relationships, passions, and goals. These individuals define life's purpose through experiences, connections, and the impact they have on others and the world.\n\nUltimately, the meaning of life is a subjective question, with each person finding their own answers based on their beliefs, experiences, and reflections."
 ```
 
-### Structured Response
+### Structured Data with Pydantic
+
+You can use Pydantic models to structure the response from the LLM, if the LLM supports it.
 
 ```python
 class Poem(BaseModel):
@@ -72,7 +96,17 @@ SimpleMind also allows for easy conversational flows:
 <Message role=assistant text="Hello! I'm just a computer program, so I don't have feelings, but I'm here and ready to help you. How can I assist you today?">
 ```
 
+To continue the conversation, you can call `conversation.send()` again, which returns the next message in the conversation:
+
+```pycon
+>>> conversation.add_message("user", "What is the meaning of life?")
+>>> conversation.send()
+<Message role=assistant text="The meaning of life is a profound philosophical question that has been explored by cultures, religions, and philosophers for centuries. Different people and belief systems offer varying interpretations:\n\n1. **Religious Perspectives:** Many religions propose that the meaning of life is to fulfill a divine purpose, serve God, or reach an afterlife. For example, Christianity often emphasizes love, faith, and service to God and others as central to life’s meaning.\n\n2. **Philosophical Views:** Philosophers offer diverse answers. Existentialists like Jean-Paul Sartre argue that life has no inherent meaning, and it is up to individuals to create their own purpose. Others, like Aristotle, suggest that achieving eudaimonia (flourishing or happiness) through virtuous living is the key to a meaningful life.\n\n3. **Scientific and Secular Approaches:** Some people find meaning through understanding the natural world, contributing to human knowledge, or through personal accomplishments and happiness. They may view life’s meaning as a product of connection, legacy, or the pursuit of knowledge and creativity.\n\n4. **Personal Perspective:** For many, the meaning of life is deeply personal, involving their relationships, passions, and goals. These individuals define life’s purpose through experiences, connections, and the impact they have on others and the world.\n\nUltimately, the meaning of life is a subjective question, with each person finding their own answers based on their beliefs, experiences, and reflections.">
+```
+
 ### Basic Memory Plugin
+
+Harnessing the power of Python, you can easily create your own plugins to add additional functionality to your conversations:
 
 ```python
 import simplemind as sm
@@ -135,18 +169,7 @@ A reminder that in tales and fun,
 The universe is never done.
 ```
 
-
-## Supported APIs
-- **OpenAI's GPT**
-- **Anthropic's Claude**
-- **xAI's Grok**
-
-To specify a provider, you can use the `llm_provider` parameter when calling `generate_text`, `generate_data`, or `create_conversation` — you can also pass the `llm_model` parameter to specify a specific LLM provided.
-
-## Why SimpleMind?
-- **Intuitive**: Built with Pythonic simplicity and readability in mind.
-- **For Humans**: Emphasizes a human-friendly interface, just like `requests` for HTTP.
-- **Open Source**: SimpleMind is open source, and contributions are always welcome!
+Please see the [examples](examples) directory for executable examples.
 
 ## Contributing
 We welcome contributions of all kinds. Feel free to open issues for bug reports or feature requests, and submit pull requests to make SimpleMind even better.

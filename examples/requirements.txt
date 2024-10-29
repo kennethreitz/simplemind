@@ -1,0 +1,4 @@
+numpy
+openai
+pydantic
+faiss-cpu

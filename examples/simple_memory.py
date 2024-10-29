@@ -1,4 +1,4 @@
-import simplemind as sm
+from _context import sm
 
 
 class SimpleMemoryPlugin:
@@ -19,11 +19,10 @@ class SimpleMemoryPlugin:
 conversation = sm.create_conversation(llm_model="grok-beta", llm_provider="xai")
 conversation.add_plugin(SimpleMemoryPlugin())
 
-
 conversation.add_message(
     role="user",
     text="Write a poem about the moon",
 )
-r = conversation.send()
 
+r = conversation.send()
 print(r.text)
