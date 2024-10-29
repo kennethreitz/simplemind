@@ -1,5 +1,6 @@
 from _context import sm
 
-r = sm.generate_text("Write a poem about the moon", llm_provider="openai", llm_model="gpt-3.5-turbo")
+# Defaults to the default provider and model (openai/gpt-4o-mini)
+r = sm.generate_text("Write a poem about the moon", llm_model="gpt-4o-mini")
 
 print(r)
