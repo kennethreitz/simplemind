@@ -1,5 +1,7 @@
 # SimpleMind: AI for Humans™
 
+[![Auto Wiki](https://img.shields.io/badge/Auto_Wiki-Mutable.ai-blue)](https://mutable.ai/kennethreitz/simplemind)
+
 **Please Note**: This is a work-in-progress project that needs a lot of work to work properly. Coming soon!
 
 SimpleMind is an AI library designed to simplify your experience with AI APIs in Python. Inspired by a "for humans" philosophy, it abstracts away complexity, giving developers an intuitive and human-friendly way to interact with powerful AI capabilities. With SimpleMind, tapping into AI is as easy as a friendly conversation.
