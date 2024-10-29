@@ -48,8 +48,6 @@ Next, import SimpleMind and start using it:
 import simplemind as sm
 ```
 
-Enjoy!
-
 
 ## Examples
 
