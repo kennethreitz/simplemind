@@ -26,8 +26,6 @@ To specify a specific provider or model, you can use the `llm_provider` and `llm
 
 ## Installation
 
-Coming soon!
-
 ```bash
 $ pip install simplemind
 ```
