@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "An experimental client for AI providers that intends to replace LangChain and LangGraph for most common use cases."
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = ["pydantic", "pydantic-settings", "instructor", "openai", "anthropic"]
+dependencies = ["pydantic", "pydantic-settings", "instructor", "openai", "anthropic", "groq"]
 
 [build-system]
 requires = ["hatchling"]
