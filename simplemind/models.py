@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 import uuid
 from datetime import datetime
 from typing import Any, Dict, List, Literal, Optional
@@ -6,6 +5,9 @@ from typing import Any, Dict, List, Literal, Optional
 from pydantic import BaseModel, Field
 
 from .utils import find_provider
+
+
+MESSAGE_ROLE = Literal["system", "user", "assistant"]
 
 
 class SMBaseModel(BaseModel):
@@ -18,46 +20,12 @@ class SMBaseModel(BaseModel):
         return str(self)
 
 
-class BaseProvider(SMBaseModel, ABC):
-    """The base provider class."""
-
-    __name__ = "BaseProvider"
-    DEFAULT_MODEL = "DEFAULT_MODEL"
-
-    @property
-    @abstractmethod
-    def client(self):
-        """The instructor client for the provider."""
-        raise NotImplementedError
-
-    @property
-    @abstractmethod
-    def structured_client(self):
-        """The structured client for the provider."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def send_conversation(self, conversation: "Conversation") -> "Message":
-        """Send a conversation to the provider."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def structured_response(self, prompt: str, response_model, **kwargs):
-        """Get a structured response."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def generate_text(self, prompt: str, **kwargs) -> str:
-        """Generate text from a prompt."""
-        raise NotImplementedError
-
-
 class BasePlugin(SMBaseModel):
     """The base plugin class."""
 
 
 class Message(SMBaseModel):
-    role: Literal["system", "user", "assistant"]
+    role: MESSAGE_ROLE
     text: str
     meta: Dict[str, Any] = {}
     raw: Optional[Any] = None
@@ -68,7 +36,7 @@ class Message(SMBaseModel):
         return f"<Message role={self.role} text={self.text!r}>"
 
     @classmethod
-    def from_raw_response(cls, *, text, raw):
+    def from_raw_response(cls, *, text: str, raw):
         self = cls()
         self.text = text
         self.raw = raw
@@ -85,7 +53,7 @@ class Conversation(SMBaseModel):
     def __str__(self):
         return f"<Conversation id={self.id!r}>"
 
-    def add_message(self, role: str, text: str, meta: Dict[str, Any] = {}):
+    def add_message(self, role: MESSAGE_ROLE, text: str, meta: Dict[str, Any] = {}):
         """Add a new message to the conversation."""
         self.messages.append(Message(role=role, text=text, meta=meta))
 

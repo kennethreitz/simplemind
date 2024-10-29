@@ -3,7 +3,8 @@ from typing import Union
 import instructor
 import openai as oa
 
-from simplemind.models import BaseProvider, Conversation, Message
+from simplemind.models import Conversation, Message
+from simplemind.providers._base import BaseProvider
 from simplemind.settings import settings
 
 PROVIDER_NAME = "openai"
@@ -51,7 +52,7 @@ class OpenAI(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
-    def structured_response(self, prompt, response_model, *, llm_model):
+    def structured_response(self, prompt, response_model, *, llm_model: str):
         # Ensure messages are provided in kwargs
         messages = [
             {"role": "user", "content": prompt},

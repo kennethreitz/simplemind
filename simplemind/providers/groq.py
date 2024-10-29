@@ -3,7 +3,8 @@ from typing import Union
 import groq
 import instructor
 
-from simplemind.models import BaseProvider, Conversation, Message
+from simplemind.models import Conversation, Message
+from simplemind.providers._base import BaseProvider
 from simplemind.settings import settings
 
 PROVIDER_NAME = "groq"
