@@ -133,7 +133,7 @@ conversation.add_plugin(SimpleMemoryPlugin())
 
 conversation.add_message(
     role="user",
-    text="Write a poem about the moon",
+    text="Please write a poem about the moon",
 )
 ```
 ```pycon
