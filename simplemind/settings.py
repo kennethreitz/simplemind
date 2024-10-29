@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     )
     GROQ_API_KEY: Optional[SecretStr] = Field(None, description="API key for Groq")
     OPENAI_API_KEY: Optional[SecretStr] = Field(None, description="API key for OpenAI")
-    OLLAMA_HOST_URL: Optional[SecretStr] = Field(None, description="Fully qualified host URL for Ollama")
+    OLLAMA_HOST_URL: Optional[str] = Field(None, description="Fully qualified host URL for Ollama")
     XAI_API_KEY: Optional[SecretStr] = Field(None, description="API key for xAI")
     DEFAULT_LLM_PROVIDER: str = Field("openai", description="The default LLM provider")
 
