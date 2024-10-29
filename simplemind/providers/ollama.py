@@ -10,7 +10,7 @@ NOT_IMPLEMENTED_REASON = """
 # Alternate python dependency may be required
 """
 class Ollama:
-    __name__ = PROVIDER_NAME
+    NAME = PROVIDER_NAME
     DEFAULT_MODEL = DEFAULT_MODEL
 
     def __init__(self, host_url: str = None):
@@ -19,6 +19,8 @@ class Ollama:
     @property
     def client(self):
         """The raw Ollama client."""
+        if not self.host_url:
+            raise ValueError("No ollama host url provided")
         return ol.Client(
             timeout=TIMEOUT,
             host=self.host_url)
