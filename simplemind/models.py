@@ -60,6 +60,9 @@ class Conversation(SMBaseModel):
     def __str__(self):
         return f"<Conversation id={self.id!r}>"
 
+    def prepend_system_message(self, role: str, text: str, meta: Optional[Dict[str, Any]] = None):
+        self.messages = [Message(role=role, text=text, meta=meta or {})] + self.messages
+
     def add_message(
         self, role: MESSAGE_ROLE, text: str, meta: Optional[Dict[str, Any]] = None
     ):

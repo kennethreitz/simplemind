@@ -1,4 +1,5 @@
 export OPENAI_API_KEY=""
 export ANTHROPIC_API_KEY=""
 export XAI_API_KEY=""
+export OLLAMA_HOST_URL=""
 export GROQ_API_KEY=""
