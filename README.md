@@ -49,13 +49,7 @@ Authenticate your API keys by setting them in the environment variables:
 $ export OPENAI_API_KEY="sk-..."
 ```
 
-or
-
-```bash
-$ export ANTHROPIC_API_KEY="sk-..."
-```
-
-*&c.*
+Other supported environment variables: `ANTHROPIC_API_KEY`, `GROK_API_KEY`, `XAI_API_KEY`, and `GROQ_API_KEY`.
 
 
 
