@@ -9,27 +9,57 @@ SimpleMind is an AI library designed to simplify your experience with AI APIs in
 - **Human-centered design**: The library prioritizes readability and usability—no need to be an expert to start experimenting.
 - **Minimal configuration**: Get started quickly, without worrying about configuration headaches.
 
+## Supported APIs
+
+- **OpenAI's GPT**
+- **Anthropic's Claude**
+- **xAI's Grok**
+- **Groq's Groq**
+- **Ollama's Ollama**
+
+To specify a specific provider or model, you can use the `llm_provider` and `llm_model` parameters when calling: `generate_text`, `generate_data`, or `create_conversation`.
+
+## Why SimpleMind?
+- **Intuitive**: Built with Pythonic simplicity and readability in mind.
+- **For Humans**: Emphasizes a human-friendly interface, just like `requests` for HTTP.
+- **Open Source**: SimpleMind is open source, and contributions are always welcome!
+
 ## Installation
 
-To install SimpleMind, use pip, eventually—
+Coming soon!
 
 ```bash
 $ pip install simplemind
 ```
 
-
-
 ## Quickstart
 
-Here's how easy it is to use SimpleMind to interact with an AI model:
+SimpleMind takes care of the complex API calls so you can focus on what matters—building, experimenting, and creating.
 
 ```python
 import simplemind as sm
 ```
 
-SimpleMind takes care of the complex API calls so you can focus on what matters—building, experimenting, and creating.
+Authenticate your API keys by setting them in the environment variables:
+
+```bash
+$ export OPENAI_API_KEY="sk-..."
+```
+
+or
+
+```bash
+$ export ANTHROPIC_API_KEY="sk-..."
+```
+
+*&c.*
+
+
+
 
 ## Examples
+
+Here are some examples of how to use SimpleMind:
 
 ### Text Completion
 
@@ -41,6 +71,8 @@ Generate a response from an AI model based on a given prompt:
 ```
 
 ### Structured Response
+
+You can use Pydantic models to structure the response from the LLM, if the LLM supports it.
 
 ```python
 class Poem(BaseModel):
@@ -73,6 +105,8 @@ SimpleMind also allows for easy conversational flows:
 ```
 
 ### Basic Memory Plugin
+
+Harnessing the power of Python, you can easily create your own plugins to add additional functionality to your conversations:
 
 ```python
 import simplemind as sm
@@ -135,18 +169,6 @@ A reminder that in tales and fun,
 The universe is never done.
 ```
 
-
-## Supported APIs
-- **OpenAI's GPT**
-- **Anthropic's Claude**
-- **xAI's Grok**
-
-To specify a provider, you can use the `llm_provider` parameter when calling `generate_text`, `generate_data`, or `create_conversation` — you can also pass the `llm_model` parameter to specify a specific LLM provided.
-
-## Why SimpleMind?
-- **Intuitive**: Built with Pythonic simplicity and readability in mind.
-- **For Humans**: Emphasizes a human-friendly interface, just like `requests` for HTTP.
-- **Open Source**: SimpleMind is open source, and contributions are always welcome!
 
 ## Contributing
 We welcome contributions of all kinds. Feel free to open issues for bug reports or feature requests, and submit pull requests to make SimpleMind even better.
