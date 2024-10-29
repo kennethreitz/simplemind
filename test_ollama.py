@@ -48,17 +48,21 @@ class TestOllama(unittest.TestCase):
     self.assertIsInstance(result, sm.models.Message)
 
   def test_structure_response(self):
-    class Poem(BaseModel):
-        title: str
-        content: str
-    with self.assertRaises(NotImplementedError):
-      data_obj = sm.generate_data(
-        prompt="Write a poem about love",
-        llm_provider="ollama",
-        llm_model="llama3.2",
-        response_model=Poem)
-      self.assertIsNotNone(data_obj)
-      self.assertIsInstance(data_obj, Poem)
+      class Poem(BaseModel):
+          title: str
+          content: str
+      # Test for NotImplementedError
+      with self.assertRaises(NotImplementedError):
+          sm.generate_data(
+              prompt="Write a poem about love",
+              llm_provider="ollama",
+              llm_model="llama3.2",
+              response_model=Poem)
+      
+      # If implementation is added later, uncomment and modify:
+      # data_obj = sm.generate_data(...)
+      # self.assertIsNotNone(data_obj)
+      # self.assertIsInstance(data_obj, Poem)
 
 
 if __name__ == '__main__':
