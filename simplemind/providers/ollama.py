@@ -1,5 +1,6 @@
 import ollama as ol
 
+from ._base import BaseProvider
 from ..settings import settings
 
 PROVIDER_NAME = "ollama"
@@ -9,7 +10,8 @@ NOT_IMPLEMENTED_REASON = """
 # TODO: instructor does not natively support ollama.
 # Alternate python dependency may be required
 """
-class Ollama:
+
+class Ollama(BaseProvider):
     NAME = PROVIDER_NAME
     DEFAULT_MODEL = DEFAULT_MODEL
 
