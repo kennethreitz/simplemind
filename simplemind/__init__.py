@@ -23,11 +23,11 @@ def generate_data(prompt, *, llm_model=None, llm_provider=None, response_model=N
     )
 
 
-def generate_text(prompt, *, llm_model=None, llm_provider=None):
+def generate_text(prompt, *, llm_model=None, llm_provider=None, **kwargs):
     """Generate text from a given prompt."""
     provider = find_provider(llm_provider or settings.DEFAULT_LLM_PROVIDER)
 
-    return provider.generate_text(prompt=prompt, llm_model=llm_model)
+    return provider.generate_text(prompt=prompt, llm_model=llm_model, **kwargs)
 
 
 __all__ = [

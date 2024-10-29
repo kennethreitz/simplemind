@@ -29,7 +29,11 @@ class Groq(BaseProvider):
         """A client patched with Instructor."""
         return instructor.from_groq(self.client)
 
-    def send_conversation(self, conversation: "Conversation") -> "Message":
+    def send_conversation(
+        self,
+        conversation: "Conversation",
+        **kwargs,
+    ) -> "Message":
         """Send a conversation to the Groq API."""
         from ..models import Message
 
@@ -38,7 +42,9 @@ class Groq(BaseProvider):
         ]
 
         response = self.client.chat.completions.create(
-            model=conversation.llm_model or DEFAULT_MODEL, messages=messages
+            model=conversation.llm_model or DEFAULT_MODEL,
+            messages=messages,
+            **kwargs,
         )
 
         # Get the response content from the Groq response
@@ -53,7 +59,7 @@ class Groq(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
-    def structured_response(self, prompt: str, response_model):
+    def structured_response(self, prompt: str, response_model, **kwargs):
         # Ensure messages are provided in kwargs
         messages = [
             {"role": "user", "content": prompt},
@@ -62,16 +68,25 @@ class Groq(BaseProvider):
         response = self.structured_client.chat.completions.create(
             messages=messages,
             response_model=response_model,
+            **kwargs,
         )
         return response
 
-    def generate_text(self, prompt: str, *, llm_model: str):
+    def generate_text(
+        self,
+        prompt: str,
+        *,
+        llm_model: str,
+        **kwargs,
+    ):
         messages = [
             {"role": "user", "content": prompt},
         ]
 
         response = self.structured_client.chat.completions.create(
-            messages=messages, model=llm_model
+            messages=messages,
+            model=llm_model,
+            **kwargs,
         )
 
         return response.choices[0].message.content

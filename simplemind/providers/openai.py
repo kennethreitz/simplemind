@@ -29,7 +29,7 @@ class OpenAI(BaseProvider):
         """A OpenAI client with Instructor."""
         return instructor.from_openai(self.client)
 
-    def send_conversation(self, conversation: "Conversation"):
+    def send_conversation(self, conversation: "Conversation", **kwargs):
         """Send a conversation to the OpenAI API."""
         from ..models import Message
 
@@ -38,7 +38,7 @@ class OpenAI(BaseProvider):
         ]
 
         response = self.client.chat.completions.create(
-            model=conversation.llm_model or DEFAULT_MODEL, messages=messages
+            model=conversation.llm_model or DEFAULT_MODEL, messages=messages, **kwargs
         )
 
         # Get the response content from the OpenAI response
@@ -53,24 +53,24 @@ class OpenAI(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
-    def structured_response(self, prompt, response_model, *, llm_model: str):
+    def structured_response(self, prompt, response_model, *, llm_model: str, **kwargs):
         # Ensure messages are provided in kwargs
         messages = [
             {"role": "user", "content": prompt},
         ]
 
         response = self.structured_client.chat.completions.create(
-            messages=messages, model=llm_model, response_model=response_model
+            messages=messages, model=llm_model, response_model=response_model, **kwargs
         )
         return response
 
-    def generate_text(self, prompt, *, llm_model):
+    def generate_text(self, prompt, *, llm_model, **kwargs):
         messages = [
             {"role": "user", "content": prompt},
         ]
 
         response = self.client.chat.completions.create(
-            messages=messages, model=llm_model
+            messages=messages, model=llm_model, **kwargs
         )
 
         return response.choices[0].message.content

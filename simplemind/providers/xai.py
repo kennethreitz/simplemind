@@ -34,7 +34,7 @@ class XAI(BaseProvider):
         """A client patched with Instructor."""
         return instructor.from_openai(self.client)
 
-    def send_conversation(self, conversation: "Conversation"):
+    def send_conversation(self, conversation: "Conversation", **kwargs):
         """Send a conversation to the OpenAI API."""
         from ..models import Message
 
@@ -43,7 +43,9 @@ class XAI(BaseProvider):
         ]
 
         response = self.client.chat.completions.create(
-            model=conversation.llm_model or DEFAULT_MODEL, messages=messages
+            model=conversation.llm_model or DEFAULT_MODEL,
+            messages=messages,
+            **kwargs,
         )
 
         # Get the response content from the OpenAI response
@@ -61,13 +63,15 @@ class XAI(BaseProvider):
     def structured_response(self, prompt: str, response_model, *, llm_model):
         raise NotImplementedError("XAI does not support structured responses")
 
-    def generate_text(self, prompt, *, llm_model):
+    def generate_text(self, prompt, *, llm_model, **kwargs):
         messages = [
             {"role": "user", "content": prompt},
         ]
 
         response = self.client.chat.completions.create(
-            messages=messages, model=llm_model
+            messages=messages,
+            model=llm_model,
+            **kwargs,
         )
 
         return response.choices[0].message.content

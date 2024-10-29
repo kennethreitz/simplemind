@@ -30,7 +30,7 @@ class Anthropic(BaseProvider):
         """A client patched with Instructor."""
         return instructor.from_anthropic(self.client)
 
-    def send_conversation(self, conversation: "Conversation"):
+    def send_conversation(self, conversation: "Conversation", **kwargs):
         """Send a conversation to the Anthropic API."""
         from ..models import Message
 
@@ -42,6 +42,7 @@ class Anthropic(BaseProvider):
             model=conversation.llm_model or DEFAULT_MODEL,
             messages=messages,
             max_tokens=DEFAULT_MAX_TOKENS,
+            **kwargs,
         )
 
         # Get the response content from the Anthropic response
@@ -62,13 +63,16 @@ class Anthropic(BaseProvider):
         )
         return response
 
-    def generate_text(self, prompt, *, llm_model):
+    def generate_text(self, prompt, *, llm_model, **kwargs):
         messages = [
             {"role": "user", "content": prompt},
         ]
 
         response = self.client.messages.create(
-            model=llm_model, messages=messages, max_tokens=DEFAULT_MAX_TOKENS
+            model=llm_model,
+            messages=messages,
+            max_tokens=DEFAULT_MAX_TOKENS,
+            **kwargs,
         )
 
         return response.content[0].text
