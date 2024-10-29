@@ -1,6 +1,6 @@
 import uuid
-from typing import List, Dict, Any, Optional
 from datetime import datetime
+from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -17,8 +17,41 @@ class SMBaseModel(BaseModel):
         return str(self)
 
 
+class BaseProvider(SMBaseModel):
+    """The base provider class."""
+
+    __name__ = "BaseProvider"
+    DEFAULT_MODEL = "DEFAULT_MODEL"
+
+    @property
+    def client(self):
+        """The instructor client for the provider."""
+        raise NotImplementedError
+
+    @property
+    def structured_client(self):
+        """The structured client for the provider."""
+        raise NotImplementedError
+
+    def send_conversation(self, conversation: "Conversation"):
+        """Send a conversation to the provider."""
+        raise NotImplementedError
+
+    def structured_response(self, prompt: str, response_model, **kwargs):
+        """Get a structured response."""
+        raise NotImplementedError
+
+    def generate_text(self, prompt: str, **kwargs):
+        """Generate text from a prompt."""
+        raise NotImplementedError
+
+
+class BasePlugin(SMBaseModel):
+    """The base plugin class."""
+
+
 class Message(SMBaseModel):
-    role: str
+    role: Literal["system", "user", "assistant"]
     text: str
     meta: Dict[str, Any] = {}
     raw: Optional[Any] = None

@@ -1,3 +1,4 @@
 export OPENAI_API_KEY=""
 export ANTHROPIC_API_KEY=""
 export XAI_API_KEY=""
+export GROQ_API_KEY=""

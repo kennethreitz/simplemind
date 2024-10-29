@@ -1,5 +1,6 @@
-from .openai import OpenAI
 from .anthropic import Anthropic
+from .groq import Groq
+from .openai import OpenAI
 from .xai import XAI
 
-providers = [OpenAI, Anthropic, XAI]
+providers = [Anthropic, Groq, OpenAI, XAI]

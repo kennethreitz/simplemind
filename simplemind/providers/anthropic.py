@@ -1,19 +1,21 @@
+from typing import Union
+
 import anthropic
 import instructor
 
-# from ..models import Conversation, Message
-from ..settings import settings
+from simplemind.models import BaseProvider, Conversation, Message
+from simplemind.settings import settings
 
 PROVIDER_NAME = "anthropic"
 DEFAULT_MODEL = "claude-3-5-sonnet-20241022"
 DEFAULT_MAX_TOKENS = 1000
 
 
-class Anthropic:
+class Anthropic(BaseProvider):
     __name__ = PROVIDER_NAME
     DEFAULT_MODEL = DEFAULT_MODEL
 
-    def __init__(self, api_key: str = None):
+    def __init__(self, api_key: Union[str, None] = None):
         self.api_key = api_key or settings.ANTHROPIC_API_KEY
 
     @property
@@ -24,12 +26,10 @@ class Anthropic:
     @property
     def structured_client(self):
         """A client patched with Instructor."""
-        return instructor.from_anthropic(anthropic.Anthropic(api_key=self.api_key))
+        return instructor.from_anthropic(self.client)
 
     def send_conversation(self, conversation: "Conversation"):
         """Send a conversation to the Anthropic API."""
-        from ..models import Message
-
         messages = [
             {"role": msg.role, "content": msg.text} for msg in conversation.messages
         ]
