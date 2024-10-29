@@ -34,19 +34,21 @@ If you'd like to see SimpleMind support additional providers or models, please s
 
 SimpleMind takes care of the complex API calls so you can focus on what matters—building, experimenting, and creating.
 
-```python
-import simplemind as sm
-```
-
-Authenticate your API keys by setting them in the environment variables:
+First, authenticate your API keys by setting them in the environment variables:
 
 ```bash
 $ export OPENAI_API_KEY="sk-..."
 ```
 
-Other supported environment variables: `ANTHROPIC_API_KEY`, `GROK_API_KEY`, `XAI_API_KEY`, and `GROQ_API_KEY`.
+This pattern allows you to keep your API keys private and out of your codebase. Other supported environment variables: `ANTHROPIC_API_KEY`, `GROK_API_KEY`, `XAI_API_KEY`, and `GROQ_API_KEY`.
 
+Next, import SimpleMind and start using it:
 
+```python
+import simplemind as sm
+```
+
+Enjoy!
 
 
 ## Examples
