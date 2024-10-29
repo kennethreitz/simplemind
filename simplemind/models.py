@@ -4,8 +4,6 @@ from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field
 
-from .utils import find_provider
-
 
 class SMBaseModel(BaseModel):
     date_created: datetime = Field(default_factory=datetime.now)
@@ -21,7 +19,7 @@ class BaseProvider(SMBaseModel):
     """The base provider class."""
 
     __name__ = "BaseProvider"
-    DEFAULT_MODEL = "DEFAULT_MODEL"
+    DEFAULT_MODEL: str = "DEFAULT_MODEL"
 
     @property
     def client(self):
@@ -91,6 +89,8 @@ class Conversation(SMBaseModel):
         """Send the conversation to the LLM."""
         for plugin in self.plugins:
             plugin.send_hook(self)
+
+        from .utils import find_provider
 
         provider = find_provider(llm_provider or self.llm_provider)
         response = provider.send_conversation(self)
