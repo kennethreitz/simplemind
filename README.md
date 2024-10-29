@@ -4,6 +4,10 @@
 
 SimpleMind is an AI library designed to simplify your experience with AI APIs in Python. Inspired by a "for humans" philosophy, it abstracts away complexity, giving developers an intuitive and human-friendly way to interact with powerful AI capabilities. With SimpleMind, tapping into AI is as easy as a friendly conversation.
 
+```bash
+$ pip install simplemind
+```
+
 ## Features
 - **Easy-to-use AI tools**: SimpleMind provides simple interfaces to popular AI services.
 - **Human-centered design**: The library prioritizes readability and usability—no need to be an expert to start experimenting.
@@ -24,11 +28,6 @@ To specify a specific provider or model, you can use the `llm_provider` and `llm
 - **For Humans**: Emphasizes a human-friendly interface, just like `requests` for HTTP.
 - **Open Source**: SimpleMind is open source, and contributions are always welcome!
 
-## Installation
-
-```bash
-$ pip install simplemind
-```
 
 ## Quickstart
 
