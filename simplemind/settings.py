@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     GROQ_API_KEY: Optional[SecretStr] = Field(None, description="API key for Groq")
     OPENAI_API_KEY: Optional[SecretStr] = Field(None, description="API key for OpenAI")
     XAI_API_KEY: Optional[SecretStr] = Field(None, description="API key for xAI")
+    DEFAULT_LLM_PROVIDER: str = Field("openai", description="The default LLM provider")
 
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", case_sensitive=True, extra="ignore"

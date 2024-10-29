@@ -2,8 +2,6 @@ from abc import ABC, abstractmethod
 
 from instructor import Instructor
 
-# from ..models import Conversation, Message
-
 
 class BaseProvider(ABC):
     """The base provider class."""

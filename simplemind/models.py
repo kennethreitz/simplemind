@@ -1,6 +1,8 @@
 import uuid
+from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Any, Dict, List, Literal, Optional
+
 
 from pydantic import BaseModel, Field
 
@@ -20,8 +22,13 @@ class SMBaseModel(BaseModel):
         return str(self)
 
 
-class BasePlugin(SMBaseModel):
-    """The base plugin class."""
+class BasePlugin(ABC):
+    """The base conversation plugin class."""
+
+    @abstractmethod
+    def send_hook(self, conversation: "Conversation"):
+        """Send a hook to the plugin."""
+        raise NotImplementedError
 
 
 class Message(SMBaseModel):
