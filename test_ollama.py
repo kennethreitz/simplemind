@@ -17,7 +17,6 @@ class TestOllama(unittest.TestCase):
     self.assertGreaterEqual(len(result.text), 0)
     self.assertIsInstance(result, sm.models.Message)
 
-  # @unittest.skip('Not working...')
   def test_memory(self):
     class SimpleMemoryPlugin:
       def __init__(self):
