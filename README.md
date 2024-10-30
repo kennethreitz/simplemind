@@ -1,4 +1,4 @@
-# SimpleMind: AI for Humans™
+# Simplemind: AI for Humans™
 
 Keep it simple, keep it human.
 
