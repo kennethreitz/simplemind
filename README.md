@@ -123,7 +123,7 @@ class SimpleMemoryPlugin:
     def yield_memories(self):
         return (m for m in self.memories)
 
-    def send_hook(self, conversation: sm.Conversation):
+    def pre_send_hook(self, conversation: sm.Conversation):
         for m in self.yield_memories():
             conversation.add_message(role="system", text=m)
 
