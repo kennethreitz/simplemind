@@ -16,7 +16,7 @@ import simplemind
 project = "simplemind"
 copyright = "2024, Kenneth Reitz"
 author = "Kenneth Reitz"
-release = "v0.1.2"
+release = "v0.1.3"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
