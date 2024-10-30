@@ -55,13 +55,20 @@ class Session:
 
 
 def create_conversation(
-    llm_model=None, llm_provider=None, *, plugins: Optional[List[BasePlugin]] = None
+    *,
+    llm_model=None,
+    llm_provider=None,
+    plugins: Optional[List[BasePlugin]] = None,
+    **kwargs,
 ):
     """Create a new conversation."""
 
+    # Note: kwargs are here to eat up any extra arguments passed in from sessions.
+
     # Create the conversation.
     conversation = Conversation(
-        llm_model=llm_model, llm_provider=llm_provider or settings.DEFAULT_LLM_PROVIDER
+        llm_model=llm_model,
+        llm_provider=llm_provider or settings.DEFAULT_LLM_PROVIDER,
     )
 
     # Add plugins to the conversation.
