@@ -1,6 +1,6 @@
 # SimpleMind: AI for Humans™
 
-![](./ext)
+![](https://github.com/kennethreitz/simplemind/blob/master/ext/simplemind.jpg)
 
 [![Auto Wiki](https://img.shields.io/badge/Auto_Wiki-Mutable.ai-blue)](https://mutable.ai/kennethreitz/simplemind)
 
