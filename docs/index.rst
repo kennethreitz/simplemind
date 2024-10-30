@@ -49,6 +49,8 @@ Quickstart
        $ export XAI_API_KEY="..."
        $ export GROQ_API_KEY="..."
 
+This is the only required configuration.
+
 2. Import and use SimpleMind:
 
    .. code-block:: python
