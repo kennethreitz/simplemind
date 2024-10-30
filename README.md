@@ -33,14 +33,15 @@ If you'd like to see SimpleMind support additional providers or models, please s
 - **For Humans**: Emphasizes a human-friendly interface, just like `requests` for HTTP.
 - **Open Source**: SimpleMind is open source, and contributions are always welcome!
 
+Also, why not? :)
 
 ## Quickstart
+
+SimpleMind takes care of the complex API calls so you can focus on what matters—building, experimenting, and creating.
 
 ```bash
 $ pip install simplemind
 ```
-
-SimpleMind takes care of the complex API calls so you can focus on what matters—building, experimenting, and creating.
 
 First, authenticate your API keys by setting them in the environment variables:
 
