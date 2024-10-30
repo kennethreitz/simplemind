@@ -67,7 +67,7 @@ Things to know:
 - To generate structured data, use ``generate_data()``, which most providers support. This is extremely useful.
 - The third function, ``create_conversation()``, is used to engage in conversations with AI models.
 
-All of these functions accept a ``llm_model`` and ``llm_provider`` parameter, which allows you to specify the AI model to use. If not provided, the default model for the given provider will be used.
+All of these functions accept an ``llm_model`` and ``llm_provider`` parameter, which allows you to specify the AI model to use. If not provided, the default model for the given provider will be used.
 
 
 Usage Examples
