@@ -109,6 +109,33 @@ To continue the conversation, you can call `conversation.send()` again, which re
 <Message role=assistant text="The meaning of life is a profound philosophical question that has been explored by cultures, religions, and philosophers for centuries. Different people and belief systems offer varying interpretations:\n\n1. **Religious Perspectives:** Many religions propose that the meaning of life is to fulfill a divine purpose, serve God, or reach an afterlife. For example, Christianity often emphasizes love, faith, and service to God and others as central to life’s meaning.\n\n2. **Philosophical Views:** Philosophers offer diverse answers. Existentialists like Jean-Paul Sartre argue that life has no inherent meaning, and it is up to individuals to create their own purpose. Others, like Aristotle, suggest that achieving eudaimonia (flourishing or happiness) through virtuous living is the key to a meaningful life.\n\n3. **Scientific and Secular Approaches:** Some people find meaning through understanding the natural world, contributing to human knowledge, or through personal accomplishments and happiness. They may view life’s meaning as a product of connection, legacy, or the pursuit of knowledge and creativity.\n\n4. **Personal Perspective:** For many, the meaning of life is deeply personal, involving their relationships, passions, and goals. These individuals define life’s purpose through experiences, connections, and the impact they have on others and the world.\n\nUltimately, the meaning of life is a subjective question, with each person finding their own answers based on their beliefs, experiences, and reflections.">
 ```
 
+### Stop Repeating Yourself
+
+You can use the `Session` class to
+
+```python
+import simplemind as sm
+
+# Create a session with defaults
+gpt_4o_mini = sm.Session(
+    llm_provider="openai",
+    llm_model="gpt-4o-mini"
+)
+
+# Now all calls use these defaults
+response = gpt_4o_mini.generate_text("Hello!")
+conversation = gpt_4o_mini.create_conversation()
+```
+
+This maintains the simplicity of the original API while reducing repetition. The session object also supports overriding defaults on a per-call basis:
+
+```python
+response = gpt_4o_mini.generate_text(
+    "Complex task here",
+    llm_model="gpt-4"
+)
+```
+
 ### Basic Memory Plugin
 
 Harnessing the power of Python, you can easily create your own plugins to add additional functionality to your conversations:
