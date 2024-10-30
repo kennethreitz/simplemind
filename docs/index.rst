@@ -143,6 +143,73 @@ This example adds a simple custom memory plugin to the conversation.
     conversation.add_message("user", "Write a poem about the moon")
     print(conversation.send().text)
 
+Plugin Development
+~~~~~~~~~~~~~~~~~~
+
+Plugins in SimpleMind follow a simple hook-based architecture. The ``send_hook`` method shown above is just one of several hooks available. Here's a more detailed example showing the complete plugin interface:
+
+.. code-block:: python
+
+    from simplemind.plugins import BasePlugin
+
+    class CustomPlugin(BasePlugin):
+        def __init__(self):
+            self.conversation_history = []
+
+        def initialize_hook(self, conversation):
+            """Called when the plugin is first added to a conversation."""
+            print("Plugin initialized!")
+
+        def pre_send_hook(self, conversation):
+            """Called before the conversation is sent to the AI provider."""
+            # Add any system messages or modify the conversation
+            conversation.add_message("system", "Remember to be helpful.")
+
+        def send_hook(self, conversation):
+            """Called during the send process."""
+            # Add messages or modify the conversation
+            self.conversation_history.append(conversation.messages)
+
+        def post_send_hook(self, conversation, response):
+            """Called after receiving a response from the AI provider."""
+            # Process or modify the response
+            return response
+
+        def cleanup_hook(self):
+            """Called when the plugin is removed or the conversation ends."""
+            self.conversation_history.clear()
+
+All plugins should inherit from ``BasePlugin``, which provides default no-op implementations of these hooks. You only need to implement the hooks you want to use. Here's a simpler example:
+
+.. code-block:: python
+
+    from simplemind.plugins import BasePlugin
+
+    class LoggingPlugin(BasePlugin):
+        def pre_send_hook(self, conversation):
+            print(f"Sending conversation with {len(conversation.messages)} messages")
+
+        def post_send_hook(self, conversation, response):
+            print(f"Received response: {response.text[:50]}...")
+            return response
+
+    conversation = sm.create_conversation()
+    conversation.add_plugin(LoggingPlugin())
+    conversation.add_message("user", "Hello!")
+    response = conversation.send()
+
+Plugins can be used to implement features like:
+
+- Conversation logging
+- Memory management
+- Response filtering
+- Token counting
+- Custom prompt engineering
+- Analytics and monitoring
+
+Multiple plugins can be added to a single conversation, and they will be executed in the order they were added.
+
+
 Contributing
 -----------
 
