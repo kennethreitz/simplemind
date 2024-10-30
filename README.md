@@ -111,7 +111,7 @@ To continue the conversation, you can call `conversation.send()` again, which re
 
 ### Stop Repeating Yourself
 
-You can use the `Session` class to
+You can use the `Session` class to set default parameters for all calls:
 
 ```python
 import simplemind as sm
