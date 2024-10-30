@@ -8,8 +8,6 @@ SimpleMind is an AI library designed to simplify your experience with AI APIs in
 
 SimpleMind: Keep it simple, keep it human.
 
-**Note**: SimpleMind is currently in beta. We welcome feedback and contributions to help make it even better.
-
 ## Features
 
 With SimpleMind, tapping into AI is as easy as a friendly conversation.
