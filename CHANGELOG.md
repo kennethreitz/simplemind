@@ -1,6 +1,10 @@
 Release History
 ===============
 
+## 0.1.4 (2024-10-30)
+
+- Introduce `Session` class to manage multiple conversations.
+- General improvements.
 
 ## 0.1.3 (2024-10-30)
 
