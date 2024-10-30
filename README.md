@@ -1,6 +1,6 @@
 # Simplemind: AI for Humans™
 
-Keep it simple, keep it human.
+**Keep it simple, keep it human.**
 
 This repository contains an AI library designed to simplify your experience with AI APIs in Python. Inspired by a "for humans" philosophy, it abstracts away complexity, giving developers an intuitive and human-friendly way to interact with powerful AI capabilities.
 
