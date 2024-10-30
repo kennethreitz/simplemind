@@ -1,6 +1,8 @@
 # SimpleMind: AI for Humans™
 
-SimpleMind is an AI library designed to simplify your experience with AI APIs in Python. Inspired by a "for humans" philosophy, it abstracts away complexity, giving developers an intuitive and human-friendly way to interact with powerful AI capabilities.
+Keep it simple, keep it human.
+
+This repository contains an AI library designed to simplify your experience with AI APIs in Python. Inspired by a "for humans" philosophy, it abstracts away complexity, giving developers an intuitive and human-friendly way to interact with powerful AI capabilities.
 
 ![simplemind](https://github.com/user-attachments/assets/36df2103-2583-4958-ad5e-19cda7740256)
 
