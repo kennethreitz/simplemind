@@ -117,10 +117,7 @@ You can use the `Session` class to
 import simplemind as sm
 
 # Create a session with defaults
-gpt_4o_mini = sm.Session(
-    llm_provider="openai",
-    llm_model="gpt-4o-mini"
-)
+gpt_4o_mini = sm.Session(llm_provider="openai", llm_model="gpt-4o-mini")
 
 # Now all calls use these defaults
 response = gpt_4o_mini.generate_text("Hello!")
