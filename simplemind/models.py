@@ -25,6 +25,9 @@ class SMBaseModel(BaseModel):
 class BasePlugin(ABC):
     """The base conversation plugin class."""
 
+    # Plugin metadata.
+    meta: Dict[str, Any] = {}
+
     # @abstractmethod
     def initialize_hook(self, conversation: "Conversation"):
         """Initialize a hook for the plugin."""

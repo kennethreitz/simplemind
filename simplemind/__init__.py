@@ -52,4 +52,5 @@ __all__ = [
     "generate_data",
     "generate_text",
     "settings",
+    "BasePlugin",
 ]

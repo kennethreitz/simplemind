@@ -9,7 +9,12 @@ import pickle
 
 
 class ContextualMemoryPlugin:
-    def __init__(self, api_key: str, memory_file: str = "memories.pkl", embedding_model: str = "text-embedding-ada-002"):
+    def __init__(
+        self,
+        api_key: str,
+        memory_file: str = "memories.pkl",
+        embedding_model: str = "text-embedding-ada-002",
+    ):
         openai.api_key = api_key
         self.memory_file = memory_file
         self.embedding_model = embedding_model
@@ -35,29 +40,29 @@ class ContextualMemoryPlugin:
     def build_faiss_index(self):
         if self.embeddings:
             self.index = faiss.IndexFlatL2(len(self.embeddings[0]))
-            self.index.add(np.array(self.embeddings).astype('float32'))
+            self.index.add(np.array(self.embeddings).astype("float32"))
         else:
             self.index = faiss.IndexFlatL2(1536)
 
     def get_embedding(self, text: str) -> list:
         response = openai.Embedding.create(input=text, model=self.embedding_model)
-        return response['data'][0]['embedding']
+        return response["data"][0]["embedding"]
 
     def add_memory(self, memory: str):
         embedding = self.get_embedding(memory)
         self.memories.append(memory)
         self.embeddings.append(embedding)
-        self.index.add(np.array([embedding]).astype('float32'))
+        self.index.add(np.array([embedding]).astype("float32"))
         self.save_memories()
 
     def retrieve_memories(self, query: str, top_k: int = 3) -> list:
         if not self.index or len(self.embeddings) == 0:
             return []
         query_embedding = self.get_embedding(query)
-        D, I = self.index.search(np.array([query_embedding]).astype('float32'), top_k)
+        D, I = self.index.search(np.array([query_embedding]).astype("float32"), top_k)
         return [self.memories[i] for i in I[0] if i < len(self.memories)]
 
-    def send_hook(self, conversation: sm.Conversation):
+    def pre_send_hook(self, conversation: sm.Conversation):
         # Retrieve relevant memories based on the latest user message
         if conversation.messages:
             last_user_message = conversation.messages[-1].text
@@ -69,12 +74,15 @@ class ContextualMemoryPlugin:
         # Optionally, add the AI's response to memories
         self.add_memory(response)
 
+
 # Example Usage
+
 
 # Define a Pydantic model if needed
 class Story(BaseModel):
     title: str
     content: str
+
 
 # Initialize the conversation with the ContextualMemoryPlugin
 memory_plugin = ContextualMemoryPlugin(api_key=sm.settings.OPENAI_API_KEY)

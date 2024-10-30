@@ -1,7 +1,7 @@
 from _context import sm
 
 
-class SimpleMemoryPlugin:
+class SimpleMemoryPlugin(sm.BasePlugin):
     def __init__(self):
         self.memories = [
             "the earth has fictionally beeen destroyed.",
@@ -11,9 +11,9 @@ class SimpleMemoryPlugin:
     def yield_memories(self):
         return (m for m in self.memories)
 
-    def send_hook(self, conversation: sm.Conversation):
+    def initialize_hook(self, conversation: sm.Conversation):
         for m in self.yield_memories():
-            conversation.add_message(role="system", text=m)
+            conversation.prepend_system_message(role="system", text=m)
 
 
 conversation = sm.create_conversation(llm_model="grok-beta", llm_provider="xai")
