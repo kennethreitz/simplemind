@@ -53,7 +53,7 @@ class Ollama(BaseProvider):
             role="assistant",
             text=assistant_message.get("content"),
             raw=response,
-            llm_model=conversation.llm_model or DEFAULT_MODEL,
+            llm_model=conversation.llm_model or self.DEFAULT_MODEL,
             llm_provider=PROVIDER_NAME,
         )
 
@@ -63,7 +63,10 @@ class Ollama(BaseProvider):
         ]
 
         response = self.structured_client.chat.completions.create(
-            messages=messages, model=llm_model, response_model=response_model, **kwargs
+            messages=messages,
+            model=llm_model or self.DEFAULT_MODEL,
+            response_model=response_model,
+            **kwargs,
         )
         return response
 
@@ -72,6 +75,8 @@ class Ollama(BaseProvider):
             {"role": "user", "content": prompt},
         ]
 
-        response = self.client.chat(messages=messages, model=llm_model)
+        response = self.client.chat(
+            messages=messages, model=llm_model or self.DEFAULT_MODEL
+        )
 
         return response.get("message").get("content")

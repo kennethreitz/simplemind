@@ -43,7 +43,7 @@ class XAI(BaseProvider):
         ]
 
         response = self.client.chat.completions.create(
-            model=conversation.llm_model or DEFAULT_MODEL,
+            model=conversation.llm_model or self.DEFAULT_MODEL,
             messages=messages,
             **kwargs,
         )
@@ -56,7 +56,7 @@ class XAI(BaseProvider):
             role="assistant",
             text=assistant_message.content,
             raw=response,
-            llm_model=conversation.llm_model or DEFAULT_MODEL,
+            llm_model=conversation.llm_model or self.DEFAULT_MODEL,
             llm_provider=PROVIDER_NAME,
         )
 
@@ -70,7 +70,7 @@ class XAI(BaseProvider):
 
         response = self.client.chat.completions.create(
             messages=messages,
-            model=llm_model,
+            model=llm_model or self.DEFAULT_MODEL,
             **kwargs,
         )
 

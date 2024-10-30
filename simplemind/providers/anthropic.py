@@ -39,7 +39,7 @@ class Anthropic(BaseProvider):
         ]
 
         response = self.client.messages.create(
-            model=conversation.llm_model or DEFAULT_MODEL,
+            model=conversation.llm_model or self.DEFAULT_MODEL,
             messages=messages,
             max_tokens=DEFAULT_MAX_TOKENS,
             **kwargs,
@@ -53,13 +53,13 @@ class Anthropic(BaseProvider):
             role="assistant",
             text=assistant_message,
             raw=response,
-            llm_model=conversation.llm_model or DEFAULT_MODEL,
+            llm_model=conversation.llm_model or self.DEFAULT_MODEL,
             llm_provider=PROVIDER_NAME,
         )
 
     def structured_response(self, model, response_model, **kwargs):
         response = self.structured_client.messages.create(
-            model=model, response_model=response_model, **kwargs
+            model=model, response_model=response_model or self.DEFAULT_MODEL, **kwargs
         )
         return response
 
@@ -69,7 +69,7 @@ class Anthropic(BaseProvider):
         ]
 
         response = self.client.messages.create(
-            model=llm_model,
+            model=llm_model or self.DEFAULT_MODEL,
             messages=messages,
             max_tokens=DEFAULT_MAX_TOKENS,
             **kwargs,
