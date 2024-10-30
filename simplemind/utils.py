@@ -7,7 +7,18 @@ _PROVIDER_NAMES = [provider.NAME.lower() for provider in providers]
 
 
 def find_provider(provider_name: Union[str, None]):
-    """Find a provider by name."""
+    """
+    Find and instantiate a provider by name.
+
+    Parameters:
+    provider_name (Union[str, None]): The name of the provider to find.
+
+    Returns:
+    An instance of the provider class if found.
+
+    Raises:
+    ValueError: If the provider is not found, with a suggestion for the closest match.
+    """
     if provider_name:
         for provider_class in providers:
             if provider_class.NAME.lower() == provider_name.lower():
