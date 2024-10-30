@@ -22,33 +22,28 @@ class SMBaseModel(BaseModel):
         return str(self)
 
 
-class BasePlugin(ABC):
+class BasePlugin:
     """The base conversation plugin class."""
 
     # Plugin metadata.
     meta: Dict[str, Any] = {}
 
-    # @abstractmethod
     def initialize_hook(self, conversation: "Conversation"):
         """Initialize a hook for the plugin."""
         raise NotImplementedError
 
-    # @abstractmethod
     def cleanup_hook(self, conversation: "Conversation"):
         """Cleanup a hook for the plugin."""
         raise NotImplementedError
 
-    # @abstractmethod
     def add_message_hook(self, conversation: "Conversation", message: "Message"):
         """Add a message hook for the plugin."""
         raise NotImplementedError
 
-    # @abstractmethod
     def pre_send_hook(self, conversation: "Conversation"):
         """Pre-send hook for the plugin."""
         raise NotImplementedError
 
-    # @abstractmethod
     def post_send_hook(self, conversation: "Conversation", response: "Message"):
         """Post-send hook for the plugin."""
         raise NotImplementedError
