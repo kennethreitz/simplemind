@@ -37,7 +37,7 @@ Also, why not? :)
 
 ## Quickstart
 
-SimpleMind takes care of the complex API calls so you can focus on what matters—building, experimenting, and creating.
+Simplemind takes care of the complex API calls so you can focus on what matters—building, experimenting, and creating.
 
 ```bash
 $ pip install simplemind
