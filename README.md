@@ -10,7 +10,7 @@ This repository contains an AI library designed to simplify your experience with
 
 ## Features
 
-With SimpleMind, tapping into AI is as easy as a friendly conversation.
+With Simplemind, tapping into AI is as easy as a friendly conversation.
 
 - **Easy-to-use AI tools**: SimpleMind provides simple interfaces to popular AI services.
 - **Human-centered design**: The library prioritizes readability and usability—no need to be an expert to start experimenting.
@@ -26,12 +26,12 @@ To specify a specific provider or model, you can use the `llm_provider` and `llm
 - **[Groq's Groq](https://groq.com/)**
 - **[Ollama](https://ollama.com)**
 
-If you'd like to see SimpleMind support additional providers or models, please send a pull request!
+If you'd like to see Simplemind support additional providers or models, please send a pull request!
 
 ## Why SimpleMind?
 - **Intuitive**: Built with Pythonic simplicity and readability in mind.
 - **For Humans**: Emphasizes a human-friendly interface, just like `requests` for HTTP.
-- **Open Source**: SimpleMind is open source, and contributions are always welcome!
+- **Open Source**: Simplemind is open source, and contributions are always welcome!
 
 Also, why not? :)
 
@@ -51,7 +51,7 @@ $ export OPENAI_API_KEY="sk-..."
 
 This pattern allows you to keep your API keys private and out of your codebase. Other supported environment variables: `ANTHROPIC_API_KEY`, `XAI_API_KEY`, and `GROQ_API_KEY`.
 
-Next, import SimpleMind and start using it:
+Next, import Simplemind and start using it:
 
 ```python
 import simplemind as sm
@@ -60,7 +60,7 @@ import simplemind as sm
 
 ## Examples
 
-Here are some examples of how to use SimpleMind:
+Here are some examples of how to use Simplemind:
 
 ### Text Completion
 
@@ -202,7 +202,11 @@ A reminder that in tales and fun,
 The universe is never done.
 ```
 
+Simple, yet effective.
+
 Please see the [examples](examples) directory for executable examples.
+
+-------------------
 
 ## Contributing
 We welcome contributions of all kinds. Feel free to open issues for bug reports or feature requests, and submit pull requests to make SimpleMind even better.
@@ -215,11 +219,7 @@ To get started:
 4. Submit a pull request.
 
 ## License
-SimpleMind is licensed under the Apache 2.0 License.
+Simplemind is licensed under the Apache 2.0 License.
 
 ## Acknowledgements
-SimpleMind is inspired by the philosophy of "code for humans" and aims to make working with AI models accessible to all. Special thanks to the open-source community for their contributions and inspiration.
-
-----
-SimpleMind: Keep it simple, keep it human.
-
+Simplemind is inspired by the philosophy of "code for humans" and aims to make working with AI models accessible to all. Special thanks to the open-source community for their contributions and inspiration.
