@@ -60,7 +60,10 @@ class OpenAI(BaseProvider):
         ]
 
         response = self.structured_client.chat.completions.create(
-            messages=messages, model=llm_model, response_model=response_model, **kwargs
+            messages=messages,
+            model=llm_model or self.DEFAULT_MODEL,
+            response_model=response_model,
+            **kwargs,
         )
         return response
 
@@ -70,7 +73,7 @@ class OpenAI(BaseProvider):
         ]
 
         response = self.client.chat.completions.create(
-            messages=messages, model=llm_model, **kwargs
+            messages=messages, model=llm_model or self.DEFAULT_MODEL, **kwargs
         )
 
         return response.choices[0].message.content
