@@ -8,7 +8,7 @@ SimpleMind is an AI library designed to simplify your experience with AI APIs in
 $ pip install simplemind
 ```
 
-Note: SimpleMind is currently in beta. We welcome feedback and contributions to help make it even better.
+**Note**: SimpleMind is currently in beta. We welcome feedback and contributions to help make it even better.
 
 ## Features
 - **Easy-to-use AI tools**: SimpleMind provides simple interfaces to popular AI services.
