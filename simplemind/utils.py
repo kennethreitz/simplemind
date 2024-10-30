@@ -6,7 +6,7 @@ from .providers import providers, BaseProvider
 _PROVIDER_NAMES = [provider.NAME.lower() for provider in providers]
 
 
-def find_provider(provider_name: Optional[str]) -> Type[BaseProvider]:
+def find_provider(provider_name: str) -> BaseProvider:
     """
     Find and instantiate a provider by name.
 
@@ -19,15 +19,16 @@ def find_provider(provider_name: Optional[str]) -> Type[BaseProvider]:
     Raises:
     ValueError: If the provider is not found, with a suggestion for the closest match.
     """
-    if provider_name:
-        for provider_class in providers:
-            if provider_class.NAME.lower() == provider_name.lower():
-                # Instantiate the provider
-                return provider_class()
+    # Find the provider by name.
+    for provider_class in providers:
+        if provider_class.NAME.lower() == provider_name.lower():
+            # Instantiate the provider
+            return provider_class()
 
+    # Find the closest match
     provider_found = difflib.get_close_matches(
         provider_name.lower(), _PROVIDER_NAMES, n=1
-    )  # Show only one suggestion
+    )
 
     if provider_found:
         raise ValueError(
