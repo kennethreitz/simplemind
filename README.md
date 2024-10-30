@@ -6,15 +6,14 @@ SimpleMind is an AI library designed to simplify your experience with AI APIs in
 
 [![Auto Wiki](https://img.shields.io/badge/Auto_Wiki-Mutable.ai-blue)](https://mutable.ai/kennethreitz/simplemind)
 
-With SimpleMind, tapping into AI is as easy as a friendly conversation.
-
-```bash
-$ pip install simplemind
-```
+SimpleMind: Keep it simple, keep it human.
 
 **Note**: SimpleMind is currently in beta. We welcome feedback and contributions to help make it even better.
 
 ## Features
+
+With SimpleMind, tapping into AI is as easy as a friendly conversation.
+
 - **Easy-to-use AI tools**: SimpleMind provides simple interfaces to popular AI services.
 - **Human-centered design**: The library prioritizes readability and usability—no need to be an expert to start experimenting.
 - **Minimal configuration**: Get started quickly, without worrying about configuration headaches.
@@ -38,6 +37,10 @@ If you'd like to see SimpleMind support additional providers or models, please s
 
 
 ## Quickstart
+
+```bash
+$ pip install simplemind
+```
 
 SimpleMind takes care of the complex API calls so you can focus on what matters—building, experimenting, and creating.
 
@@ -218,6 +221,5 @@ SimpleMind is licensed under the Apache 2.0 License.
 ## Acknowledgements
 SimpleMind is inspired by the philosophy of "code for humans" and aims to make working with AI models accessible to all. Special thanks to the open-source community for their contributions and inspiration.
 
----------------
 
-SimpleMind: Keep it simple, keep it human.
+
