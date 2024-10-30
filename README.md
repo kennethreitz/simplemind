@@ -6,8 +6,6 @@ SimpleMind is an AI library designed to simplify your experience with AI APIs in
 
 [![Auto Wiki](https://img.shields.io/badge/Auto_Wiki-Mutable.ai-blue)](https://mutable.ai/kennethreitz/simplemind)
 
-SimpleMind: Keep it simple, keep it human.
-
 ## Features
 
 With SimpleMind, tapping into AI is as easy as a friendly conversation.
@@ -219,5 +217,6 @@ SimpleMind is licensed under the Apache 2.0 License.
 ## Acknowledgements
 SimpleMind is inspired by the philosophy of "code for humans" and aims to make working with AI models accessible to all. Special thanks to the open-source community for their contributions and inspiration.
 
-
+----
+SimpleMind: Keep it simple, keep it human.
 
