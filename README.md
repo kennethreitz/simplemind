@@ -118,8 +118,6 @@ To continue the conversation, you can call `conversation.send()` again, which re
 You can use the `Session` class to set default parameters for all calls:
 
 ```python
-import simplemind as sm
-
 # Create a session with defaults
 gpt_4o_mini = sm.Session(llm_provider="openai", llm_model="gpt-4o-mini")
 
@@ -142,9 +140,6 @@ response = gpt_4o_mini.generate_text(
 Harnessing the power of Python, you can easily create your own plugins to add additional functionality to your conversations:
 
 ```python
-import simplemind as sm
-
-
 class SimpleMemoryPlugin:
     def __init__(self):
         self.memories = [
