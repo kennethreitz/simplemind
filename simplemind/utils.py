@@ -1,12 +1,12 @@
 import difflib
-from typing import Union
+from typing import Optional, Type
 
-from .providers import providers
+from .providers import providers, BaseProvider
 
 _PROVIDER_NAMES = [provider.NAME.lower() for provider in providers]
 
 
-def find_provider(provider_name: Union[str, None]):
+def find_provider(provider_name: Optional[str]) -> Type[BaseProvider]:
     """
     Find and instantiate a provider by name.
 
