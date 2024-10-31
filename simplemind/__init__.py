@@ -1,8 +1,8 @@
-from typing import List, Optional, Type
+from typing import List, Type
 
-from .models import Conversation, BasePlugin, BaseModel
-from .utils import find_provider
+from .models import BaseModel, BasePlugin, Conversation
 from .settings import settings
+from .utils import find_provider
 
 
 class Session:
@@ -56,9 +56,9 @@ class Session:
 
 def create_conversation(
     *,
-    llm_model=None,
-    llm_provider=None,
-    plugins: Optional[List[BasePlugin]] = None,
+    llm_model: str | None = None,
+    llm_provider: str | None = None,
+    plugins: List[BasePlugin] | None = None,
     **kwargs,
 ) -> Conversation:
     """Create a new conversation."""
@@ -77,7 +77,12 @@ def create_conversation(
 
 
 def generate_data(
-    prompt, *, llm_model=None, llm_provider=None, response_model=None, **kwargs
+    prompt: str,
+    *,
+    llm_model: str | None = None,
+    llm_provider: str | None = None,
+    response_model: Type[BaseModel],
+    **kwargs,
 ) -> BaseModel:
     """Generate structured data from a given prompt."""
 
@@ -92,7 +97,13 @@ def generate_data(
     )
 
 
-def generate_text(prompt, *, llm_model=None, llm_provider=None, **kwargs) -> str:
+def generate_text(
+    prompt: str,
+    *,
+    llm_model: str | None = None,
+    llm_provider: str | None = None,
+    **kwargs,
+) -> str:
     """Generate text from a given prompt."""
 
     # Find the provider.

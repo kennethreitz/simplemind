@@ -20,13 +20,14 @@ With Simplemind, tapping into AI is as easy as a friendly conversation.
 
 To specify a specific provider or model, you can use the `llm_provider` and `llm_model` parameters when calling: `generate_text`, `generate_data`, or `create_conversation`.
 
-- **[OpenAI's GPT](https://openai.com/gpt)**
-- **[Anthropic's Claude](https://www.anthropic.com/claude)**
-- **[xAI's Grok](https://x.ai/)**
-- **[Groq's Groq](https://groq.com/)**
-- **[Ollama](https://ollama.com)**
+- [**Anthropic's Claude**](https://www.anthropic.com/claude)
+- [**Google's Gemini**](https://ai.google.dev/gemini-api)
+- [**Groq's Groq**](https://groq.com/)
+- [**Ollama**](https://ollama.com)
+- [**OpenAI's GPT**](https://openai.com/gpt)
+- [**xAI's Grok**](https://x.ai/)
 
-If you'd like to see Simplemind support additional providers or models, please send a pull request!
+If you want to see Simplemind support, additional providers or models, please request a pull!
 
 ## Why SimpleMind?
 - **Intuitive**: Built with Pythonic simplicity and readability in mind.
@@ -140,7 +141,7 @@ response = gpt_4o_mini.generate_text(
 Harnessing the power of Python, you can easily create your own plugins to add additional functionality to your conversations:
 
 ```python
-class SimpleMemoryPlugin:
+class SimpleMemoryPlugin(sm.BasePlugin):
     def __init__(self):
         self.memories = [
             "the earth has fictionally beeen destroyed.",

@@ -1,9 +1,16 @@
-import ollama as ol
-import instructor
-from openai import OpenAI
+from functools import cached_property
+from typing import Type, TypeVar
 
-from ._base import BaseProvider
+import instructor
+import ollama as ol
+from openai import OpenAI
+from pydantic import BaseModel
+
 from ..settings import settings
+from ._base import BaseProvider
+
+T = TypeVar("T", bound=BaseModel)
+
 
 PROVIDER_NAME = "ollama"
 DEFAULT_MODEL = "llama3.2"
@@ -15,18 +22,18 @@ class Ollama(BaseProvider):
     DEFAULT_MODEL = DEFAULT_MODEL
     TIMEOUT = DEFAULT_TIMEOUT
 
-    def __init__(self, host_url: str = None):
+    def __init__(self, host_url: str | None = None):
         self.host_url = host_url or settings.OLLAMA_HOST_URL
 
-    @property
+    @cached_property
     def client(self):
         """The raw Ollama client."""
         if not self.host_url:
             raise ValueError("No ollama host url provided")
         return ol.Client(timeout=self.TIMEOUT, host=self.host_url)
 
-    @property
-    def structured_client(self):
+    @cached_property
+    def structured_client(self) -> instructor.Instructor:
         """A client patched with Instructor."""
         return instructor.from_openai(
             OpenAI(
@@ -36,7 +43,7 @@ class Ollama(BaseProvider):
             mode=instructor.Mode.JSON,
         )
 
-    def send_conversation(self, conversation: "Conversation"):
+    def send_conversation(self, conversation: "Conversation") -> "Message":
         """Send a conversation to the Ollama API."""
         from ..models import Message
 
@@ -57,7 +64,10 @@ class Ollama(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
-    def structured_response(self, prompt, response_model, *, llm_model: str, **kwargs):
+    def structured_response(
+        self, prompt: str, response_model: Type[T], *, llm_model: str, **kwargs
+    ) -> T:
+        """Get a structured response from the Ollama API."""
         messages = [
             {"role": "user", "content": prompt},
         ]
@@ -70,7 +80,8 @@ class Ollama(BaseProvider):
         )
         return response
 
-    def generate_text(self, prompt, *, llm_model):
+    def generate_text(self, prompt: str, *, llm_model: str) -> str:
+        """Generate text using the Ollama API."""
         messages = [
             {"role": "user", "content": prompt},
         ]
@@ -79,4 +90,4 @@ class Ollama(BaseProvider):
             messages=messages, model=llm_model or self.DEFAULT_MODEL
         )
 
-        return response.get("message").get("content")
+        return response.get("message", {}).get("content", "")

@@ -1,7 +1,7 @@
-from _context import sm
-
-from pydantic import BaseModel
 from typing import Literal
+
+from _context import sm
+from pydantic import BaseModel
 
 
 class SentimentAnalysis(BaseModel):

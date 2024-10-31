@@ -1,5 +1,6 @@
-import simplemind as sm
 import time
+
+import simplemind as sm
 
 
 class ConversationPlugin(sm.BasePlugin):
@@ -8,7 +9,7 @@ class ConversationPlugin(sm.BasePlugin):
         print(f"{conversation.llm_model}:\n{response.text.strip()}\n\n------------\n")
 
 
-def have_conversation(rounds=3):
+def have_conversation(rounds: int = 3):
     # Create two conversations - one for each AI
     with (
         sm.create_conversation(

@@ -1,6 +1,11 @@
 from abc import ABC, abstractmethod
+from functools import cached_property
+from typing import Any, Type, TypeVar
 
 from instructor import Instructor
+from pydantic import BaseModel
+
+T = TypeVar("T", bound=BaseModel)
 
 
 class BaseProvider(ABC):
@@ -9,13 +14,13 @@ class BaseProvider(ABC):
     NAME: str
     DEFAULT_MODEL: str
 
-    @property
+    @cached_property
     @abstractmethod
-    def client(self):
+    def client(self) -> Any:
         """The instructor client for the provider."""
         raise NotImplementedError
 
-    @property
+    @cached_property
     @abstractmethod
     def structured_client(self) -> Instructor:
         """The structured client for the provider."""
@@ -27,7 +32,7 @@ class BaseProvider(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def structured_response(self, prompt: str, response_model, **kwargs):
+    def structured_response(self, prompt: str, response_model: Type[T], **kwargs) -> T:
         """Get a structured response."""
         raise NotImplementedError
 

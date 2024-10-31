@@ -1,8 +1,7 @@
-from typing import List, Iterator
-
-from pydantic import BaseModel
+from typing import Iterator, List
 
 from _context import sm
+from pydantic import BaseModel
 
 
 class Movie(BaseModel):
@@ -25,7 +24,7 @@ class QuotesList(BaseModel):
     quotes: List[MovieQuote]
 
 
-def gen_quotes(n=10) -> Iterator[MovieQuote]:
+def gen_quotes(n: int = 10) -> Iterator[MovieQuote]:
     """Generate a list of quotes from famous movies."""
 
     for q in sm.generate_data(

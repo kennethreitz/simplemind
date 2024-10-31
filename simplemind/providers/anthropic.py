@@ -1,10 +1,15 @@
-from typing import Union
+from functools import cached_property
+from typing import Type, TypeVar
 
 import anthropic
 import instructor
+from pydantic import BaseModel
 
-from ._base import BaseProvider
 from ..settings import settings
+from ._base import BaseProvider
+
+T = TypeVar("T", bound=BaseModel)
+
 
 PROVIDER_NAME = "anthropic"
 DEFAULT_MODEL = "claude-3-5-sonnet-20241022"
@@ -15,17 +20,17 @@ class Anthropic(BaseProvider):
     NAME = PROVIDER_NAME
     DEFAULT_MODEL = DEFAULT_MODEL
 
-    def __init__(self, api_key: Union[str, None] = None):
+    def __init__(self, api_key: str | None = None):
         self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
 
-    @property
+    @cached_property
     def client(self):
         """The raw Anthropic client."""
         if not self.api_key:
             raise ValueError("Anthropic API key is required")
         return anthropic.Anthropic(api_key=self.api_key)
 
-    @property
+    @cached_property
     def structured_client(self):
         """A client patched with Instructor."""
         return instructor.from_anthropic(self.client)
@@ -57,13 +62,13 @@ class Anthropic(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
-    def structured_response(self, model, response_model, **kwargs):
+    def structured_response(self, model: str, response_model: Type[T], **kwargs) -> T:
         response = self.structured_client.messages.create(
-            model=model, response_model=response_model or self.DEFAULT_MODEL, **kwargs
+            model=model or self.DEFAULT_MODEL, response_model=response_model, **kwargs
         )
         return response
 
-    def generate_text(self, prompt, *, llm_model, **kwargs):
+    def generate_text(self, prompt: str, *, llm_model: str, **kwargs):
         messages = [
             {"role": "user", "content": prompt},
         ]

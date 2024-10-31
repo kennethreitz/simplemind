@@ -1,10 +1,10 @@
-from typing import Union
+from functools import cached_property
 
 import instructor
 import openai as oa
 
-from ._base import BaseProvider
 from ..settings import settings
+from ._base import BaseProvider
 
 PROVIDER_NAME = "xai"
 DEFAULT_MODEL = "grok-beta"
@@ -16,10 +16,10 @@ class XAI(BaseProvider):
     NAME = PROVIDER_NAME
     DEFAULT_MODEL = DEFAULT_MODEL
 
-    def __init__(self, api_key: Union[str, None] = None):
+    def __init__(self, api_key: str | None = None):
         self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
 
-    @property
+    @cached_property
     def client(self):
         """The raw OpenAI client."""
         if not self.api_key:
@@ -29,7 +29,7 @@ class XAI(BaseProvider):
             base_url=BASE_URL,
         )
 
-    @property
+    @cached_property
     def structured_client(self):
         """A client patched with Instructor."""
         return instructor.from_openai(self.client)
@@ -60,10 +60,10 @@ class XAI(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
-    def structured_response(self, prompt: str, response_model, *, llm_model):
+    def structured_response(self, prompt: str, response_model, *, llm_model: str):
         raise NotImplementedError("XAI does not support structured responses")
 
-    def generate_text(self, prompt, *, llm_model, **kwargs):
+    def generate_text(self, prompt: str, *, llm_model: str, **kwargs):
         messages = [
             {"role": "user", "content": prompt},
         ]
