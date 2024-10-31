@@ -15,11 +15,17 @@ T = TypeVar("T", bound=BaseModel)
 PROVIDER_NAME = "ollama"
 DEFAULT_MODEL = "llama3.2"
 DEFAULT_TIMEOUT = 60
+DEFAULT_MAX_TOKENS = 1_000
+DEFAULT_KWARGS = {
+    "max_tokens": DEFAULT_MAX_TOKENS,
+    "timeout": DEFAULT_TIMEOUT,
+}
 
 
 class Ollama(BaseProvider):
     NAME = PROVIDER_NAME
     DEFAULT_MODEL = DEFAULT_MODEL
+    DEFAULT_KWARGS = DEFAULT_KWARGS
     TIMEOUT = DEFAULT_TIMEOUT
 
     def __init__(self, host_url: str | None = None):
@@ -43,7 +49,7 @@ class Ollama(BaseProvider):
             mode=instructor.Mode.JSON,
         )
 
-    def send_conversation(self, conversation: "Conversation") -> "Message":
+    def send_conversation(self, conversation: "Conversation", **kwargs) -> "Message":
         """Send a conversation to the Ollama API."""
         from ..models import Message
 
@@ -51,7 +57,9 @@ class Ollama(BaseProvider):
             {"role": msg.role, "content": msg.text} for msg in conversation.messages
         ]
         response = self.client.chat(
-            model=conversation.llm_model or DEFAULT_MODEL, messages=messages
+            model=conversation.llm_model or DEFAULT_MODEL,
+            messages=messages,
+            **{**self.DEFAULT_KWARGS, **kwargs}
         )
         assistant_message = response.get("message")
 
@@ -81,18 +89,20 @@ class Ollama(BaseProvider):
             messages=messages,
             model=llm_model or self.DEFAULT_MODEL,
             response_model=response_model,
-            **kwargs,
+            **{**self.DEFAULT_KWARGS, **kwargs}
         )
         return response
 
-    def generate_text(self, prompt: str, *, llm_model: str | None = None) -> str:
+    def generate_text(self, prompt: str, *, llm_model: str | None = None, **kwargs) -> str:
         """Generate text using the Ollama API."""
         messages = [
             {"role": "user", "content": prompt},
         ]
 
         response = self.client.chat(
-            messages=messages, model=llm_model or self.DEFAULT_MODEL
+            messages=messages,
+            model=llm_model or self.DEFAULT_MODEL,
+            **{**self.DEFAULT_KWARGS, **kwargs}
         )
 
         return response.get("message", {}).get("content", "")
