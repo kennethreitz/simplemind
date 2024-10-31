@@ -66,6 +66,8 @@ class Gemini(BaseProvider):
 
     def structured_response(self, prompt: str, response_model: Type[T], **kwargs) -> T:
         """Send a structured response to the Gemini API."""
+        llm_model = kwargs.pop("llm_model", self.model_name)
+
         try:
             response = self.structured_client.chat.completions.create(
                 messages=[{"role": "user", "content": prompt}],
