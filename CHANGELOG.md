@@ -5,6 +5,7 @@ Release History
 
 - Add Gemini provider.
 - Add structured response to Gemini provider.
+- Support for Python 3.10.
 
 ## 0.1.4 (2024-10-30)
 
