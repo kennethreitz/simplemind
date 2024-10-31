@@ -15,7 +15,7 @@ class Ollama(BaseProvider):
     DEFAULT_MODEL = DEFAULT_MODEL
     TIMEOUT = DEFAULT_TIMEOUT
 
-    def __init__(self, host_url: str = None):
+    def __init__(self, host_url: str | None = None):
         self.host_url = host_url or settings.OLLAMA_HOST_URL
 
     @property
@@ -57,7 +57,9 @@ class Ollama(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
-    def structured_response(self, prompt, response_model, *, llm_model: str, **kwargs):
+    def structured_response(
+        self, prompt: str, response_model, *, llm_model: str, **kwargs
+    ):
         messages = [
             {"role": "user", "content": prompt},
         ]
@@ -70,7 +72,7 @@ class Ollama(BaseProvider):
         )
         return response
 
-    def generate_text(self, prompt, *, llm_model):
+    def generate_text(self, prompt: str, *, llm_model: str):
         messages = [
             {"role": "user", "content": prompt},
         ]

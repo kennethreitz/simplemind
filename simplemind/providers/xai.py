@@ -1,5 +1,3 @@
-from typing import Union
-
 import instructor
 import openai as oa
 
@@ -16,7 +14,7 @@ class XAI(BaseProvider):
     NAME = PROVIDER_NAME
     DEFAULT_MODEL = DEFAULT_MODEL
 
-    def __init__(self, api_key: Union[str, None] = None):
+    def __init__(self, api_key: str | None = None):
         self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
 
     @property
@@ -60,10 +58,10 @@ class XAI(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
-    def structured_response(self, prompt: str, response_model, *, llm_model):
+    def structured_response(self, prompt: str, response_model, *, llm_model: str):
         raise NotImplementedError("XAI does not support structured responses")
 
-    def generate_text(self, prompt, *, llm_model, **kwargs):
+    def generate_text(self, prompt: str, *, llm_model: str, **kwargs):
         messages = [
             {"role": "user", "content": prompt},
         ]

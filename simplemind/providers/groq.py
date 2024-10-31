@@ -1,5 +1,3 @@
-from typing import Union
-
 import groq
 import instructor
 
@@ -14,7 +12,7 @@ class Groq(BaseProvider):
     NAME = PROVIDER_NAME
     DEFAULT_MODEL = DEFAULT_MODEL
 
-    def __init__(self, api_key: Union[str, None] = None):
+    def __init__(self, api_key: str | None = None):
         self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
 
     @property

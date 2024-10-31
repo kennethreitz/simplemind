@@ -1,5 +1,4 @@
 import uuid
-from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Any, Dict, List, Literal, Optional
 
@@ -73,7 +72,7 @@ class Conversation(SMBaseModel):
     messages: List[Message] = []
     llm_model: Optional[str] = None
     llm_provider: Optional[str] = None
-    plugins: List[Any] = []
+    plugins: List[BasePlugin] = []
 
     def __str__(self):
         return f"<Conversation id={self.id!r}>"
@@ -99,7 +98,7 @@ class Conversation(SMBaseModel):
                     pass
 
     def prepend_system_message(
-        self, role: str, text: str, meta: Optional[Dict[str, Any]] = None
+        self, role: str, text: str, meta: Dict[str, Any] | None = None
     ):
         """Prepend a system message to the conversation."""
         self.messages = [Message(role=role, text=text, meta=meta or {})] + self.messages
@@ -127,7 +126,9 @@ class Conversation(SMBaseModel):
         self.messages.append(Message(role=role, text=text, meta=meta))
 
     def send(
-        self, llm_model: Optional[str] = None, llm_provider: Optional[str] = None
+        self,
+        llm_model: str | None = None,
+        llm_provider: str | None = None,
     ) -> Message:
         """Send the conversation to the LLM."""
 
@@ -156,10 +157,10 @@ class Conversation(SMBaseModel):
 
         return response
 
-    def get_last_message(self, role: MESSAGE_ROLE) -> Optional[Message]:
+    def get_last_message(self, role: MESSAGE_ROLE) -> Message | None:
         """Get the last message with the given role."""
         return next((m for m in reversed(self.messages) if m.role == role), None)
 
-    def add_plugin(self, plugin: Any):
+    def add_plugin(self, plugin: BasePlugin) -> None:
         """Add a plugin to the conversation."""
         self.plugins.append(plugin)

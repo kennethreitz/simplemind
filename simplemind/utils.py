@@ -1,5 +1,4 @@
 import difflib
-from typing import Optional, Type
 
 from .providers import providers, BaseProvider
 

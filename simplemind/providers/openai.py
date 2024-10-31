@@ -1,5 +1,3 @@
-from typing import Union
-
 import instructor
 import openai as oa
 
@@ -14,7 +12,7 @@ class OpenAI(BaseProvider):
     NAME = PROVIDER_NAME
     DEFAULT_MODEL = DEFAULT_MODEL
 
-    def __init__(self, api_key: Union[str, None] = None):
+    def __init__(self, api_key: str | None = None):
         self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
 
     @property
@@ -53,7 +51,9 @@ class OpenAI(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
-    def structured_response(self, prompt, response_model, *, llm_model: str, **kwargs):
+    def structured_response(
+        self, prompt: str, response_model, *, llm_model: str, **kwargs
+    ):
         # Ensure messages are provided in kwargs
         messages = [
             {"role": "user", "content": prompt},
@@ -67,7 +67,7 @@ class OpenAI(BaseProvider):
         )
         return response
 
-    def generate_text(self, prompt, *, llm_model, **kwargs):
+    def generate_text(self, prompt: str, *, llm_model: str, **kwargs):
         messages = [
             {"role": "user", "content": prompt},
         ]

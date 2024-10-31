@@ -1,5 +1,3 @@
-from typing import Union
-
 import anthropic
 import instructor
 
@@ -15,7 +13,7 @@ class Anthropic(BaseProvider):
     NAME = PROVIDER_NAME
     DEFAULT_MODEL = DEFAULT_MODEL
 
-    def __init__(self, api_key: Union[str, None] = None):
+    def __init__(self, api_key: str | None = None):
         self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
 
     @property
@@ -57,13 +55,13 @@ class Anthropic(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
-    def structured_response(self, model, response_model, **kwargs):
+    def structured_response(self, model: str, response_model, **kwargs):
         response = self.structured_client.messages.create(
             model=model, response_model=response_model or self.DEFAULT_MODEL, **kwargs
         )
         return response
 
-    def generate_text(self, prompt, *, llm_model, **kwargs):
+    def generate_text(self, prompt: str, *, llm_model: str, **kwargs):
         messages = [
             {"role": "user", "content": prompt},
         ]
