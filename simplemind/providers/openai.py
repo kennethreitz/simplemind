@@ -1,3 +1,4 @@
+from functools import cached_property
 from typing import Type, TypeVar
 
 import instructor
@@ -20,14 +21,14 @@ class OpenAI(BaseProvider):
     def __init__(self, api_key: str | None = None):
         self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
 
-    @property
+    @cached_property
     def client(self):
         """The raw OpenAI client."""
         if not self.api_key:
             raise ValueError("OpenAI API key is required")
         return oa.OpenAI(api_key=self.api_key)
 
-    @property
+    @cached_property
     def structured_client(self):
         """A OpenAI client with Instructor."""
         return instructor.from_openai(self.client)

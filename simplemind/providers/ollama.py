@@ -1,3 +1,4 @@
+from functools import cached_property
 from typing import Type, TypeVar
 
 import instructor
@@ -24,14 +25,14 @@ class Ollama(BaseProvider):
     def __init__(self, host_url: str | None = None):
         self.host_url = host_url or settings.OLLAMA_HOST_URL
 
-    @property
+    @cached_property
     def client(self):
         """The raw Ollama client."""
         if not self.host_url:
             raise ValueError("No ollama host url provided")
         return ol.Client(timeout=self.TIMEOUT, host=self.host_url)
 
-    @property
+    @cached_property
     def structured_client(self) -> instructor.Instructor:
         """A client patched with Instructor."""
         return instructor.from_openai(

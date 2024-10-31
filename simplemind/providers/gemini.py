@@ -1,3 +1,4 @@
+from functools import cached_property
 from typing import Type, TypeVar
 
 import google.generativeai as genai
@@ -22,7 +23,7 @@ class Gemini(BaseProvider):
         self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
         self.model_name = DEFAULT_MODEL
 
-    @property
+    @cached_property
     def client(self, model_name: str = DEFAULT_MODEL):
         """The raw Gemini client."""
         if not self.api_key:
@@ -30,7 +31,7 @@ class Gemini(BaseProvider):
         self.model_name = model_name
         return genai.GenerativeModel(model_name=self.model_name)
 
-    @property
+    @cached_property
     def structured_client(self):
         """A Gemini client patched with Instructor."""
         return instructor.from_gemini(self.client)

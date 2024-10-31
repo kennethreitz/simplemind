@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Type, TypeVar
+from functools import cached_property
+from typing import Any, Type, TypeVar
 
 from instructor import Instructor
 from pydantic import BaseModel
@@ -13,13 +14,13 @@ class BaseProvider(ABC):
     NAME: str
     DEFAULT_MODEL: str
 
-    @property
+    @cached_property
     @abstractmethod
-    def client(self):
+    def client(self) -> Any:
         """The instructor client for the provider."""
         raise NotImplementedError
 
-    @property
+    @cached_property
     @abstractmethod
     def structured_client(self) -> Instructor:
         """The structured client for the provider."""

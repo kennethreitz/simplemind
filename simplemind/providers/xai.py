@@ -1,3 +1,5 @@
+from functools import cached_property
+
 import instructor
 import openai as oa
 
@@ -17,7 +19,7 @@ class XAI(BaseProvider):
     def __init__(self, api_key: str | None = None):
         self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
 
-    @property
+    @cached_property
     def client(self):
         """The raw OpenAI client."""
         if not self.api_key:
@@ -27,7 +29,7 @@ class XAI(BaseProvider):
             base_url=BASE_URL,
         )
 
-    @property
+    @cached_property
     def structured_client(self):
         """A client patched with Instructor."""
         return instructor.from_openai(self.client)
