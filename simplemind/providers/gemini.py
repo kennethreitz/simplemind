@@ -40,37 +40,29 @@ class Gemini(BaseProvider):
 
     def send_conversation(self, conversation: "Conversation") -> "Message":
         """Send a conversation to the Gemini API."""
-        raise NotImplementedError(
-            "Gemini does not support conversation-based completions"
+        from ..models import Message
+
+        # Convert messages to Gemini's format
+        chat = self.client.start_chat()
+
+        # Send all previous messages to establish context
+        for msg in conversation.messages[:-1]:  # All messages except the last one
+            chat.send_message(msg.text)
+
+        # Send the final message and get response
+        try:
+            response = chat.send_message(conversation.messages[-1].text)
+        except Exception as e:
+            raise RuntimeError(f"Failed to send conversation to Gemini API: {e}") from e
+
+        # Create and return a properly formatted Message instance
+        return Message(
+            role="assistant",
+            text=response.text,
+            raw=response,
+            llm_model=self.model_name,
+            llm_provider=PROVIDER_NAME,
         )
-
-        # from ..models import Message
-
-        # messages = [
-        #     {
-        #         "role": msg.role,
-        #         "content": msg.text,
-        #         "metadata": msg.meta or {},
-        #     }
-        #     for msg in conversation.messages
-        # ]
-
-        # try:
-        #     response = self.client.chat.completions.create(
-        #         messages=messages, response_model=None
-        #     )
-        # except Exception as e:
-        #     # Handle the exception appropriately, e.g., log the error or raise a custom exception
-        #     raise RuntimeError(f"Failed to send conversation to Gemini API: {e}") from e
-
-        # # Create and return a properly formatted Message instance
-        # return Message(
-        #     role="assistant",
-        #     text=str(response),
-        #     raw=response,
-        #     llm_model=self.model_name,
-        #     llm_provider=PROVIDER_NAME,
-        # )
 
     def structured_response(self, prompt: str, response_model: Type[T], **kwargs) -> T:
         """Send a structured response to the Gemini API."""
