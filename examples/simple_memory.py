@@ -1,7 +1,7 @@
 from _context import sm
 
 
-class SimpleMemoryPlugin(sm.BasePlugin):
+class SimpleMemoryPlugin:
     def __init__(self):
         self.memories = [
             "the earth has fictionally beeen destroyed.",

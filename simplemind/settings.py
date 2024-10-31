@@ -1,7 +1,18 @@
-from typing import Optional, Union
+from typing import Literal, Optional, Union
 
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+logging_level = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+
+
+class LoggingConfig(BaseSettings):
+    """The class that holds all the logging settings for the application."""
+
+    enabled: bool = Field(False, description="Enable logging")
+    level: logging_level = Field("INFO", description="The logging level")
+
+    model_config = SettingsConfigDict(extra="forbid")
 
 
 class Settings(BaseSettings):
@@ -23,6 +34,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", case_sensitive=True, extra="ignore"
     )
+    logging: LoggingConfig = LoggingConfig()
 
     @field_validator("*", mode="before")
     @classmethod
