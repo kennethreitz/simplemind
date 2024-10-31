@@ -68,8 +68,15 @@ class Anthropic(BaseProvider):
     ) -> T:
         model = llm_model or self.DEFAULT_MODEL
 
+        # Extract the prompt from kwargs if it exists
+        prompt = kwargs.pop("prompt", kwargs.pop("messages", ""))
+
+        # Format the messages properly
+        messages = [{"role": "user", "content": prompt}]
+
         response = self.structured_client.messages.create(
             model=model,
+            messages=messages,  # Add the messages parameter
             response_model=response_model,
             **{**self.DEFAULT_KWARGS, **kwargs},
         )
