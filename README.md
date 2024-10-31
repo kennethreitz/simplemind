@@ -8,6 +8,8 @@ Simplemind is AI library designed to simplify your experience with AI APIs in Py
 
 [![Auto Wiki](https://img.shields.io/badge/Auto_Wiki-Mutable.ai-blue)](https://mutable.ai/kennethreitz/simplemind)
 
+If you prefer to listen about the project, check out [this podcast](https://soundcloud.com/infiniterhythm/simplemind-ai-for-humans) about it.
+
 ## Features
 
 With Simplemind, tapping into AI is as easy as a friendly conversation.
