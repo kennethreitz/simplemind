@@ -25,7 +25,7 @@ class QuotesList(BaseModel):
     quotes: List[MovieQuote]
 
 
-def gen_quotes(n=10) -> Iterator[MovieQuote]:
+def gen_quotes(n: int = 10) -> Iterator[MovieQuote]:
     """Generate a list of quotes from famous movies."""
 
     for q in sm.generate_data(

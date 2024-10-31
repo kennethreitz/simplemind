@@ -57,7 +57,7 @@ class Anthropic(BaseProvider):
 
     def structured_response(self, model: str, response_model, **kwargs):
         response = self.structured_client.messages.create(
-            model=model, response_model=response_model or self.DEFAULT_MODEL, **kwargs
+            model=model or self.DEFAULT_MODEL, response_model=response_model, **kwargs
         )
         return response
 

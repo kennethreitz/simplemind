@@ -23,7 +23,7 @@ class Gemini(BaseProvider):
         if not self.api_key:
             raise ValueError("Gemini API key is required")
         self.model_name = model_name
-        return genai.GenerativeModel(model_name=model_name)
+        return genai.GenerativeModel(model_name=self.model_name)
 
     @property
     def structured_client(self):
@@ -42,9 +42,13 @@ class Gemini(BaseProvider):
             for msg in conversation.messages
         ]
 
-        response = self.structured_client.chat.completions.create(
-            messages=messages, response_model=None
-        )
+        try:
+            response = self.structured_client.chat.completions.create(
+                messages=messages, response_model=None
+            )
+        except Exception as e:
+            # Handle the exception appropriately, e.g., log the error or raise a custom exception
+            raise RuntimeError(f"Failed to send conversation to Gemini API: {e}") from e
 
         # Create and return a properly formatted Message instance
         return Message(
@@ -57,15 +61,25 @@ class Gemini(BaseProvider):
 
     def structured_response(self, prompt: str, response_model, **kwargs):
         """Send a structured response to the Gemini API."""
-        response = self.structured_client.chat.completions.create(
-            messages=[{"role": "user", "content": prompt}],
-            response_model=response_model,
-        )
+        try:
+            response = self.structured_client.chat.completions.create(
+                messages=[{"role": "user", "content": prompt}],
+                response_model=response_model,
+            )
+        except Exception as e:
+            # Handle the exception appropriately, e.g., log the error or raise a custom exception
+            raise RuntimeError(
+                f"Failed to send structured response to Gemini API: {e}"
+            ) from e
         return response
 
     def generate_text(self, prompt: str, **kwargs) -> str:
         """Generate text using the Gemini API."""
-        response = self.structured_client.chat.completions.create(
-            messages=[{"role": "user", "content": prompt}], response_model=None
-        )
+        try:
+            response = self.structured_client.chat.completions.create(
+                messages=[{"role": "user", "content": prompt}], response_model=None
+            )
+        except Exception as e:
+            # Handle the exception appropriately, e.g., log the error or raise a custom exception
+            raise RuntimeError(f"Failed to generate text with Gemini API: {e}") from e
         return str(response)

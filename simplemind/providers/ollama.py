@@ -26,7 +26,7 @@ class Ollama(BaseProvider):
         return ol.Client(timeout=self.TIMEOUT, host=self.host_url)
 
     @property
-    def structured_client(self):
+    def structured_client(self) -> instructor.Instructor:
         """A client patched with Instructor."""
         return instructor.from_openai(
             OpenAI(
@@ -36,7 +36,7 @@ class Ollama(BaseProvider):
             mode=instructor.Mode.JSON,
         )
 
-    def send_conversation(self, conversation: "Conversation"):
+    def send_conversation(self, conversation: "Conversation") -> "Message":
         """Send a conversation to the Ollama API."""
         from ..models import Message
 
@@ -81,4 +81,4 @@ class Ollama(BaseProvider):
             messages=messages, model=llm_model or self.DEFAULT_MODEL
         )
 
-        return response.get("message").get("content")
+        return response.get("message", {}).get("content", "")

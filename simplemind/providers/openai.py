@@ -52,7 +52,7 @@ class OpenAI(BaseProvider):
         )
 
     def structured_response(
-        self, prompt: str, response_model, *, llm_model: str, **kwargs
+        self, prompt: str, response_model, *, llm_model: str | None = None, **kwargs
     ):
         # Ensure messages are provided in kwargs
         messages = [
@@ -67,7 +67,7 @@ class OpenAI(BaseProvider):
         )
         return response
 
-    def generate_text(self, prompt: str, *, llm_model: str, **kwargs):
+    def generate_text(self, prompt: str, *, llm_model: str | None = None, **kwargs):
         messages = [
             {"role": "user", "content": prompt},
         ]

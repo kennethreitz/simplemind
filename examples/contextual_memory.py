@@ -8,7 +8,7 @@ import os
 import pickle
 
 
-class ContextualMemoryPlugin:
+class ContextualMemoryPlugin(sm.BasePlugin):
     def __init__(
         self,
         api_key: str,

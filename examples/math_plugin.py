@@ -1,9 +1,11 @@
 from _context import sm
 
 
-class MathPlugin:
+class MathPlugin(sm.BasePlugin):
     def send_hook(self, conversation: sm.Conversation):
         last_user_message = conversation.get_last_message(role="user")
+        if last_user_message is None:
+            return
         if "calculate" in last_user_message.text.lower():
             expression = last_user_message.text.lower().replace("calculate", "").strip()
             try:
@@ -14,7 +16,7 @@ class MathPlugin:
             except Exception:
                 conversation.add_message(
                     role="assistant",
-                    text="I'm sorry, I couldn't compute that expression.",
+                    text="I'm sorry, I couldn't compute that expression. Please try again.",
                 )
 
 
