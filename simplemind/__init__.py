@@ -113,6 +113,9 @@ def generate_text(
     return provider.generate_text(prompt=prompt, llm_model=llm_model, **kwargs)
 
 
+# Syntax sugar.
+Plugin = BasePlugin
+
 __all__ = [
     "create_conversation",
     "find_provider",
@@ -121,4 +124,5 @@ __all__ = [
     "settings",
     "BasePlugin",
     "Session",
+    "Plugin",
 ]
