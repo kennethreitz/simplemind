@@ -1,6 +1,11 @@
 Release History
 ===============
 
+## 0.1.6 (2024-10-31)
+
+- Add `Plugin` syntax sugar.
+- Improvements to Anthropic provider, related to max tokens.
+
 ## 0.1.5 (2024-10-31)
 
 - Add Gemini provider.
