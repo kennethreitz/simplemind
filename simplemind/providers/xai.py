@@ -1,8 +1,8 @@
 import instructor
 import openai as oa
 
-from ._base import BaseProvider
 from ..settings import settings
+from ._base import BaseProvider
 
 PROVIDER_NAME = "xai"
 DEFAULT_MODEL = "grok-beta"

@@ -1,11 +1,11 @@
-from _context import sm
-
-from pydantic import BaseModel
-import openai
-import faiss
-import numpy as np
 import os
 import pickle
+
+import faiss
+import numpy as np
+import openai
+from _context import sm
+from pydantic import BaseModel
 
 
 class ContextualMemoryPlugin(sm.BasePlugin):

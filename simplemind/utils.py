@@ -1,6 +1,6 @@
 import difflib
 
-from .providers import providers, BaseProvider
+from .providers import BaseProvider, providers
 
 _PROVIDER_NAMES = [provider.NAME.lower() for provider in providers]
 

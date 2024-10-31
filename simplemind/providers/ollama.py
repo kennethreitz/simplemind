@@ -1,9 +1,15 @@
-import ollama as ol
-import instructor
-from openai import OpenAI
+from typing import Type, TypeVar
 
-from ._base import BaseProvider
+import instructor
+import ollama as ol
+from openai import OpenAI
+from pydantic import BaseModel
+
 from ..settings import settings
+from ._base import BaseProvider
+
+T = TypeVar("T", bound=BaseModel)
+
 
 PROVIDER_NAME = "ollama"
 DEFAULT_MODEL = "llama3.2"
@@ -58,8 +64,9 @@ class Ollama(BaseProvider):
         )
 
     def structured_response(
-        self, prompt: str, response_model, *, llm_model: str, **kwargs
-    ):
+        self, prompt: str, response_model: Type[T], *, llm_model: str, **kwargs
+    ) -> T:
+        """Get a structured response from the Ollama API."""
         messages = [
             {"role": "user", "content": prompt},
         ]
@@ -72,7 +79,8 @@ class Ollama(BaseProvider):
         )
         return response
 
-    def generate_text(self, prompt: str, *, llm_model: str):
+    def generate_text(self, prompt: str, *, llm_model: str) -> str:
+        """Generate text using the Ollama API."""
         messages = [
             {"role": "user", "content": prompt},
         ]

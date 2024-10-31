@@ -1,8 +1,14 @@
+from typing import Type, TypeVar
+
 import anthropic
 import instructor
+from pydantic import BaseModel
 
-from ._base import BaseProvider
 from ..settings import settings
+from ._base import BaseProvider
+
+T = TypeVar("T", bound=BaseModel)
+
 
 PROVIDER_NAME = "anthropic"
 DEFAULT_MODEL = "claude-3-5-sonnet-20241022"
@@ -55,7 +61,7 @@ class Anthropic(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
-    def structured_response(self, model: str, response_model, **kwargs):
+    def structured_response(self, model: str, response_model: Type[T], **kwargs) -> T:
         response = self.structured_client.messages.create(
             model=model or self.DEFAULT_MODEL, response_model=response_model, **kwargs
         )

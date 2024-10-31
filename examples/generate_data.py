@@ -1,8 +1,7 @@
-from typing import List, Iterator
-
-from pydantic import BaseModel
+from typing import Iterator, List
 
 from _context import sm
+from pydantic import BaseModel
 
 
 class Movie(BaseModel):

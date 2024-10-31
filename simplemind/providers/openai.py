@@ -1,8 +1,13 @@
+from typing import Type, TypeVar
+
 import instructor
 import openai as oa
+from pydantic import BaseModel
 
-from ._base import BaseProvider
 from ..settings import settings
+from ._base import BaseProvider
+
+T = TypeVar("T", bound=BaseModel)
 
 PROVIDER_NAME = "openai"
 DEFAULT_MODEL = "gpt-4o-mini"
@@ -52,13 +57,18 @@ class OpenAI(BaseProvider):
         )
 
     def structured_response(
-        self, prompt: str, response_model, *, llm_model: str | None = None, **kwargs
-    ):
+        self,
+        prompt: str,
+        response_model: Type[T],
+        *,
+        llm_model: str | None = None,
+        **kwargs,
+    ) -> T:
+        """Get a structured response from the OpenAI API."""
         # Ensure messages are provided in kwargs
         messages = [
             {"role": "user", "content": prompt},
         ]
-
         response = self.structured_client.chat.completions.create(
             messages=messages,
             model=llm_model or self.DEFAULT_MODEL,
@@ -68,12 +78,11 @@ class OpenAI(BaseProvider):
         return response
 
     def generate_text(self, prompt: str, *, llm_model: str | None = None, **kwargs):
+        """Generate text using the OpenAI API."""
         messages = [
             {"role": "user", "content": prompt},
         ]
-
         response = self.client.chat.completions.create(
             messages=messages, model=llm_model or self.DEFAULT_MODEL, **kwargs
         )
-
         return response.choices[0].message.content

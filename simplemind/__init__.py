@@ -1,8 +1,8 @@
 from typing import List, Type
 
-from .models import Conversation, BasePlugin, BaseModel
-from .utils import find_provider
+from .models import BaseModel, BasePlugin, Conversation
 from .settings import settings
+from .utils import find_provider
 
 
 class Session:
@@ -81,7 +81,7 @@ def generate_data(
     *,
     llm_model: str | None = None,
     llm_provider: str | None = None,
-    response_model: Type[BaseModel] = None,
+    response_model: Type[BaseModel],
     **kwargs,
 ) -> BaseModel:
     """Generate structured data from a given prompt."""

@@ -1,6 +1,10 @@
 from abc import ABC, abstractmethod
+from typing import Type, TypeVar
 
 from instructor import Instructor
+from pydantic import BaseModel
+
+T = TypeVar("T", bound=BaseModel)
 
 
 class BaseProvider(ABC):
@@ -27,7 +31,7 @@ class BaseProvider(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def structured_response(self, prompt: str, response_model, **kwargs):
+    def structured_response(self, prompt: str, response_model: Type[T], **kwargs) -> T:
         """Get a structured response."""
         raise NotImplementedError
 

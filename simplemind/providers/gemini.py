@@ -1,12 +1,17 @@
-import instructor
-import google.generativeai as genai
+from typing import Type, TypeVar
 
-from ._base import BaseProvider
+import google.generativeai as genai
+import instructor
+from pydantic import BaseModel
+
+from ..models import Conversation, Message
 from ..settings import settings
-from ..models import Message, Conversation
+from ._base import BaseProvider
 
 PROVIDER_NAME = "gemini"
 DEFAULT_MODEL = "models/gemini-1.5-flash-latest"
+
+T = TypeVar("T", bound=BaseModel)
 
 
 class Gemini(BaseProvider):
@@ -59,12 +64,13 @@ class Gemini(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
-    def structured_response(self, prompt: str, response_model, **kwargs):
+    def structured_response(self, prompt: str, response_model: Type[T], **kwargs) -> T:
         """Send a structured response to the Gemini API."""
         try:
             response = self.structured_client.chat.completions.create(
                 messages=[{"role": "user", "content": prompt}],
                 response_model=response_model,
+                **kwargs,
             )
         except Exception as e:
             # Handle the exception appropriately, e.g., log the error or raise a custom exception
@@ -77,7 +83,9 @@ class Gemini(BaseProvider):
         """Generate text using the Gemini API."""
         try:
             response = self.structured_client.chat.completions.create(
-                messages=[{"role": "user", "content": prompt}], response_model=None
+                messages=[{"role": "user", "content": prompt}],
+                response_model=None,
+                **kwargs,
             )
         except Exception as e:
             # Handle the exception appropriately, e.g., log the error or raise a custom exception
