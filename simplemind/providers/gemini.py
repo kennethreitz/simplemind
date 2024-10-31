@@ -96,4 +96,4 @@ class Gemini(BaseProvider):
         except Exception as e:
             # Handle the exception appropriately, e.g., log the error or raise a custom exception
             raise RuntimeError(f"Failed to generate text with Gemini API: {e}") from e
-        return response.result
+        return response.text
