@@ -72,6 +72,7 @@ class Groq(BaseProvider):
         response = self.structured_client.chat.completions.create(
             messages=messages,
             response_model=response_model,
+            model=kwargs.pop("llm_model", self.DEFAULT_MODEL),
             **kwargs,
         )
         return response

@@ -65,7 +65,12 @@ class Ollama(BaseProvider):
         )
 
     def structured_response(
-        self, prompt: str, response_model: Type[T], *, llm_model: str, **kwargs
+        self,
+        prompt: str,
+        response_model: Type[T],
+        *,
+        llm_model: str | None = None,
+        **kwargs,
     ) -> T:
         """Get a structured response from the Ollama API."""
         messages = [
@@ -80,7 +85,7 @@ class Ollama(BaseProvider):
         )
         return response
 
-    def generate_text(self, prompt: str, *, llm_model: str) -> str:
+    def generate_text(self, prompt: str, *, llm_model: str | None = None) -> str:
         """Generate text using the Ollama API."""
         messages = [
             {"role": "user", "content": prompt},
