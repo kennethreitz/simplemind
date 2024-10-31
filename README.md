@@ -21,6 +21,7 @@ With Simplemind, tapping into AI is as easy as a friendly conversation.
 To specify a specific provider or model, you can use the `llm_provider` and `llm_model` parameters when calling: `generate_text`, `generate_data`, or `create_conversation`.
 
 - [**Anthropic's Claude**](https://www.anthropic.com/claude)
+- [**Google's Gemini**](https://gemini.google/)
 - [**Groq's Groq**](https://groq.com/)
 - [**Ollama**](https://ollama.com)
 - [**OpenAI's GPT**](https://openai.com/gpt)
