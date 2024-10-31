@@ -13,7 +13,7 @@ T = TypeVar("T", bound=BaseModel)
 
 PROVIDER_NAME = "anthropic"
 DEFAULT_MODEL = "claude-3-5-sonnet-20241022"
-DEFAULT_MAX_TOKENS = 1000
+DEFAULT_MAX_TOKENS = 1_000
 DEFAULT_KWARGS = {"max_tokens": DEFAULT_MAX_TOKENS}
 
 
@@ -63,9 +63,13 @@ class Anthropic(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
-    def structured_response(self, model: str, response_model: Type[T], **kwargs) -> T:
+    def structured_response(
+        self, response_model: Type[T], *, llm_model: str | None = None, **kwargs
+    ) -> T:
+        model = llm_model or self.DEFAULT_MODEL
+
         response = self.structured_client.messages.create(
-            model=model or self.DEFAULT_MODEL, 
+            model=model,
             response_model=response_model,
             **{**self.DEFAULT_KWARGS, **kwargs},
         )
