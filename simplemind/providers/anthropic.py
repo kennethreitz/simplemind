@@ -79,7 +79,6 @@ class Anthropic(BaseProvider):
         response = self.client.messages.create(
             model=llm_model or self.DEFAULT_MODEL,
             messages=messages,
-            max_tokens=DEFAULT_MAX_TOKENS,
             **{**self.DEFAULT_KWARGS, **kwargs},
         )
 
