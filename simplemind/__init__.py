@@ -16,7 +16,7 @@ class Session:
         self,
         *,
         llm_provider: str = settings.DEFAULT_LLM_PROVIDER,
-        llm_model: str = settings.DEFAULT_LLM_MODEL,
+        llm_model: str | None = None,
         **kwargs,
     ):
         self.llm_provider = llm_provider
