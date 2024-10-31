@@ -11,6 +11,7 @@ class Settings(BaseSettings):
         None, description="API key for Anthropic"
     )
     GROQ_API_KEY: Optional[SecretStr] = Field(None, description="API key for Groq")
+    GEMINI_API_KEY: Optional[SecretStr] = Field(None, description="API key for Gemini")
     OPENAI_API_KEY: Optional[SecretStr] = Field(None, description="API key for OpenAI")
     OLLAMA_HOST_URL: Optional[str] = Field(
         "http://127.0.0.1:11434", description="Fully qualified host URL for Ollama"
