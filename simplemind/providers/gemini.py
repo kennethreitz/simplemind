@@ -5,7 +5,6 @@ import google.generativeai as genai
 import instructor
 from pydantic import BaseModel
 
-from ..models import Conversation, Message
 from ..settings import settings
 from ._base import BaseProvider
 
@@ -38,6 +37,7 @@ class Gemini(BaseProvider):
 
     def send_conversation(self, conversation: "Conversation") -> "Message":
         """Send a conversation to the Gemini API."""
+        from ..models import Message
 
         messages = [
             {
