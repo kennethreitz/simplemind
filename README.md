@@ -27,7 +27,7 @@ To specify a specific provider or model, you can use the `llm_provider` and `llm
 - [**OpenAI's GPT**](https://openai.com/gpt)
 - [**xAI's Grok**](https://x.ai/)
 
-If you want to see Simplemind support, additional providers or models, please request a pull!
+If you want to see Simplemind support, additional providers or models, please send a pull request!
 
 ## Why SimpleMind?
 - **Intuitive**: Built with Pythonic simplicity and readability in mind.
