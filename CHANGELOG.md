@@ -3,7 +3,7 @@ Release History
 
 ## 0.1.6 (2024-10-31)
 
-- Add `Plugin` syntax sugar.
+- Add `sm.Plugin` syntax sugar.
 - Improvements to Anthropic provider, related to max tokens.
 - General improvements.
 - Add tests for structured response.
