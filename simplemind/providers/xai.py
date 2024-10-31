@@ -10,11 +10,13 @@ PROVIDER_NAME = "xai"
 DEFAULT_MODEL = "grok-beta"
 BASE_URL = "https://api.x.ai/v1"
 DEFAULT_MAX_TOKENS = 1000
+DEFAULT_KWARGS = {"max_tokens": DEFAULT_MAX_TOKENS}
 
 
 class XAI(BaseProvider):
     NAME = PROVIDER_NAME
     DEFAULT_MODEL = DEFAULT_MODEL
+    DEFAULT_KWARGS = DEFAULT_KWARGS
 
     def __init__(self, api_key: str | None = None):
         self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
@@ -45,7 +47,7 @@ class XAI(BaseProvider):
         response = self.client.chat.completions.create(
             model=conversation.llm_model or self.DEFAULT_MODEL,
             messages=messages,
-            **kwargs,
+            **{**self.DEFAULT_KWARGS, **kwargs},
         )
 
         # Get the response content from the OpenAI response
@@ -71,7 +73,7 @@ class XAI(BaseProvider):
         response = self.client.chat.completions.create(
             messages=messages,
             model=llm_model or self.DEFAULT_MODEL,
-            **kwargs,
+            **{**self.DEFAULT_KWARGS, **kwargs},
         )
 
         return response.choices[0].message.content
