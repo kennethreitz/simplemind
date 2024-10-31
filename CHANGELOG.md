@@ -1,6 +1,11 @@
 Release History
 ===============
 
+## 0.1.5 (2024-10-31)
+
+- Add Gemini provider.
+- Add structured response to Gemini provider.
+
 ## 0.1.4 (2024-10-30)
 
 - Introduce `Session` class to manage repeatability.
