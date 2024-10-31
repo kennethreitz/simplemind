@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 from types import TracebackType
 import uuid
 from datetime import datetime
@@ -23,7 +22,7 @@ class SMBaseModel(BaseModel):
         return str(self)
 
 
-class BasePlugin(SMBaseModel, ABC):
+class BasePlugin(SMBaseModel):
     """The base conversation plugin class."""
 
     # Plugin metadata.
