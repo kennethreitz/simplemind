@@ -5,6 +5,9 @@ Release History
 
 - Add `Plugin` syntax sugar.
 - Improvements to Anthropic provider, related to max tokens.
+- General improvements.
+- Add tests for structured response.
+- Add `llm_model` to `structured_response`.
 
 ## 0.1.5 (2024-10-31)
 
