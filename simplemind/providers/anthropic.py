@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import Type, TypeVar
+from typing import TYPE_CHECKING, Type, TypeVar
 
 import anthropic
 import instructor
@@ -8,6 +8,9 @@ from pydantic import BaseModel
 from ..logging import logger
 from ..settings import settings
 from ._base import BaseProvider
+
+if TYPE_CHECKING:
+    from ..models import Conversation, Message
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -39,7 +42,7 @@ class Anthropic(BaseProvider):
         return instructor.from_anthropic(self.client)
 
     @logger
-    def send_conversation(self, conversation: "Conversation", **kwargs):
+    def send_conversation(self, conversation: "Conversation", **kwargs) -> "Message":
         """Send a conversation to the Anthropic API."""
         from ..models import Message
 

@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import Type, TypeVar
+from typing import TYPE_CHECKING, Type, TypeVar
 
 import instructor
 import openai as oa
@@ -8,6 +8,9 @@ from pydantic import BaseModel
 from ..logging import logger
 from ..settings import settings
 from ._base import BaseProvider
+
+if TYPE_CHECKING:
+    from ..models import Conversation, Message
 
 T = TypeVar("T", bound=BaseModel)
 
@@ -38,7 +41,7 @@ class OpenAI(BaseProvider):
         return instructor.from_openai(self.client)
 
     @logger
-    def send_conversation(self, conversation: "Conversation", **kwargs):
+    def send_conversation(self, conversation: "Conversation", **kwargs) -> "Message":
         """Send a conversation to the OpenAI API."""
         from ..models import Message
 

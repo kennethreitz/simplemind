@@ -2,7 +2,7 @@
 # IT is not currently working as desired.
 
 from functools import cached_property
-from typing import Type, TypeVar
+from typing import TYPE_CHECKING, Type, TypeVar
 
 import google.generativeai as genai
 import instructor
@@ -12,10 +12,14 @@ from ..logging import logger
 from ..settings import settings
 from ._base import BaseProvider
 
-PROVIDER_NAME = "gemini"
-DEFAULT_MODEL = "models/gemini-1.5-flash-latest"
+if TYPE_CHECKING:
+    from ..models import Conversation, Message
 
 T = TypeVar("T", bound=BaseModel)
+
+
+PROVIDER_NAME = "gemini"
+DEFAULT_MODEL = "models/gemini-1.5-flash-latest"
 
 
 class Gemini(BaseProvider):

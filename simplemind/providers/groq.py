@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import Type, TypeVar
+from typing import TYPE_CHECKING, Type, TypeVar
 
 import groq
 import instructor
@@ -9,12 +9,16 @@ from ..logging import logger
 from ..settings import settings
 from ._base import BaseProvider
 
+if TYPE_CHECKING:
+    from ..models import Conversation, Message
+
+T = TypeVar("T", bound=BaseModel)
+
+
 PROVIDER_NAME = "groq"
 DEFAULT_MODEL = "llama3-8b-8192"
 DEFAULT_MAX_TOKENS = 1_000
 DEFAULT_KWARGS = {"max_tokens": DEFAULT_MAX_TOKENS}
-
-T = TypeVar("T", bound=BaseModel)
 
 
 class Groq(BaseProvider):
