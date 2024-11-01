@@ -23,7 +23,7 @@ The APIs remain identical between all supported providers / models:
 <table>
   <thead>
     <tr>
-      <th>Provider</th>
+      <th>Link</th>
       <th><code>llm_provider</code></th>
       <th>Default <code>llm_model</code></th>
     </tr>
