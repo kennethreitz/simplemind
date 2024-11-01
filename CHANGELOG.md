@@ -1,6 +1,12 @@
 Release History
 ===============
 
+## 0.1.7 (2024-11-01)
+
+- Add `logger` decorator.
+- Add `sm.enable_logfire()` function.
+- General improvements.
+
 ## 0.1.6 (2024-10-31)
 
 - Add `sm.Plugin` syntax sugar.
