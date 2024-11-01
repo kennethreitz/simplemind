@@ -18,7 +18,7 @@ With Simplemind, tapping into AI is as easy as a friendly conversation.
 
 The APIs remain identical between all supported providers / models:
 
-| Provider Name | `llm_provider` | `llm_model` (default)|
+|               | `llm_provider` | `llm_model` (default)|
 |---------------|----------------|-----------------------|
 | [Anthropic's Claude](https://www.anthropic.com/claude) | `"anthropic"` | `"claude-3-sonnet-20241022"` |
 | [Amazon's Bedrock](https://aws.amazon.com/bedrock/) | `"amazon"` | `"anthropic.claude-3-sonnet-20240229-v1:0"` |
