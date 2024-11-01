@@ -13,6 +13,8 @@ full = [
     "ollama",
     "groq",
     "google-generativeai",
+    "botocore",
+    "boto3"
 ]
 
 [build-system]

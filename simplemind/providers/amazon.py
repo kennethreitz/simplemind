@@ -11,7 +11,8 @@ T = TypeVar("T", bound=BaseModel)
 
 PROVIDER_NAME = "amazon"
 DEFAULT_MODEL = "anthropic.claude-3-sonnet-20240229-v1:0"
-DEFAULT_MAX_TOKENS = 5000
+DEFAULT_MAX_TOKENS = 5_000
+
 
 class Amazon(BaseProvider):
     NAME = PROVIDER_NAME
@@ -57,7 +58,9 @@ class Amazon(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
-    def structured_response(self, prompt, response_model: Type[T], *, llm_model: str | None = None, **kwargs) -> T:
+    def structured_response(
+        self, prompt, response_model: Type[T], *, llm_model: str | None = None, **kwargs
+    ) -> T:
         # Ensure messages are provided in kwargs
         messages = [
             {"role": "user", "content": prompt},
@@ -67,7 +70,7 @@ class Amazon(BaseProvider):
             messages=messages,
             model=llm_model or self.DEFAULT_MODEL,
             response_model=response_model,
-            max_tokens = DEFAULT_MAX_TOKENS,
+            max_tokens=DEFAULT_MAX_TOKENS,
             **kwargs,
         )
         return response
