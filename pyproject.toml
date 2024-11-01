@@ -4,7 +4,16 @@ version = "0.1.7"
 description = "An experimental client for AI providers that intends to replace LangChain and LangGraph for most common use cases."
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = ["pydantic", "pydantic-settings", "instructor", "openai", "anthropic", "ollama", "groq", "google-generativeai", "logfire"]
+dependencies = ["pydantic", "pydantic-settings", "instructor", "logfire"]
+
+[project.optional-dependencies]
+full = [
+    "openai",
+    "anthropic",
+    "ollama",
+    "groq",
+    "google-generativeai",
+]
 
 [build-system]
 requires = ["hatchling"]
