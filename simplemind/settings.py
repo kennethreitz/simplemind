@@ -51,5 +51,19 @@ class Settings(BaseSettings):
         key = getattr(self, f"{provider.upper()}_API_KEY", None)
         return key.get_secret_value() if key else None
 
+    def enable_logging(self) -> None:
+        """Enable logging for the application."""
+        # adding imports here to avoid forced dependencies
+        import logfire
+        from logging import basicConfig
+
+        self.logging.enabled = True
+        logfire.configure()
+        basicConfig(handlers=[logfire.LogfireLoggingHandler()])
+
+    def disable_logging(self) -> None:
+        """Disable logging for the application."""
+        self.logging.enabled = False
+
 
 settings = Settings()
