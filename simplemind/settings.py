@@ -7,7 +7,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class LoggingConfig(BaseSettings):
     """The class that holds all the logging settings for the application."""
 
-    enabled: bool = Field(False, description="Enable logging")
+    is_enabled: bool = Field(False, description="Enable logging")
 
     model_config = SettingsConfigDict(extra="forbid")
 
@@ -22,7 +22,7 @@ class LoggingConfig(BaseSettings):
                 "To enable logging, please install logfire: `pip install logfire`"
             ) from e
 
-        self.enabled = True
+        self.is_enabled = True
         logfire.configure(**kwargs)
         basicConfig(handlers=[logfire.LogfireLoggingHandler()])
 
@@ -30,12 +30,12 @@ class LoggingConfig(BaseSettings):
             logfire.configure(**kwargs)
             basicConfig(handlers=[logfire.LogfireLoggingHandler()])
         except Exception as e:
-            self.enabled = False  # Reset flag on failure
+            self.is_enabled = False  # Reset flag on failure
             raise RuntimeError("Failed to configure logging") from e
 
     def disable_logfire(self) -> None:
         """Disable logging for the application."""
-        self.enabled = False
+        self.is_enabled = False
 
 
 class Settings(BaseSettings):

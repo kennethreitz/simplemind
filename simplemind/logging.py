@@ -7,10 +7,12 @@ from .settings import settings
 
 
 def logger(func: Callable[..., Any]) -> Callable[..., Any]:
-    """A @logger decorator that logs the function parameters, function returns, and exceptions raised if logging is enabled."""
+    """A decorator that logs the function parameters, function returns,
+    and exceptions raised if logging is enabled, using logfire.
+    """
 
     def wrapper(*args, **kwargs) -> Any:
-        if not settings.logging.enabled:
+        if not settings.logging.is_enabled:
             return func(*args, **kwargs)
         logfire.info(f"Calling {func.__name__} with args: {args}, kwargs: {kwargs}")
         t1 = time.perf_counter()
