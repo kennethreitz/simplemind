@@ -28,7 +28,7 @@ The APIs remain identical between all supported providers / models:
 | [Groq's Groq](https://groq.com/) | `"groq"` | `"mixtral-8x7b-32768"` | |
 | [Ollama](https://ollama.com) | `"ollama"` | `"llama2"` | Run models locally! |
 | [OpenAI's GPT](https://openai.com/gpt) | `"openai"` | `"gpt-4"` | |
-| [xAI's Grok](https://x.ai/) | `"xai"` | `"grok-1"` | No structured output support |
+| [xAI's Grok](https://x.ai/) | `"xai"` | `"grok-beta"` | No structured output support |
 
 If you want to see Simplemind support additional providers or models, please send a pull request!
 
