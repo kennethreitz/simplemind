@@ -24,7 +24,7 @@ The APIs remain identital between all supported providers/models.
 - [**Amazon's Bedrock**](https://aws.amazon.com/bedrock/)
 - [**Google's Gemini**](https://gemini.google/)
 - [**Groq's Groq**](https://groq.com/)
-- [**Ollama**](https://ollama.com)
+- [**Ollama**](https://ollama.com) (run models locally!)
 - [**OpenAI's GPT**](https://openai.com/gpt)
 - [**xAI's Grok**](https://x.ai/)
 
