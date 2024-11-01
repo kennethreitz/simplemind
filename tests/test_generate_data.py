@@ -1,7 +1,7 @@
-import pytest
-
-from simplemind.providers import Anthropic, Gemini, OpenAI, Groq, Ollama
 from pydantic import BaseModel
+
+import pytest
+from simplemind.providers import Anthropic, Gemini, Groq, Ollama, OpenAI
 
 
 class ResponseModel(BaseModel):
@@ -25,4 +25,4 @@ def test_generate_data(provider_cls):
     data = provider.structured_response(prompt=prompt, response_model=ResponseModel)
 
     assert isinstance(data, ResponseModel)
-    assert type(data.result) == int
+    assert isinstance(data.result, int)
