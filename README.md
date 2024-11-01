@@ -23,7 +23,7 @@ The APIs remain identical between all supported providers / models:
 | Name | `llm_provider` | Default `llm_model` | Notes |
 |------|---------------|---------------------|--------|
 | [Anthropic's Claude](https://www.anthropic.com/claude) | `"anthropic"` | `"claude-3-sonnet-20240229"` |  |
-| [Amazon's Bedrock](https://aws.amazon.com/bedrock/) | `"bedrock"` | `"anthropic.claude-3-sonnet-20240229-v1:0"` | boto3 credentials required |
+| [Amazon's Bedrock](https://aws.amazon.com/bedrock/) | `"bedrock"` | `"anthropic.claude-3-sonnet-20240229-v1:0"` | use `settings.AMAZON_PROFILE_NAME` |
 | [Google's Gemini](https://gemini.google/) | `"gemini"` | `"models/gemini-1.5-pro"` | Limited structured output support |
 | [Groq's Groq](https://groq.com/) | `"groq"` | `"mixtral-8x7b-32768"` | |
 | [Ollama](https://ollama.com) | `"ollama"` | `"llama2"` | Local models only |
