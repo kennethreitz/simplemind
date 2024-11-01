@@ -11,7 +11,7 @@ class LoggingConfig(BaseSettings):
 
     model_config = SettingsConfigDict(extra="forbid")
 
-    def enable_logging(self, **kwargs) -> None:
+    def enable_logfire(self, **kwargs) -> None:
         """Enable logging for the application."""
         # adding imports here to avoid forced dependencies
         try:
@@ -33,7 +33,7 @@ class LoggingConfig(BaseSettings):
             self.enabled = False  # Reset flag on failure
             raise RuntimeError("Failed to configure logging") from e
 
-    def disable_logging(self) -> None:
+    def disable_logfire(self) -> None:
         """Disable logging for the application."""
         self.enabled = False
 
