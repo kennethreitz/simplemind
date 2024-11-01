@@ -18,10 +18,10 @@ full = [
 ]
 openai = ["openai"]
 anthropic = ["anthropic"]
-ollama = ["ollama"]
+ollama = ["ollama", "openai"]
 groq = ["groq"]
 gemini = ["google-generativeai"]
-amazon = ["boto3", "botocore"]
+amazon = ["boto3", "botocore", "anthropic"]
 
 [build-system]
 requires = ["hatchling"]
