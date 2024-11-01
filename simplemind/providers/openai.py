@@ -5,6 +5,7 @@ import instructor
 import openai as oa
 from pydantic import BaseModel
 
+from ..logging import logger
 from ..settings import settings
 from ._base import BaseProvider
 
@@ -36,6 +37,7 @@ class OpenAI(BaseProvider):
         """A OpenAI client with Instructor."""
         return instructor.from_openai(self.client)
 
+    @logger
     def send_conversation(self, conversation: "Conversation", **kwargs):
         """Send a conversation to the OpenAI API."""
         from ..models import Message
@@ -47,7 +49,7 @@ class OpenAI(BaseProvider):
         response = self.client.chat.completions.create(
             model=conversation.llm_model or DEFAULT_MODEL,
             messages=messages,
-            **{**self.DEFAULT_KWARGS, **kwargs}
+            **{**self.DEFAULT_KWARGS, **kwargs},
         )
 
         # Get the response content from the OpenAI response
@@ -62,6 +64,7 @@ class OpenAI(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
+    @logger
     def structured_response(
         self,
         prompt: str,
@@ -79,10 +82,11 @@ class OpenAI(BaseProvider):
             messages=messages,
             model=llm_model or self.DEFAULT_MODEL,
             response_model=response_model,
-            **{**self.DEFAULT_KWARGS, **kwargs}
+            **{**self.DEFAULT_KWARGS, **kwargs},
         )
         return response
 
+    @logger
     def generate_text(self, prompt: str, *, llm_model: str | None = None, **kwargs):
         """Generate text using the OpenAI API."""
         messages = [
@@ -91,6 +95,6 @@ class OpenAI(BaseProvider):
         response = self.client.chat.completions.create(
             messages=messages,
             model=llm_model or self.DEFAULT_MODEL,
-            **{**self.DEFAULT_KWARGS, **kwargs}
+            **{**self.DEFAULT_KWARGS, **kwargs},
         )
         return response.choices[0].message.content

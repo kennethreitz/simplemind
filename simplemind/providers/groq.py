@@ -5,6 +5,7 @@ import groq
 import instructor
 from pydantic import BaseModel
 
+from ..logging import logger
 from ..settings import settings
 from ._base import BaseProvider
 
@@ -36,6 +37,7 @@ class Groq(BaseProvider):
         """A client patched with Instructor."""
         return instructor.from_groq(self.client)
 
+    @logger
     def send_conversation(
         self,
         conversation: "Conversation",
@@ -66,6 +68,7 @@ class Groq(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
+    @logger
     def structured_response(self, prompt: str, response_model: Type[T], **kwargs) -> T:
         # Ensure messages are provided in kwargs
         messages = [
@@ -80,6 +83,7 @@ class Groq(BaseProvider):
         )
         return response
 
+    @logger
     def generate_text(
         self,
         prompt: str,

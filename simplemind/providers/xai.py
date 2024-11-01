@@ -1,8 +1,11 @@
 from functools import cached_property
+from typing import Type, TypeVar
 
 import instructor
 import openai as oa
+from pydantic import BaseModel
 
+from ..logging import logger
 from ..settings import settings
 from ._base import BaseProvider
 
@@ -11,6 +14,8 @@ DEFAULT_MODEL = "grok-beta"
 BASE_URL = "https://api.x.ai/v1"
 DEFAULT_MAX_TOKENS = 1000
 DEFAULT_KWARGS = {"max_tokens": DEFAULT_MAX_TOKENS}
+
+T = TypeVar("T", bound=BaseModel)
 
 
 class XAI(BaseProvider):
@@ -36,6 +41,7 @@ class XAI(BaseProvider):
         """A client patched with Instructor."""
         return instructor.from_openai(self.client)
 
+    @logger
     def send_conversation(self, conversation: "Conversation", **kwargs):
         """Send a conversation to the OpenAI API."""
         from ..models import Message
@@ -62,9 +68,13 @@ class XAI(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
-    def structured_response(self, prompt: str, response_model, *, llm_model: str):
+    @logger
+    def structured_response(
+        self, prompt: str, response_model: Type[T], *, llm_model: str
+    ) -> T:
         raise NotImplementedError("XAI does not support structured responses")
 
+    @logger
     def generate_text(self, prompt: str, *, llm_model: str, **kwargs):
         messages = [
             {"role": "user", "content": prompt},

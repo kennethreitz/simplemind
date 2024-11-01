@@ -5,6 +5,7 @@ import anthropic
 import instructor
 from pydantic import BaseModel
 
+from ..logging import logger
 from ..settings import settings
 from ._base import BaseProvider
 
@@ -37,6 +38,7 @@ class Anthropic(BaseProvider):
         """A client patched with Instructor."""
         return instructor.from_anthropic(self.client)
 
+    @logger
     def send_conversation(self, conversation: "Conversation", **kwargs):
         """Send a conversation to the Anthropic API."""
         from ..models import Message
@@ -63,6 +65,7 @@ class Anthropic(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
+    @logger
     def structured_response(
         self, response_model: Type[T], *, llm_model: str | None = None, **kwargs
     ) -> T:
@@ -82,6 +85,7 @@ class Anthropic(BaseProvider):
         )
         return response
 
+    @logger
     def generate_text(self, prompt: str, *, llm_model: str, **kwargs):
         messages = [
             {"role": "user", "content": prompt},

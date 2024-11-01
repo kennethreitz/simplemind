@@ -8,6 +8,7 @@ import google.generativeai as genai
 import instructor
 from pydantic import BaseModel
 
+from ..logging import logger
 from ..settings import settings
 from ._base import BaseProvider
 
@@ -38,6 +39,7 @@ class Gemini(BaseProvider):
         """A Gemini client patched with Instructor."""
         return instructor.from_gemini(self.client)
 
+    @logger
     def send_conversation(self, conversation: "Conversation") -> "Message":
         """Send a conversation to the Gemini API."""
         from ..models import Message
@@ -64,6 +66,7 @@ class Gemini(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
+    @logger
     def structured_response(self, prompt: str, response_model: Type[T], **kwargs) -> T:
         """Send a structured response to the Gemini API."""
         llm_model = kwargs.pop("llm_model", self.model_name)
@@ -81,6 +84,7 @@ class Gemini(BaseProvider):
             ) from e
         return response
 
+    @logger
     def generate_text(self, prompt: str, **kwargs) -> str:
         """Generate text using the Gemini API."""
         llm_model = kwargs.pop("llm_model", self.model_name)

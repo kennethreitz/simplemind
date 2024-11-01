@@ -6,6 +6,7 @@ import ollama as ol
 from openai import OpenAI
 from pydantic import BaseModel
 
+from ..logging import logger
 from ..settings import settings
 from ._base import BaseProvider
 
@@ -45,6 +46,7 @@ class Ollama(BaseProvider):
             mode=instructor.Mode.JSON,
         )
 
+    @logger
     def send_conversation(self, conversation: "Conversation", **kwargs) -> "Message":
         """Send a conversation to the Ollama API."""
         from ..models import Message
@@ -68,6 +70,7 @@ class Ollama(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
+    @logger
     def structured_response(
         self,
         prompt: str,
@@ -89,6 +92,7 @@ class Ollama(BaseProvider):
         )
         return response
 
+    @logger
     def generate_text(
         self, prompt: str, *, llm_model: str | None = None, **kwargs
     ) -> str:
