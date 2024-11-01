@@ -16,6 +16,12 @@ full = [
     "botocore",
     "boto3"
 ]
+openai = ["openai"]
+anthropic = ["anthropic"]
+ollama = ["ollama"]
+groq = ["groq"]
+gemini = ["google-generativeai"]
+amazon = ["boto3", "botocore"]
 
 [build-system]
 requires = ["hatchling"]
