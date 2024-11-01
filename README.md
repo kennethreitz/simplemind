@@ -41,7 +41,7 @@ Also, why not? :)
 Simplemind takes care of the complex API calls so you can focus on what matters—building, experimenting, and creating.
 
 ```bash
-$ pip install simplemind
+$ pip install 'simplemind[full]'
 ```
 
 First, authenticate your API keys by setting them in the environment variables:
