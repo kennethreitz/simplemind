@@ -41,6 +41,7 @@ class LoggingConfig(BaseSettings):
 class Settings(BaseSettings):
     """The class that holds all the API keys for the application."""
 
+    AMAZON_PROFILE_NAME: Optional[str] = Field("default", description="AWS Named Profile")
     ANTHROPIC_API_KEY: Optional[SecretStr] = Field(
         None, description="API key for Anthropic"
     )

@@ -24,10 +24,12 @@ To specify a specific provider or model, you can use the `llm_provider` and `llm
 - [**Ollama**](https://ollama.com)
 - [**OpenAI's GPT**](https://openai.com/gpt)
 - [**xAI's Grok**](https://x.ai/)
+- [**Amazon Bedrock**](https://aws.amazon.com/bedrock/)
 
 If you want to see Simplemind support, additional providers or models, please send a pull request!
 
 ## Why SimpleMind?
+
 - **Intuitive**: Built with Pythonic simplicity and readability in mind.
 - **For Humans**: Emphasizes a human-friendly interface, just like `requests` for HTTP.
 - **Open Source**: Simplemind is open source, and contributions are always welcome!
@@ -55,7 +57,6 @@ Next, import Simplemind and start using it:
 ```python
 import simplemind as sm
 ```
-
 
 ## Examples
 
@@ -190,6 +191,7 @@ conversation.add_message(
     text="Please write a poem about the moon",
 )
 ```
+
 ```pycon
 >>> conversation.send()
 In the vast expanse where stars do play,
@@ -233,9 +235,10 @@ Simplemind uses [logfire](https://logfire.ai) for logging. To enable logging, ca
 
 Please see the [examples](examples) directory for executable examples.
 
--------------------
+---
 
 ## Contributing
+
 We welcome contributions of all kinds. Feel free to open issues for bug reports or feature requests, and submit pull requests to make SimpleMind even better.
 
 To get started:
@@ -246,7 +249,9 @@ To get started:
 4. Submit a pull request.
 
 ## License
+
 Simplemind is licensed under the Apache 2.0 License.
 
 ## Acknowledgements
+
 Simplemind is inspired by the philosophy of "code for humans" and aims to make working with AI models accessible to all. Special thanks to the open-source community for their contributions and inspiration.

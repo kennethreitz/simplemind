@@ -1,5 +1,6 @@
 import pytest
-from simplemind.providers import Anthropic, Gemini, Groq, Ollama, OpenAI
+
+from simplemind.providers import Anthropic, Gemini, OpenAI, Groq, Ollama, Amazon
 
 
 @pytest.mark.parametrize(
@@ -10,6 +11,7 @@ from simplemind.providers import Anthropic, Gemini, Groq, Ollama, OpenAI
         OpenAI,
         Groq,
         Ollama,
+        Amazon,
     ],
 )
 def test_generate_text(provider_cls):
