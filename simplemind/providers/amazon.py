@@ -1,7 +1,7 @@
 from typing import Type, TypeVar
+from functools import cached_property
 
 import instructor
-import anthropic
 from pydantic import BaseModel
 
 from ._base import BaseProvider
@@ -21,21 +21,25 @@ class Amazon(BaseProvider):
     def __init__(self, profile_name: str | None = None):
         self.profile_name = profile_name or settings.AMAZON_PROFILE_NAME
 
-    @property
+    @cached_property
     def client(self):
         """The AnthropicBedrock client."""
+        import anthropic
+
         if not self.profile_name:
             raise ValueError("Profile name is not provided")
 
         return anthropic.AnthropicBedrock(aws_profile=self.profile_name)
 
-    @property
+    @cached_property
     def structured_client(self):
         """A client patched with Instructor."""
+
         return instructor.from_anthropic(self.client)
 
     def send_conversation(self, conversation: "Conversation", **kwargs):
         """Send a conversation to the OpenAI API."""
+
         from ..models import Message
 
         messages = [
