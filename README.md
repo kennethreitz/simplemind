@@ -24,7 +24,7 @@ The APIs remain identical between all supported providers / models:
 |------|---------------|---------------------|--------|
 | [Anthropic's Claude](https://www.anthropic.com/claude) | `"anthropic"` | `"claude-3-sonnet-20240229"` |  |
 | [Amazon's Bedrock](https://aws.amazon.com/bedrock/) | `"bedrock"` | `"anthropic.claude-3-sonnet-20240229-v1:0"` | use `settings.AMAZON_PROFILE_NAME` |
-| [Google's Gemini](https://gemini.google/) | `"gemini"` | `"models/gemini-1.5-pro"` | Limited structured output support |
+| [Google's Gemini](https://gemini.google/) | `"gemini"` | `"models/gemini-1.5-pro"` |  |
 | [Groq's Groq](https://groq.com/) | `"groq"` | `"mixtral-8x7b-32768"` | |
 | [Ollama](https://ollama.com) | `"ollama"` | `"llama2"` | Run models locally! |
 | [OpenAI's GPT](https://openai.com/gpt) | `"openai"` | `"gpt-4"` | |
