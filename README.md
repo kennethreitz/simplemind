@@ -198,6 +198,12 @@ The universe is never done.
 
 Simple, yet effective.
 
+### Logging
+
+Simplemind uses [logfire](https://logfire.ai) for logging. To enable logging, call `sm.enable_logfire()`.
+
+### More Examples
+
 Please see the [examples](examples) directory for executable examples.
 
 -------------------
@@ -217,4 +223,3 @@ Simplemind is licensed under the Apache 2.0 License.
 
 ## Acknowledgements
 Simplemind is inspired by the philosophy of "code for humans" and aims to make working with AI models accessible to all. Special thanks to the open-source community for their contributions and inspiration.
-
