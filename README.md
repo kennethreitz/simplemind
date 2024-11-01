@@ -22,7 +22,7 @@ The APIs remain identical between all supported providers / models:
 
 | Provider Name | `llm_provider` | `llm_model` (default)|
 |---------------|----------------|-----------------------|
-| [Anthropic's Claude](https://www.anthropic.com/claude) | `"anthropic"` | `"claude-3-sonnet-20240229"` |
+| [Anthropic's Claude](https://www.anthropic.com/claude) | `"anthropic"` | `"claude-3-sonnet-20241022"` |
 | [Amazon's Bedrock](https://aws.amazon.com/bedrock/) | `"amazon"` | `"anthropic.claude-3-sonnet-20240229-v1:0"` |
 | [Google's Gemini](https://gemini.google/) | `"gemini"` | `"models/gemini-1.5-pro"` |
 | [Groq's Groq](https://groq.com/) | `"groq"` | `"llama3-8b-8192"` |
