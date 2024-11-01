@@ -16,19 +16,56 @@ With Simplemind, tapping into AI is as easy as a friendly conversation.
 
 ## Supported APIs
 
+To specify a specific provider or model, you can use the `llm_provider` and `llm_model` parameters when calling: `generate_text`, `generate_data`, or `create_conversation`.
+
 The APIs remain identical between all supported providers / models:
 
-|               | `llm_provider` | `llm_model` (default)|
-|---------------|----------------|-----------------------|
-| [Anthropic's Claude](https://www.anthropic.com/claude) | `"anthropic"` | `"claude-3-sonnet-20241022"` |
-| [Amazon's Bedrock](https://aws.amazon.com/bedrock/) | `"amazon"` | `"anthropic.claude-3-sonnet-20240229-v1:0"` |
-| [Google's Gemini](https://gemini.google/) | `"gemini"` | `"models/gemini-1.5-pro"` |
-| [Groq's Groq](https://groq.com/) | `"groq"` | `"llama3-8b-8192"` |
-| [Ollama](https://ollama.com) | `"ollama"` | `"llama3.2"` |
-| [OpenAI's GPT](https://openai.com/gpt) | `"openai"` | `"gpt-4o-mini"` |
-| [xAI's Grok](https://x.ai/) | `"xai"` | `"grok-beta"` |
-
-To specify a specific provider or model, you can use the `llm_provider` and `llm_model` parameters when calling: `generate_text`, `generate_data`, or `create_conversation`.
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th><code>llm_provider</code></th>
+      <th>Default <code>llm_model</code></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><a href="https://www.anthropic.com/claude">Anthropic's Claude</a></td>
+      <td><code>"anthropic"</code></td>
+      <td><code>"claude-3-sonnet-20240229"</code></td>
+    </tr>
+    <tr>
+      <td><a href="https://aws.amazon.com/bedrock/">Amazon's Bedrock</a></td>
+      <td><code>"bedrock"</code></td>
+      <td><code>"anthropic.claude-3-sonnet-20240229-v1:0"</code></td>
+    </tr>
+    <tr>
+      <td><a href="https://gemini.google/">Google's Gemini</a></td>
+      <td><code>"gemini"</code></td>
+      <td><code>"models/gemini-1.5-pro"</code></td>
+    </tr>
+    <tr>
+      <td><a href="https://groq.com/">Groq's Groq</a></td>
+      <td><code>"groq"</code></td>
+      <td><code>"mixtral-8x7b-32768"</code></td>
+    </tr>
+    <tr>
+      <td><a href="https://ollama.com">Ollama</a></td>
+      <td><code>"ollama"</code></td>
+      <td><code>"llama2"</code></td>
+    </tr>
+    <tr>
+      <td><a href="https://openai.com/gpt">OpenAI's GPT</a></td>
+      <td><code>"openai"</code></td>
+      <td><code>"gpt-4"</code></td>
+    </tr>
+    <tr>
+      <td><a href="https://x.ai/">xAI's Grok</a></td>
+      <td><code>"xai"</code></td>
+      <td><code>"grok-1"</code></td>
+    </tr>
+  </tbody>
+</table>
 
 If you want to see Simplemind support additional providers or models, please send a pull request!
 
