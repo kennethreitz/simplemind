@@ -20,15 +20,15 @@ To specify a specific provider or model, you can use the `llm_provider` and `llm
 
 The APIs remain identital between all supported providers / models:
 
-| Name | `llm_provider` | Notes |
+| Name | `llm_provider` | Default `llm_model` | Notes |
 |------|---------------|--------|
-| [Anthropic's Claude](https://www.anthropic.com/claude) | `"anthropic"` | Supports structured output |
-| [Amazon's Bedrock](https://aws.amazon.com/bedrock/) | `"bedrock"` | AWS credentials required |
-| [Google's Gemini](https://gemini.google/) | `"gemini"` | Limited structured output support |
-| [Groq's Groq](https://groq.com/) | `"groq"` | Fast inference times |
-| [Ollama](https://ollama.com) | `"ollama"` | Local models only |
-| [OpenAI's GPT](https://openai.com/gpt) | `"openai"` | Full structured output support |
-| [xAI's Grok](https://x.ai/) | `"xai"` | Beta access required |
+| [Anthropic's Claude](https://www.anthropic.com/claude) | `"anthropic"` | `"claude-3-5-sonnet-20241022"` | Supports structured output |
+| [Amazon's Bedrock](https://aws.amazon.com/bedrock/) | `"amazon"` | `"anthropic.claude-3-sonnet-20240229-v1:0"` | AWS credentials required |
+| [Google's Gemini](https://gemini.google/) | `"gemini"` | `"models/gemini-1.5-flash-latest"` | Limited structured output support |
+| [Groq's Groq](https://groq.com/) | `"groq"` | `"llama3-8b-8192"` | Fast inference times |
+| [Ollama](https://ollama.com) | `"ollama"` | `"llama3.2"` | Local models only |
+| [OpenAI's GPT](https://openai.com/gpt) | `"openai"` | `"gpt-4o-mini"` |Full structured output support |
+| [xAI's Grok](https://x.ai/) | `"xai"` | `"grok-beta"`| Beta access required |
 
 If you want to see Simplemind support additional providers or models, please send a pull request!
 
