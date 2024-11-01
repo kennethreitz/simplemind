@@ -26,7 +26,7 @@ The APIs remain identical between all supported providers / models:
 | [Amazon's Bedrock](https://aws.amazon.com/bedrock/) | `"bedrock"` | `"anthropic.claude-3-sonnet-20240229-v1:0"` |
 | [Google's Gemini](https://gemini.google/) | `"gemini"` | `"models/gemini-1.5-pro"` |
 | [Groq's Groq](https://groq.com/) | `"groq"` | `"mixtral-8x7b-32768"` |
-| [Ollama](https://ollama.com) | `"ollama"` | `"llama2"` |
+| [Ollama](https://ollama.com) | `"ollama"` | `"llama3.2"` |
 | [OpenAI's GPT](https://openai.com/gpt) | `"openai"` | `"gpt-4"` |
 | [xAI's Grok](https://x.ai/) | `"xai"` | `"grok-1"` |
 
