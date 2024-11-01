@@ -32,7 +32,7 @@ The APIs remain identical between all supported providers / models:
     <tr>
       <td><a href="https://www.anthropic.com/claude">Anthropic's Claude</a></td>
       <td><code>"anthropic"</code></td>
-      <td><code>"claude-3-sonnet-20240229"</code></td>
+      <td><code>"claude-3-5-sonnet-20241022"</code></td>
     </tr>
     <tr>
       <td><a href="https://aws.amazon.com/bedrock/">Amazon's Bedrock</a></td>
@@ -47,22 +47,22 @@ The APIs remain identical between all supported providers / models:
     <tr>
       <td><a href="https://groq.com/">Groq's Groq</a></td>
       <td><code>"groq"</code></td>
-      <td><code>"mixtral-8x7b-32768"</code></td>
+      <td><code>"llama3-8b-8192"</code></td>
     </tr>
     <tr>
       <td><a href="https://ollama.com">Ollama</a></td>
       <td><code>"ollama"</code></td>
-      <td><code>"llama2"</code></td>
+      <td><code>"llama3.2"</code></td>
     </tr>
     <tr>
       <td><a href="https://openai.com/gpt">OpenAI's GPT</a></td>
       <td><code>"openai"</code></td>
-      <td><code>"gpt-4"</code></td>
+      <td><code>"gpt-4o-mini"</code></td>
     </tr>
     <tr>
       <td><a href="https://x.ai/">xAI's Grok</a></td>
       <td><code>"xai"</code></td>
-      <td><code>"grok-1"</code></td>
+      <td><code>"grok-beta"</code></td>
     </tr>
   </tbody>
 </table>
