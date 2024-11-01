@@ -16,15 +16,22 @@ class LoggingConfig(BaseSettings):
         # adding imports here to avoid forced dependencies
         try:
             import logfire
+            from logging import basicConfig
         except ImportError as e:
             raise ImportError(
                 "To enable logging, please install logfire: `pip install logfire`"
             ) from e
-        from logging import basicConfig
 
         self.enabled = True
         logfire.configure(**kwargs)
         basicConfig(handlers=[logfire.LogfireLoggingHandler()])
+
+        try:
+            logfire.configure(**kwargs)
+            basicConfig(handlers=[logfire.LogfireLoggingHandler()])
+        except Exception as e:
+            self.enabled = False  # Reset flag on failure
+            raise RuntimeError("Failed to configure logging") from e
 
     def disable_logging(self) -> None:
         """Disable logging for the application."""
