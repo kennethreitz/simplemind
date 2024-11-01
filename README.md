@@ -18,17 +18,17 @@ With Simplemind, tapping into AI is as easy as a friendly conversation.
 
 To specify a specific provider or model, you can use the `llm_provider` and `llm_model` parameters when calling: `generate_text`, `generate_data`, or `create_conversation`.
 
-The APIs remain identital between all supported providers / models:
+The APIs remain identical between all supported providers / models:
 
 | Name | `llm_provider` | Default `llm_model` | Notes |
-|------|---------------|--------|
-| [Anthropic's Claude](https://www.anthropic.com/claude) | `"anthropic"` | `"claude-3-5-sonnet-20241022"` | Supports structured output |
-| [Amazon's Bedrock](https://aws.amazon.com/bedrock/) | `"amazon"` | `"anthropic.claude-3-sonnet-20240229-v1:0"` | AWS credentials required |
-| [Google's Gemini](https://gemini.google/) | `"gemini"` | `"models/gemini-1.5-flash-latest"` | Limited structured output support |
-| [Groq's Groq](https://groq.com/) | `"groq"` | `"llama3-8b-8192"` | Fast inference times |
-| [Ollama](https://ollama.com) | `"ollama"` | `"llama3.2"` | Local models only |
-| [OpenAI's GPT](https://openai.com/gpt) | `"openai"` | `"gpt-4o-mini"` |Full structured output support |
-| [xAI's Grok](https://x.ai/) | `"xai"` | `"grok-beta"`| Beta access required |
+|------|---------------|---------------------|--------|
+| [Anthropic's Claude](https://www.anthropic.com/claude) | `"anthropic"` | `"claude-3-sonnet-20240229"` | Supports structured output |
+| [Amazon's Bedrock](https://aws.amazon.com/bedrock/) | `"bedrock"` | `"anthropic.claude-3-sonnet-20240229-v1:0"` | AWS credentials required |
+| [Google's Gemini](https://gemini.google/) | `"gemini"` | `"models/gemini-1.5-pro"` | Limited structured output support |
+| [Groq's Groq](https://groq.com/) | `"groq"` | `"mixtral-8x7b-32768"` | Fast inference times |
+| [Ollama](https://ollama.com) | `"ollama"` | `"llama2"` | Local models only |
+| [OpenAI's GPT](https://openai.com/gpt) | `"openai"` | `"gpt-4"` | Full structured output support |
+| [xAI's Grok](https://x.ai/) | `"xai"` | `"grok-1"` | Beta access required |
 
 If you want to see Simplemind support additional providers or models, please send a pull request!
 
