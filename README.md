@@ -20,8 +20,8 @@ To specify a specific provider or model, you can use the `llm_provider` and `llm
 
 The APIs remain identical between all supported providers / models:
 
-| Name | `llm_provider` | `llm_model` (default)|
-|------|----------------|----------------------|
+| Provider Name | `llm_provider` | `llm_model` (default)|
+|---------------|----------------|-----------------------|
 | [Anthropic's Claude](https://www.anthropic.com/claude) | `"anthropic"` | `"claude-3-sonnet-20240229"` |
 | [Amazon's Bedrock](https://aws.amazon.com/bedrock/) | `"amazon"` | `"anthropic.claude-3-sonnet-20240229-v1:0"` |
 | [Google's Gemini](https://gemini.google/) | `"gemini"` | `"models/gemini-1.5-pro"` |
