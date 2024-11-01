@@ -1,6 +1,6 @@
 import pytest
 
-from simplemind.providers import Anthropic, Gemini, OpenAI, Groq, Ollama
+from simplemind.providers import Anthropic, Gemini, OpenAI, Groq, Ollama, Amazon
 from pydantic import BaseModel
 
 
@@ -16,6 +16,7 @@ class ResponseModel(BaseModel):
         OpenAI,
         Groq,
         Ollama,
+        Amazon
     ],
 )
 def test_generate_data(provider_cls):
