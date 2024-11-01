@@ -99,7 +99,7 @@ class InstructionStep(BaseModel):
 
 class RecipeIngredient(BaseModel):
     name: str
-    quantity: str
+    quantity: float
     unit: str
 
 class Recipe(BaseModel):
