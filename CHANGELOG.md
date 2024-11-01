@@ -1,6 +1,10 @@
 Release History
 ===============
 
+## 0.2.1 (2024-11-01)
+
+- Add `cached_property` to Amazon provider.
+
 ## 0.2.0 (2024-11-01)
 
 - Add Amazon Bedrock provider.
