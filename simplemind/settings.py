@@ -1,9 +1,7 @@
-from typing import Literal, Optional, Union
+from typing import Optional, Union
 
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
-logging_level = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
 
 class LoggingConfig(BaseSettings):
