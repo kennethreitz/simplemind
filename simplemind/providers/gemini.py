@@ -81,7 +81,9 @@ class Gemini(BaseProvider):
     @logger
     def structured_response(self, prompt: str, response_model: Type[T], **kwargs) -> T:
         """Send a structured response to the Gemini API."""
-        kwargs.pop("llm_model")
+        # Only try to pop if the key exists
+        kwargs.pop("llm_model", None)  # Add default value of None
+
         try:
             response = self.structured_client.chat.completions.create(
                 messages=[{"role": "user", "content": prompt}],
