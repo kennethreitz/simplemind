@@ -1,11 +1,13 @@
-from typing import Union
-import json
+from typing import Type, TypeVar
 
 import instructor
 import anthropic
+from pydantic import BaseModel
 
 from ._base import BaseProvider
 from ..settings import settings
+
+T = TypeVar("T", bound=BaseModel)
 
 PROVIDER_NAME = "amazon"
 DEFAULT_MODEL = "anthropic.claude-3-sonnet-20240229-v1:0"
@@ -15,16 +17,16 @@ class Amazon(BaseProvider):
     NAME = PROVIDER_NAME
     DEFAULT_MODEL = DEFAULT_MODEL
 
-    def __init__(self, api_key: Union[str, None] = None):
-        self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
+    def __init__(self, profile_name: str | None = None):
+        self.profile_name = profile_name or settings.AMAZON_PROFILE_NAME
 
     @property
     def client(self):
         """The AnthropicBedrock client."""
-        if not self.api_key:
+        if not self.profile_name:
             raise ValueError("Profile name is not provided")
 
-        return anthropic.AnthropicBedrock(aws_profile=self.api_key)
+        return anthropic.AnthropicBedrock(aws_profile=self.profile_name)
 
     @property
     def structured_client(self):
@@ -55,7 +57,7 @@ class Amazon(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
-    def structured_response(self, prompt, response_model, *, llm_model: str, **kwargs):
+    def structured_response(self, prompt, response_model: Type[T], *, llm_model: str | None = None, **kwargs) -> T:
         # Ensure messages are provided in kwargs
         messages = [
             {"role": "user", "content": prompt},
@@ -65,7 +67,7 @@ class Amazon(BaseProvider):
             messages=messages,
             model=llm_model or self.DEFAULT_MODEL,
             response_model=response_model,
-            max_tokens=DEFAULT_MAX_TOKENS,
+            max_tokens = DEFAULT_MAX_TOKENS,
             **kwargs,
         )
         return response
