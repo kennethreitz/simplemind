@@ -16,7 +16,9 @@ With Simplemind, tapping into AI is as easy as a friendly conversation.
 
 ## Supported APIs
 
-To specify a specific provider or model, you can use the `llm_provider` and `llm_model` parameters when calling: `generate_text`, `generate_data`, or `create_conversation`. The APIs remain identital between all supported providers/models.
+To specify a specific provider or model, you can use the `llm_provider` and `llm_model` parameters when calling: `generate_text`, `generate_data`, or `create_conversation`. 
+
+The APIs remain identital between all supported providers/models.
 
 - [**Anthropic's Claude**](https://www.anthropic.com/claude)
 - [**Amazon's Bedrock**](https://aws.amazon.com/bedrock/)
