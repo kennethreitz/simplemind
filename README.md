@@ -34,7 +34,7 @@ The APIs remain identical between all supported providers / models:
     </tr>
     <tr>
       <td><a href="https://aws.amazon.com/bedrock/">Amazon's Bedrock</a></td>
-      <td><code>"bedrock"</code></td>
+      <td><code>"amazon"</code></td>
       <td><code>"anthropic.claude-3-sonnet-20240229-v1:0"</code></td>
     </tr>
     <tr>
