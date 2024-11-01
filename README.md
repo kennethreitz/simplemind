@@ -28,14 +28,6 @@ To specify a specific provider or model, you can use the `llm_provider` and `llm
 
 If you want to see Simplemind support, additional providers or models, please send a pull request!
 
-## Why SimpleMind?
-
-- **Intuitive**: Built with Pythonic simplicity and readability in mind.
-- **For Humans**: Emphasizes a human-friendly interface, just like `requests` for HTTP.
-- **Open Source**: Simplemind is open source, and contributions are always welcome!
-
-Also, why not? :)
-
 ## Quickstart
 
 Simplemind takes care of the complex API calls so you can focus on what matters—building, experimenting, and creating.
