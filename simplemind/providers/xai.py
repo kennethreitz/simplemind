@@ -4,8 +4,6 @@ from typing import TYPE_CHECKING, Type, TypeVar
 import instructor
 from pydantic import BaseModel
 
-from simplemind.models import Message
-
 from ..logging import logger
 from ..settings import settings
 from ._base import BaseProvider
