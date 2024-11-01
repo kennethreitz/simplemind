@@ -1,6 +1,12 @@
 Release History
 ===============
 
+## 0.2.0 (2024-11-01)
+
+- Add Amazon Bedrock provider.
+- Make all provider optional dependencies. Use `$ pip install 'simplemind[full]'` to install all providers.
+- General improvements.
+
 ## 0.1.7 (2024-11-01)
 
 - Add `logger` decorator.
