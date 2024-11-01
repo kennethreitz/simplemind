@@ -221,7 +221,7 @@ Simple, yet effective.
 
 ### Logging
 
-Simplemind uses [logfire](https://logfire.ai) for logging. To enable logging, call `sm.enable_logfire()`.
+Simplemind uses [logfire](https://pydantic.dev/logfire) for logging. To enable logging, call `sm.enable_logfire()`.
 
 ### More Examples
 
