@@ -2,19 +2,23 @@
 # IT is not currently working as desired.
 
 from functools import cached_property
-from typing import Type, TypeVar
+from typing import TYPE_CHECKING, Type, TypeVar
 
-import google.generativeai as genai
 import instructor
 from pydantic import BaseModel
 
+from ..logging import logger
 from ..settings import settings
 from ._base import BaseProvider
 
-PROVIDER_NAME = "gemini"
-DEFAULT_MODEL = "models/gemini-1.5-flash-latest"
+if TYPE_CHECKING:
+    from ..models import Conversation, Message
 
 T = TypeVar("T", bound=BaseModel)
+
+
+PROVIDER_NAME = "gemini"
+DEFAULT_MODEL = "models/gemini-1.5-flash-latest"
 
 
 class Gemini(BaseProvider):
@@ -25,12 +29,21 @@ class Gemini(BaseProvider):
         self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
         self.model_name = DEFAULT_MODEL
 
+    def set_model(self, model_name: str):
+        self.model_name = model_name
+
     @cached_property
-    def client(self, model_name: str = DEFAULT_MODEL):
+    def client(self):
         """The raw Gemini client."""
         if not self.api_key:
             raise ValueError("Gemini API key is required")
-        self.model_name = model_name
+        try:
+            import google.generativeai as genai
+        except ImportError as exc:
+            raise ImportError(
+                "Please install the `google-generativeai` package: `pip install google-generativeai`"
+            ) from exc
+        genai.configure(api_key=self.api_key)
         return genai.GenerativeModel(model_name=self.model_name)
 
     @cached_property
@@ -38,6 +51,7 @@ class Gemini(BaseProvider):
         """A Gemini client patched with Instructor."""
         return instructor.from_gemini(self.client)
 
+    @logger
     def send_conversation(self, conversation: "Conversation") -> "Message":
         """Send a conversation to the Gemini API."""
         from ..models import Message
@@ -64,9 +78,11 @@ class Gemini(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
+    @logger
     def structured_response(self, prompt: str, response_model: Type[T], **kwargs) -> T:
         """Send a structured response to the Gemini API."""
-        llm_model = kwargs.pop("llm_model", self.model_name)
+        # Only try to pop if the key exists
+        kwargs.pop("llm_model", None)  # Add default value of None
 
         try:
             response = self.structured_client.chat.completions.create(
@@ -79,12 +95,12 @@ class Gemini(BaseProvider):
             raise RuntimeError(
                 f"Failed to send structured response to Gemini API: {e}"
             ) from e
-        return response
+        return response_model.model_validate(response)
 
+    @logger
     def generate_text(self, prompt: str, **kwargs) -> str:
         """Generate text using the Gemini API."""
-        llm_model = kwargs.pop("llm_model", self.model_name)
-
+        kwargs.pop("llm_model")
         try:
             response = self.client.generate_content(prompt, **kwargs)
         except Exception as e:

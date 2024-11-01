@@ -1,22 +1,28 @@
 from functools import cached_property
-from typing import Type, TypeVar
+from typing import TYPE_CHECKING, Type, TypeVar
 
 import instructor
-import openai as oa
 from pydantic import BaseModel
 
+from ..logging import logger
 from ..settings import settings
 from ._base import BaseProvider
+
+if TYPE_CHECKING:
+    from ..models import Conversation, Message
 
 T = TypeVar("T", bound=BaseModel)
 
 PROVIDER_NAME = "openai"
 DEFAULT_MODEL = "gpt-4o-mini"
+DEFAULT_MAX_TOKENS = 1_000
+DEFAULT_KWARGS = {"max_tokens": DEFAULT_MAX_TOKENS}
 
 
 class OpenAI(BaseProvider):
     NAME = PROVIDER_NAME
     DEFAULT_MODEL = DEFAULT_MODEL
+    DEFAULT_KWARGS = DEFAULT_KWARGS
 
     def __init__(self, api_key: str | None = None):
         self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
@@ -26,6 +32,12 @@ class OpenAI(BaseProvider):
         """The raw OpenAI client."""
         if not self.api_key:
             raise ValueError("OpenAI API key is required")
+        try:
+            import openai as oa
+        except ImportError as exc:
+            raise ImportError(
+                "Please install the `openai` package: `pip install openai`"
+            ) from exc
         return oa.OpenAI(api_key=self.api_key)
 
     @cached_property
@@ -33,7 +45,8 @@ class OpenAI(BaseProvider):
         """A OpenAI client with Instructor."""
         return instructor.from_openai(self.client)
 
-    def send_conversation(self, conversation: "Conversation", **kwargs):
+    @logger
+    def send_conversation(self, conversation: "Conversation", **kwargs) -> "Message":
         """Send a conversation to the OpenAI API."""
         from ..models import Message
 
@@ -42,7 +55,9 @@ class OpenAI(BaseProvider):
         ]
 
         response = self.client.chat.completions.create(
-            model=conversation.llm_model or DEFAULT_MODEL, messages=messages, **kwargs
+            model=conversation.llm_model or DEFAULT_MODEL,
+            messages=messages,
+            **{**self.DEFAULT_KWARGS, **kwargs},
         )
 
         # Get the response content from the OpenAI response
@@ -57,6 +72,7 @@ class OpenAI(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
+    @logger
     def structured_response(
         self,
         prompt: str,
@@ -74,16 +90,19 @@ class OpenAI(BaseProvider):
             messages=messages,
             model=llm_model or self.DEFAULT_MODEL,
             response_model=response_model,
-            **kwargs,
+            **{**self.DEFAULT_KWARGS, **kwargs},
         )
-        return response
+        return response_model.model_validate(response)
 
+    @logger
     def generate_text(self, prompt: str, *, llm_model: str | None = None, **kwargs):
         """Generate text using the OpenAI API."""
         messages = [
             {"role": "user", "content": prompt},
         ]
         response = self.client.chat.completions.create(
-            messages=messages, model=llm_model or self.DEFAULT_MODEL, **kwargs
+            messages=messages,
+            model=llm_model or self.DEFAULT_MODEL,
+            **{**self.DEFAULT_KWARGS, **kwargs},
         )
         return response.choices[0].message.content

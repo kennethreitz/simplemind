@@ -1,18 +1,41 @@
-from typing import Literal, Optional, Union
+from typing import Optional, Union
 
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
-logging_level = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
 
 class LoggingConfig(BaseSettings):
     """The class that holds all the logging settings for the application."""
 
-    enabled: bool = Field(False, description="Enable logging")
-    level: logging_level = Field("INFO", description="The logging level")
+    is_enabled: bool = Field(False, description="Enable logging")
 
     model_config = SettingsConfigDict(extra="forbid")
+
+    def enable_logfire(self, **kwargs) -> None:
+        """Enable logging for the application."""
+        # adding imports here to avoid forced dependencies
+        try:
+            import logfire
+            from logging import basicConfig
+        except ImportError as e:
+            raise ImportError(
+                "To enable logging, please install logfire: `pip install logfire`"
+            ) from e
+
+        self.is_enabled = True
+        logfire.configure(**kwargs)
+        basicConfig(handlers=[logfire.LogfireLoggingHandler()])
+
+        try:
+            logfire.configure(**kwargs)
+            basicConfig(handlers=[logfire.LogfireLoggingHandler()])
+        except Exception as e:
+            self.is_enabled = False  # Reset flag on failure
+            raise RuntimeError("Failed to configure logging") from e
+
+    def disable_logfire(self) -> None:
+        """Disable logging for the application."""
+        self.is_enabled = False
 
 
 class Settings(BaseSettings):

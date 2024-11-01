@@ -113,6 +113,11 @@ def generate_text(
     return provider.generate_text(prompt=prompt, llm_model=llm_model, **kwargs)
 
 
+def enable_logfire() -> None:
+    """Enable logfire logging."""
+    settings.logging.enable_logfire()
+
+
 # Syntax sugar.
 Plugin = BasePlugin
 
@@ -125,4 +130,5 @@ __all__ = [
     "BasePlugin",
     "Session",
     "Plugin",
+    "enable_logfire",
 ]

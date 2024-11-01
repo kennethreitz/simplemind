@@ -91,6 +91,33 @@ class Poem(BaseModel):
 title='Eternal Embrace' content='In the quiet hours of the night,\nWhen stars whisper secrets bright,\nTwo hearts beat in a gentle rhyme,\nDancing through the sands of time.\n\nWith every glance, a spark ignites,\nA flame that warms the coldest nights,\nIn laughter shared and whispers sweet,\nLove paints the world, a masterpiece.\n\nThrough stormy skies and sunlit days,\nIn myriad forms, it finds its ways,\nA tender touch, a knowing sigh,\nIn love’s embrace, we learn to fly.\n\nAs seasons change and moments fade,\nIn the tapestry of dreams we’ve laid,\nLove’s threads endure, forever bind,\nA timeless bond, two souls aligned.\n\nSo here’s to love, both bright and true,\nA gift we give, anew, anew,\nIn every heartbeat, every prayer,\nA story written in the air.'
 ```
 
+#### A more complex example
+
+```python
+class InstructionStep(BaseModel):
+    step_number: int
+    instruction: str
+
+class RecipeIngredient(BaseModel):
+    name: str
+    quantity: float
+    unit: str
+
+class Recipe(BaseModel):
+    name: str
+    ingredients: list[RecipeIngredient]
+    instructions: list[InstructionStep]
+
+recipe = sm.generate_data(
+    "Write a recipe for chocolate chip cookies",
+    llm_model="gpt-4o-mini",
+    llm_provider="openai",
+    response_model=Recipe,
+)
+```
+
+Special thanks to [@jxnl](https://github.com/jxnl) for building [Instructor](https://github.com/jxnl/instructor), which makes this possible!
+
 ### Conversational AI
 
 SimpleMind also allows for easy conversational flows:
@@ -199,6 +226,12 @@ The universe is never done.
 ```
 
 Simple, yet effective.
+
+### Logging
+
+Simplemind uses [logfire](https://logfire.ai) for logging. To enable logging, call `sm.enable_logfire()`.
+
+### More Examples
 
 Please see the [examples](examples) directory for executable examples.
 

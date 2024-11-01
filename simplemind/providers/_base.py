@@ -1,9 +1,12 @@
 from abc import ABC, abstractmethod
 from functools import cached_property
-from typing import Any, Type, TypeVar
+from typing import TYPE_CHECKING, Any, Type, TypeVar
 
 from instructor import Instructor
 from pydantic import BaseModel
+
+if TYPE_CHECKING:
+    from ..models import Conversation, Message
 
 T = TypeVar("T", bound=BaseModel)
 

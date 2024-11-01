@@ -1,22 +1,29 @@
 from functools import cached_property
-from typing import Type, TypeVar
+from typing import TYPE_CHECKING, Type, TypeVar
 
-import groq
 import instructor
 from pydantic import BaseModel
 
+from ..logging import logger
 from ..settings import settings
 from ._base import BaseProvider
 
-PROVIDER_NAME = "groq"
-DEFAULT_MODEL = "llama3-8b-8192"
+if TYPE_CHECKING:
+    from ..models import Conversation, Message
 
 T = TypeVar("T", bound=BaseModel)
+
+
+PROVIDER_NAME = "groq"
+DEFAULT_MODEL = "llama3-8b-8192"
+DEFAULT_MAX_TOKENS = 1_000
+DEFAULT_KWARGS = {"max_tokens": DEFAULT_MAX_TOKENS}
 
 
 class Groq(BaseProvider):
     NAME = PROVIDER_NAME
     DEFAULT_MODEL = DEFAULT_MODEL
+    DEFAULT_KWARGS = DEFAULT_KWARGS
 
     def __init__(self, api_key: str | None = None):
         self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
@@ -26,6 +33,12 @@ class Groq(BaseProvider):
         """The raw Groq client."""
         if not self.api_key:
             raise ValueError("Groq API key is required")
+        try:
+            import groq
+        except ImportError as exc:
+            raise ImportError(
+                "Please install the `groq` package: `pip install groq`"
+            ) from exc
         return groq.Groq(api_key=self.api_key)
 
     @cached_property
@@ -33,6 +46,7 @@ class Groq(BaseProvider):
         """A client patched with Instructor."""
         return instructor.from_groq(self.client)
 
+    @logger
     def send_conversation(
         self,
         conversation: "Conversation",
@@ -48,7 +62,7 @@ class Groq(BaseProvider):
         response = self.client.chat.completions.create(
             model=conversation.llm_model or self.DEFAULT_MODEL,
             messages=messages,
-            **kwargs,
+            **{**self.DEFAULT_KWARGS, **kwargs},
         )
 
         # Get the response content from the Groq response
@@ -63,6 +77,7 @@ class Groq(BaseProvider):
             llm_provider=PROVIDER_NAME,
         )
 
+    @logger
     def structured_response(self, prompt: str, response_model: Type[T], **kwargs) -> T:
         # Ensure messages are provided in kwargs
         messages = [
@@ -73,17 +88,18 @@ class Groq(BaseProvider):
             messages=messages,
             response_model=response_model,
             model=kwargs.pop("llm_model", self.DEFAULT_MODEL),
-            **kwargs,
+            **{**self.DEFAULT_KWARGS, **kwargs},
         )
-        return response
+        return response_model.model_validate(response)
 
+    @logger
     def generate_text(
         self,
         prompt: str,
         *,
         llm_model: str,
         **kwargs,
-    ):
+    ) -> str:
         messages = [
             {"role": "user", "content": prompt},
         ]
@@ -91,7 +107,7 @@ class Groq(BaseProvider):
         response = self.client.chat.completions.create(
             messages=messages,
             model=llm_model or self.DEFAULT_MODEL,
-            **kwargs,
+            **{**self.DEFAULT_KWARGS, **kwargs},
         )
 
-        return response.choices[0].message.content
+        return str(response.choices[0].message.content)
