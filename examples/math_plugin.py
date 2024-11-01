@@ -2,7 +2,7 @@ from _context import sm
 
 
 class MathPlugin(sm.BasePlugin):
-    def send_hook(self, conversation: sm.Conversation):
+    def pre_send_hook(self, conversation: sm.Conversation):
         last_user_message = conversation.get_last_message(role="user")
         if last_user_message is None:
             return
