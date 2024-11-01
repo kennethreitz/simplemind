@@ -2,7 +2,6 @@ from functools import cached_property
 from typing import TYPE_CHECKING, Type, TypeVar
 
 import instructor
-import openai as oa
 from pydantic import BaseModel
 
 from simplemind.models import Message
@@ -37,6 +36,12 @@ class XAI(BaseProvider):
         """The raw OpenAI client."""
         if not self.api_key:
             raise ValueError("XAI API key is required")
+        try:
+            import openai as oa
+        except ImportError as exc:
+            raise ImportError(
+                "Please install the `openai` package: `pip install openai`"
+            ) from exc
         return oa.OpenAI(
             api_key=self.api_key,
             base_url=BASE_URL,

@@ -1,7 +1,6 @@
 from functools import cached_property
 from typing import TYPE_CHECKING, Type, TypeVar
 
-import groq
 import instructor
 from pydantic import BaseModel
 
@@ -34,6 +33,12 @@ class Groq(BaseProvider):
         """The raw Groq client."""
         if not self.api_key:
             raise ValueError("Groq API key is required")
+        try:
+            import groq
+        except ImportError as exc:
+            raise ImportError(
+                "Please install the `groq` package: `pip install groq`"
+            ) from exc
         return groq.Groq(api_key=self.api_key)
 
     @cached_property
@@ -85,7 +90,7 @@ class Groq(BaseProvider):
             model=kwargs.pop("llm_model", self.DEFAULT_MODEL),
             **{**self.DEFAULT_KWARGS, **kwargs},
         )
-        return response
+        return response_model.model_validate(response)
 
     @logger
     def generate_text(
@@ -94,7 +99,7 @@ class Groq(BaseProvider):
         *,
         llm_model: str,
         **kwargs,
-    ):
+    ) -> str:
         messages = [
             {"role": "user", "content": prompt},
         ]
@@ -105,4 +110,4 @@ class Groq(BaseProvider):
             **{**self.DEFAULT_KWARGS, **kwargs},
         )
 
-        return response.choices[0].message.content
+        return str(response.choices[0].message.content)

@@ -1,7 +1,6 @@
 from functools import cached_property
 from typing import TYPE_CHECKING, Type, TypeVar
 
-import anthropic
 import instructor
 from pydantic import BaseModel
 
@@ -34,6 +33,13 @@ class Anthropic(BaseProvider):
         """The raw Anthropic client."""
         if not self.api_key:
             raise ValueError("Anthropic API key is required")
+        try:
+            import anthropic
+        except ImportError as exc:
+            raise ImportError(
+                "Please install the `anthropic` package: `pip install anthropic`"
+            ) from exc
+
         return anthropic.Anthropic(api_key=self.api_key)
 
     @cached_property
@@ -86,7 +92,7 @@ class Anthropic(BaseProvider):
             response_model=response_model,
             **{**self.DEFAULT_KWARGS, **kwargs},
         )
-        return response
+        return response_model.model_validate(response)
 
     @logger
     def generate_text(self, prompt: str, *, llm_model: str, **kwargs):

@@ -2,7 +2,6 @@ from functools import cached_property
 from typing import TYPE_CHECKING, Type, TypeVar
 
 import instructor
-import openai as oa
 from pydantic import BaseModel
 
 from ..logging import logger
@@ -33,6 +32,12 @@ class OpenAI(BaseProvider):
         """The raw OpenAI client."""
         if not self.api_key:
             raise ValueError("OpenAI API key is required")
+        try:
+            import openai as oa
+        except ImportError as exc:
+            raise ImportError(
+                "Please install the `openai` package: `pip install openai`"
+            ) from exc
         return oa.OpenAI(api_key=self.api_key)
 
     @cached_property
@@ -87,7 +92,7 @@ class OpenAI(BaseProvider):
             response_model=response_model,
             **{**self.DEFAULT_KWARGS, **kwargs},
         )
-        return response
+        return response_model.model_validate(response)
 
     @logger
     def generate_text(self, prompt: str, *, llm_model: str | None = None, **kwargs):

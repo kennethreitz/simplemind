@@ -2,7 +2,6 @@ from functools import cached_property
 from typing import TYPE_CHECKING, Type, TypeVar
 
 import instructor
-import ollama as ol
 from openai import OpenAI
 from pydantic import BaseModel
 
@@ -36,6 +35,12 @@ class Ollama(BaseProvider):
         """The raw Ollama client."""
         if not self.host_url:
             raise ValueError("No ollama host url provided")
+        try:
+            import ollama as ol
+        except ImportError as exc:
+            raise ImportError(
+                "Please install the `ollama` package: `pip install ollama`"
+            ) from exc
         return ol.Client(timeout=self.TIMEOUT, host=self.host_url)
 
     @cached_property
@@ -93,7 +98,7 @@ class Ollama(BaseProvider):
             response_model=response_model,
             **{**self.DEFAULT_KWARGS, **kwargs},
         )
-        return response
+        return response_model.model_validate(response)
 
     @logger
     def generate_text(
