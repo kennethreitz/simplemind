@@ -10,7 +10,7 @@ Simplemind is AI library designed to simplify your experience with AI APIs in Py
 
 With Simplemind, tapping into AI is as easy as a friendly conversation.
 
-- **Easy-to-use AI tools**: SimpleMind provides simple interfaces to popular AI services.
+- **Easy-to-use AI tools**: Simplemind provides simple interfaces to most popular AI services.
 - **Human-centered design**: The library prioritizes readability and usability—no need to be an expert to start experimenting.
 - **Minimal configuration**: Get started quickly, without worrying about configuration headaches.
 
