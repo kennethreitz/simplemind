@@ -94,6 +94,7 @@ def generate_data(
         prompt=prompt,
         llm_model=llm_model,
         response_model=response_model,
+        **kwargs,
     )
 
 
