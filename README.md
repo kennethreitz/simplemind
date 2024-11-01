@@ -16,19 +16,21 @@ With Simplemind, tapping into AI is as easy as a friendly conversation.
 
 ## Supported APIs
 
-To specify a specific provider or model, you can use the `llm_provider` and `llm_model` parameters when calling: `generate_text`, `generate_data`, or `create_conversation`. 
+To specify a specific provider or model, you can use the `llm_provider` and `llm_model` parameters when calling: `generate_text`, `generate_data`, or `create_conversation`.
 
-The APIs remain identital between all supported providers/models.
+The APIs remain identital between all supported providers / models:
 
-- [**Anthropic's Claude**](https://www.anthropic.com/claude)
-- [**Amazon's Bedrock**](https://aws.amazon.com/bedrock/)
-- [**Google's Gemini**](https://gemini.google/)
-- [**Groq's Groq**](https://groq.com/)
-- [**Ollama**](https://ollama.com) (local llm support)
-- [**OpenAI's GPT**](https://openai.com/gpt)
-- [**xAI's Grok**](https://x.ai/)
+| Name | `llm_provider` | Notes |
+|------|---------------|--------|
+| [Anthropic's Claude](https://www.anthropic.com/claude) | `"anthropic"` | Supports structured output |
+| [Amazon's Bedrock](https://aws.amazon.com/bedrock/) | `"bedrock"` | AWS credentials required |
+| [Google's Gemini](https://gemini.google/) | `"gemini"` | Limited structured output support |
+| [Groq's Groq](https://groq.com/) | `"groq"` | Fast inference times |
+| [Ollama](https://ollama.com) | `"ollama"` | Local models only |
+| [OpenAI's GPT](https://openai.com/gpt) | `"openai"` | Full structured output support |
+| [xAI's Grok](https://x.ai/) | `"xai"` | Beta access required |
 
-If you want to see Simplemind support, additional providers or models, please send a pull request!
+If you want to see Simplemind support additional providers or models, please send a pull request!
 
 ## Quickstart
 
