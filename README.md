@@ -16,8 +16,6 @@ With Simplemind, tapping into AI is as easy as a friendly conversation.
 
 ## Supported APIs
 
-To specify a specific provider or model, you can use the `llm_provider` and `llm_model` parameters when calling: `generate_text`, `generate_data`, or `create_conversation`.
-
 The APIs remain identical between all supported providers / models:
 
 | Provider Name | `llm_provider` | `llm_model` (default)|
@@ -29,6 +27,8 @@ The APIs remain identical between all supported providers / models:
 | [Ollama](https://ollama.com) | `"ollama"` | `"llama3.2"` |
 | [OpenAI's GPT](https://openai.com/gpt) | `"openai"` | `"gpt-4o-mini"` |
 | [xAI's Grok](https://x.ai/) | `"xai"` | `"grok-beta"` |
+
+To specify a specific provider or model, you can use the `llm_provider` and `llm_model` parameters when calling: `generate_text`, `generate_data`, or `create_conversation`.
 
 If you want to see Simplemind support additional providers or models, please send a pull request!
 
