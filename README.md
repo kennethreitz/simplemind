@@ -186,7 +186,9 @@ response = gpt_4o_mini.generate_text("Hello!")
 conversation = gpt_4o_mini.create_conversation()
 ```
 
-This maintains the simplicity of the original API while reducing repetition. The session object also supports overriding defaults on a per-call basis:
+This maintains the simplicity of the original API while reducing repetition. 
+
+The session object also supports overriding defaults on a per-call basis:
 
 ```python
 response = gpt_4o_mini.generate_text("Complex task here", llm_model="gpt-4")
