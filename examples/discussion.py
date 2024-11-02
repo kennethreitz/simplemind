@@ -126,13 +126,7 @@ def have_ai_discussion(topic: str, turns_per_model: int = 1, max_rounds: int = 3
 # Example usage
 if __name__ == "__main__":
     # Example topics
-    topics = [
-        "The future of human-AI collaboration in creative fields",
-        "The role of consciousness in artificial intelligence",
-        "The balance between AI advancement and ethical considerations",
-        "The impact of AI on human relationships and communication",
-        "The potential for AI to help solve climate change",
-    ]
+    topic = "The future of human-AI collaboration in creative fields",
 
     # Run a discussion on the first topic
-    have_ai_discussion(topic=topics[0], turns_per_model=1, max_rounds=3)
+    have_ai_discussion(topic=topic, turns_per_model=1, max_rounds=3)
