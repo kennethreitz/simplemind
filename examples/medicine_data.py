@@ -1,5 +1,8 @@
 from pydantic import BaseModel
 from _context import simplemind as sm
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
 
 
 class SideEffect(BaseModel):
@@ -44,19 +47,48 @@ prompt = get_medication_prompt(medications_to_lookup)
 # Generate structured data for medications
 medications = session.generate_data(prompt=prompt, response_model=MedicationList)
 
-# Print the structured information
+# Create a Rich console
+console = Console()
+
+# Replace the print section with Rich formatting
 for med in medications.root:
-    print(f"\n=== {med.brand_name} ===")
-    print(f"Generic Name: {med.generic_name}")
-    print(f"Drug Class: {med.drug_class}")
-    print(f"Half Life: {med.half_life}")
-    print("\nCommon Uses:")
+    # Create a table for the medication details
+    table = Table(show_header=False, box=None)
+    table.add_row("[bold cyan]Generic Name:[/]", med.generic_name)
+    table.add_row("[bold cyan]Drug Class:[/]", med.drug_class)
+    table.add_row("[bold cyan]Half Life:[/]", med.half_life)
+
+    # Create a nested table for common uses
+    uses_table = Table(show_header=False, box=None, padding=(0, 2))
     for use in med.common_uses:
-        print(f"- {use}")
-    print("\nSide Effects:")
+        uses_table.add_row("•", use)
+
+    # Create a nested table for side effects
+    effects_table = Table(show_header=False, box=None, padding=(0, 2))
     for effect in med.side_effects:
-        print(f"- {effect.effect} ({effect.severity}, {effect.frequency})")
-    print(f"\nTypical Dosage: {med.typical_dosage}")
-    print("\nWarnings:")
+        severity_color = {"mild": "green", "moderate": "yellow", "severe": "red"}.get(
+            effect.severity.lower(), "white"
+        )
+        effects_table.add_row(
+            "•",
+            effect.effect,
+            f"[{severity_color}]{effect.severity}[/]",
+            f"({effect.frequency})",
+        )
+
+    # Create a nested table for warnings
+    warnings_table = Table(show_header=False, box=None, padding=(0, 2))
     for warning in med.warnings:
-        print(f"- {warning}")
+        warnings_table.add_row("•", f"[red]{warning}[/]")
+
+    # Add the nested tables to the main table
+    table.add_row("[bold cyan]Common Uses:[/]", uses_table)
+    table.add_row("[bold cyan]Side Effects:[/]", effects_table)
+    table.add_row("[bold cyan]Typical Dosage:[/]", med.typical_dosage)
+    table.add_row("[bold cyan]Warnings:[/]", warnings_table)
+
+    # Create and print a panel for each medication
+    console.print(
+        Panel(table, title=f"[bold blue]{med.brand_name}[/]", border_style="blue")
+    )
+    console.print()  # Add a blank line between medications
