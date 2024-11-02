@@ -24,6 +24,7 @@ class OpenAI(BaseProvider):
     DEFAULT_MODEL = DEFAULT_MODEL
     DEFAULT_KWARGS = DEFAULT_KWARGS
     supports_streaming = True
+    
 
     def __init__(self, api_key: str | None = None):
         self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)

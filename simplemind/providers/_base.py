@@ -17,6 +17,7 @@ class BaseProvider(ABC):
     NAME: str
     DEFAULT_MODEL: str
     supports_streaming: bool = False
+    supports_structured_responses: bool = True
 
     @cached_property
     @abstractmethod

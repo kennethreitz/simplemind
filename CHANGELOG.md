@@ -3,7 +3,10 @@ Release History
 
 ## 0.2.2 (2024-11-02)
 
+- Add openai streaming support (set `stream=True` to `generate_text`).
 - `conv.prepend_system_message` now uses system role by default.
+- Add `provider.supports_streaming` property.
+- Add `provider.supports_structured_response` property.
 - General improvements.
 
 ## 0.2.1 (2024-11-01)
