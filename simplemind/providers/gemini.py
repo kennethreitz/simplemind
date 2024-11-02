@@ -2,7 +2,7 @@
 # IT is not currently working as desired.
 
 from functools import cached_property
-from typing import TYPE_CHECKING, Type, TypeVar
+from typing import TYPE_CHECKING, Type, TypeVar, Iterator
 
 import instructor
 from pydantic import BaseModel
@@ -110,7 +110,7 @@ class Gemini(BaseProvider):
         return response.text
 
     @logger
-    def generate_stream_text(self, prompt: str, **kwargs) -> str:
+    def generate_stream_text(self, prompt: str, **kwargs) -> Iterator[str]:
         """Generate streaming text using the Gemini API."""
         kwargs.pop("llm_model", None)
         try:

@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import TYPE_CHECKING, Type, TypeVar
+from typing import TYPE_CHECKING, Type, TypeVar, Iterator
 
 import instructor
 from openai import OpenAI
@@ -119,7 +119,9 @@ class Ollama(BaseProvider):
         return response.get("message", {}).get("content", "")
 
     @logger
-    def generate_stream_text(self, prompt: str, *, llm_model: str, **kwargs) -> str:
+    def generate_stream_text(
+        self, prompt: str, *, llm_model: str, **kwargs
+    ) -> Iterator[str]:
         # Prepare the messages.
         messages = [
             {"role": "user", "content": prompt},

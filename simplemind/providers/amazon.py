@@ -1,4 +1,4 @@
-from typing import Type, TypeVar
+from typing import Type, TypeVar, Iterator
 from functools import cached_property
 
 import instructor
@@ -94,7 +94,7 @@ class Amazon(BaseProvider):
 
         return response.content[0].text
 
-    def generate_stream_text(self, prompt, *, llm_model, **kwargs):
+    def generate_stream_text(self, prompt, *, llm_model, **kwargs) -> Iterator[str]:
         """Generate streaming text using the Amazon API."""
 
         # Prepare the messages.

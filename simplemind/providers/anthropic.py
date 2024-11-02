@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import TYPE_CHECKING, Type, TypeVar
+from typing import TYPE_CHECKING, Type, TypeVar, Iterator
 
 import instructor
 from pydantic import BaseModel
@@ -110,7 +110,9 @@ class Anthropic(BaseProvider):
         return response.content[0].text
 
     @logger
-    def generate_stream_text(self, prompt: str, *, llm_model: str, **kwargs):
+    def generate_stream_text(
+        self, prompt: str, *, llm_model: str, **kwargs
+    ) -> Iterator[str]:
         # Prepare the messages.
         messages = [
             {"role": "user", "content": prompt},

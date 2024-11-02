@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import TYPE_CHECKING, Type, TypeVar
+from typing import TYPE_CHECKING, Type, TypeVar, Iterator
 
 import instructor
 from pydantic import BaseModel
@@ -120,7 +120,7 @@ class Groq(BaseProvider):
         *,
         llm_model: str | None = None,
         **kwargs,
-    ) -> str:
+    ) -> Iterator[str]:
         """Generate streaming text using the Groq API."""
         messages = [
             {"role": "user", "content": prompt},
