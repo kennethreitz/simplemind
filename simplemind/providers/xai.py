@@ -25,6 +25,7 @@ class XAI(BaseProvider):
     NAME = PROVIDER_NAME
     DEFAULT_MODEL = DEFAULT_MODEL
     DEFAULT_KWARGS = DEFAULT_KWARGS
+    supports_streaming = True
     supports_structured_responses = False
 
     def __init__(self, api_key: str | None = None):
@@ -86,14 +87,36 @@ class XAI(BaseProvider):
 
     @logger
     def generate_text(self, prompt: str, *, llm_model: str, **kwargs) -> str:
+        # Prepare the messages.
         messages = [
             {"role": "user", "content": prompt},
         ]
 
+        # Make the request.
         response = self.client.chat.completions.create(
             messages=messages,
             model=llm_model or self.DEFAULT_MODEL,
             **{**self.DEFAULT_KWARGS, **kwargs},
         )
 
+        # Return the response content.
         return str(response.choices[0].message.content)
+
+    @logger
+    def generate_stream_text(self, prompt: str, *, llm_model: str, **kwargs) -> str:
+        # Prepare the messages.
+        messages = [
+            {"role": "user", "content": prompt},
+        ]
+
+        # Make the request.
+        response = self.client.chat.completions.create(
+            messages=messages,
+            model=llm_model or self.DEFAULT_MODEL,
+            stream=True,
+            **{**self.DEFAULT_KWARGS, **kwargs},
+        )
+
+        # Iterate over the response and yield the content.
+        for chunk in response:
+            yield chunk.choices[0].delta.content
