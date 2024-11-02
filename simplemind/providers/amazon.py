@@ -17,6 +17,7 @@ DEFAULT_MAX_TOKENS = 5_000
 class Amazon(BaseProvider):
     NAME = PROVIDER_NAME
     DEFAULT_MODEL = DEFAULT_MODEL
+    supports_streaming = True
 
     def __init__(self, profile_name: str | None = None):
         self.profile_name = profile_name or settings.AMAZON_PROFILE_NAME
