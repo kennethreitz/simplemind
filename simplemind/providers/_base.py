@@ -16,6 +16,7 @@ class BaseProvider(ABC):
 
     NAME: str
     DEFAULT_MODEL: str
+    supports_streaming: bool = False
 
     @cached_property
     @abstractmethod
@@ -40,6 +41,6 @@ class BaseProvider(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def generate_text(self, prompt: str, **kwargs) -> str:
+    def generate_text(self, prompt: str, *, stream: bool = False, **kwargs) -> str:
         """Generate text from a prompt."""
         raise NotImplementedError

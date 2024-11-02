@@ -8,7 +8,6 @@ class LoggingConfig(BaseSettings):
     """The class that holds all the logging settings for the application."""
 
     is_enabled: bool = Field(False, description="Enable logging")
-
     model_config = SettingsConfigDict(extra="forbid")
 
     def enable_logfire(self, **kwargs) -> None:
@@ -41,7 +40,9 @@ class LoggingConfig(BaseSettings):
 class Settings(BaseSettings):
     """The class that holds all the API keys for the application."""
 
-    AMAZON_PROFILE_NAME: Optional[str] = Field("default", description="AWS Named Profile")
+    AMAZON_PROFILE_NAME: Optional[str] = Field(
+        "default", description="AWS Named Profile"
+    )
     ANTHROPIC_API_KEY: Optional[SecretStr] = Field(
         None, description="API key for Anthropic"
     )

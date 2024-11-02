@@ -103,6 +103,7 @@ def generate_text(
     *,
     llm_model: str | None = None,
     llm_provider: str | None = None,
+    stream: bool = False,
     **kwargs,
 ) -> str:
     """Generate text from a given prompt."""
@@ -111,19 +112,15 @@ def generate_text(
     provider = find_provider(llm_provider or settings.DEFAULT_LLM_PROVIDER)
 
     # Generate the text.
-    return provider.generate_text(prompt=prompt, llm_model=llm_model, **kwargs)
+    if stream:
+        if not provider.supports_streaming:
+            raise ValueError(f"{provider} does not support streaming.")
 
-
-def generate_stream_text(
-    prompt: str,
-    *,
-    llm_model: str | None = None,
-    llm_provider: str | None = None,
-    **kwargs,
-) -> Generator[str, None, None]:
-    """Generate streaming text from a given prompt."""
-    provider = find_provider(llm_provider or settings.DEFAULT_LLM_PROVIDER)
-    return provider.generate_stream_text(prompt=prompt, llm_model=llm_model, **kwargs)
+        return provider.generate_stream_text(
+            prompt=prompt, llm_model=llm_model, **kwargs
+        )
+    else:
+        return provider.generate_text(prompt=prompt, llm_model=llm_model, **kwargs)
 
 
 def enable_logfire() -> None:
