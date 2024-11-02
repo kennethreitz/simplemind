@@ -6,7 +6,8 @@ from rich.text import Text
 
 console = Console()
 
-claude = sm.Session(llm_provider="openai")
+gpt_4o_mini = sm.Session(llm_provider="openai")
+claude_sonnet = sm.Session(llm_provider="anthropic")
 
 
 class BibleVerse(BaseModel):
@@ -28,10 +29,12 @@ class CrossReference(BaseModel):
     passage: BiblePassage
     notes: list[str]
     origin_verse: BibleVerse
+    ai_perspective: str
+    anthropic_perspective: str
 
 
 def get_passage(book: str, chapter: int, translation: str = "ESV") -> BiblePassage:
-    passage = claude.generate_data(
+    passage = gpt_4o_mini.generate_data(
         prompt=f"""Return {book} chapter {chapter} from the {translation} translation.
 Format each verse as plain text without any special characters or formatting.
 For example:
@@ -47,16 +50,36 @@ Return only the biblical text, formatted as a BiblePassage object.""",
 
 def get_cross_reference(passage: BiblePassage) -> CrossReference:
     verses_text = "\n".join([f"Verse {v.verse}: {v.text}" for v in passage.verses])
-    ref = claude.generate_data(
+
+    # Get main cross-reference from OpenAI
+    ref = gpt_4o_mini.generate_data(
         prompt=f"""Find a thematically related Bible passage that connects with this text:
 {verses_text}
 
 Return a CrossReference object with:
 1. A related passage (using plain text without special characters)
 2. A list of clear, specific notes explaining the thematic connections
-3. The original passage included""",
+3. The original passage included
+4. An AI perspective that provides a thoughtful, modern interpretation of how these passages relate to contemporary life and universal human experiences""",
         response_model=CrossReference,
     )
+
+    # Get Anthropic's perspective separately
+    anthropic_insight = claude_sonnet.generate_text(
+        prompt=f"""Analyze these biblical passages from a philosophical and ethical perspective:
+
+Original passage:
+{verses_text}
+
+Cross-reference passage:
+{' '.join([f'Verse {v.verse}: {v.text}' for v in ref.passage.verses])}
+
+Provide a thoughtful analysis focusing on the philosophical and ethical implications of these passages, drawing from your training in ethics and philosophy.
+Return your response as a plain string.""",
+    )
+
+    # Add Anthropic's perspective to the reference object
+    ref.anthropic_perspective = anthropic_insight
     return ref
 
 
@@ -94,10 +117,17 @@ def pretty_print_reference(ref: CrossReference):
 
     notes_panel = Panel(notes_text, title="Thematic Connections", border_style="yellow")
 
+    # Add new AI perspective panel
+    ai_text = Text()
+    ai_text.append(ref.ai_perspective)
+
+    ai_panel = Panel(ai_text, title="AI Perspective", border_style="magenta")
+
     # Print all panels
     console.print(origin_panel)
     console.print(ref_panel)
     console.print(notes_panel)
+    console.print(ai_panel)
 
 
 if __name__ == "__main__":
