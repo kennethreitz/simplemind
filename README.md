@@ -93,7 +93,9 @@ import simplemind as sm
 
 ## Examples
 
-Here are some examples of how to use Simplemind. Please note that most function calls optionally accept `llm_provider` and `llm_model` parameters, which you provide as strings.
+Here are some examples of how to use Simplemind. 
+
+**Please note**: Most of the calls seen here optionally accept `llm_provider` and `llm_model` parameters, which you provide as strings.
 
 ### Text Completion
 
