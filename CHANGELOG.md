@@ -1,6 +1,10 @@
 Release History
 ===============
 
+## 0.2.2 (2024-11-02)
+
+- `conv.prepend_system_message` now uses system role by default.
+
 ## 0.2.1 (2024-11-01)
 
 - Add `cached_property` to Amazon provider.
