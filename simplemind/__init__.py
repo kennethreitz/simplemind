@@ -1,4 +1,4 @@
-from typing import List, Type
+from typing import Generator, List, Type
 
 from .models import BaseModel, BasePlugin, Conversation
 from .settings import settings
@@ -112,6 +112,18 @@ def generate_text(
 
     # Generate the text.
     return provider.generate_text(prompt=prompt, llm_model=llm_model, **kwargs)
+
+
+def generate_stream_text(
+    prompt: str,
+    *,
+    llm_model: str | None = None,
+    llm_provider: str | None = None,
+    **kwargs,
+) -> Generator[str, None, None]:
+    """Generate streaming text from a given prompt."""
+    provider = find_provider(llm_provider or settings.DEFAULT_LLM_PROVIDER)
+    return provider.generate_stream_text(prompt=prompt, llm_model=llm_model, **kwargs)
 
 
 def enable_logfire() -> None:
