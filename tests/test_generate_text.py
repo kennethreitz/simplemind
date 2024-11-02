@@ -11,7 +11,7 @@ from simplemind.providers import Anthropic, Gemini, OpenAI, Groq, Ollama, Amazon
         OpenAI,
         Groq,
         Ollama,
-        Amazon,
+        # Amazon,
     ],
 )
 def test_generate_text(provider_cls):

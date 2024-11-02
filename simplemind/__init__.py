@@ -64,16 +64,16 @@ def create_conversation(
     """Create a new conversation."""
 
     # Create the conversation.
-    conversation = Conversation(
+    conv = Conversation(
         llm_model=llm_model,
         llm_provider=llm_provider or settings.DEFAULT_LLM_PROVIDER,
     )
 
     # Add plugins to the conversation.
     for plugin in plugins or []:
-        conversation.add_plugin(plugin)
+        conv.add_plugin(plugin)
 
-    return conversation
+    return conv
 
 
 def generate_data(

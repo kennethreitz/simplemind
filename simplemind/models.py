@@ -116,16 +116,22 @@ class Conversation(SMBaseModel):
                 except NotImplementedError:
                     pass
 
-    def prepend_system_message(
-        self, text: str, meta: Dict[str, Any] | None = None
-    ):
+    def prepend_system_message(self, text: str, meta: Dict[str, Any] | None = None):
         """Prepend a system message to the conversation."""
-        self.messages = [Message(role="system", text=text, meta=meta or {})] + self.messages
+        self.messages = [
+            Message(role="system", text=text, meta=meta or {})
+        ] + self.messages
 
     def add_message(
-        self, role: MESSAGE_ROLE, text: str, meta: Optional[Dict[str, Any]] = None
+        self,
+        role: MESSAGE_ROLE = "user",
+        text: str | None = None,
+        *,
+        meta: Optional[Dict[str, Any]] = None,
     ):
         """Add a new message to the conversation."""
+
+        assert text is not None
 
         # Ensure meta is a dict.
         if meta is None:
@@ -150,6 +156,8 @@ class Conversation(SMBaseModel):
         llm_provider: str | None = None,
     ) -> Message:
         """Send the conversation to the LLM."""
+
+        # TODO: llm_model and llm_provider should override the conversation's.
 
         # Execute all pre send hooks.
         for plugin in self.plugins:
