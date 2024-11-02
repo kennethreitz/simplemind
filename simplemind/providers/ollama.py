@@ -26,6 +26,7 @@ class Ollama(BaseProvider):
     DEFAULT_MODEL = DEFAULT_MODEL
     DEFAULT_KWARGS = DEFAULT_KWARGS
     TIMEOUT = DEFAULT_TIMEOUT
+    supports_streaming = True
 
     def __init__(self, host_url: str | None = None):
         self.host_url = host_url or settings.OLLAMA_HOST_URL
@@ -116,3 +117,21 @@ class Ollama(BaseProvider):
         )
 
         return response.get("message", {}).get("content", "")
+
+    @logger
+    def generate_stream_text(self, prompt: str, *, llm_model: str, **kwargs) -> str:
+        # Prepare the messages.
+        messages = [
+            {"role": "user", "content": prompt},
+        ]
+
+        response = self.client.chat(
+            messages=messages,
+            model=llm_model or self.DEFAULT_MODEL,
+            stream=True,
+            **{**self.DEFAULT_KWARGS, **kwargs},
+        )
+
+        # Iterate over the response and yield the content.
+        for chunk in response:
+            yield chunk["message"]["content"]
