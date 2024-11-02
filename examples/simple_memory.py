@@ -13,7 +13,7 @@ class SimpleMemoryPlugin:
 
     def initialize_hook(self, conversation: sm.Conversation):
         for m in self.yield_memories():
-            conversation.prepend_system_message(role="system", text=m)
+            conversation.prepend_system_message(text=m)
 
 
 conversation = sm.create_conversation(llm_model="grok-beta", llm_provider="xai")

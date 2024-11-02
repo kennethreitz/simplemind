@@ -117,10 +117,10 @@ class Conversation(SMBaseModel):
                     pass
 
     def prepend_system_message(
-        self, role: MESSAGE_ROLE, text: str, meta: Dict[str, Any] | None = None
+        self, text: str, meta: Dict[str, Any] | None = None
     ):
         """Prepend a system message to the conversation."""
-        self.messages = [Message(role=role, text=text, meta=meta or {})] + self.messages
+        self.messages = [Message(role="system", text=text, meta=meta or {})] + self.messages
 
     def add_message(
         self, role: MESSAGE_ROLE, text: str, meta: Optional[Dict[str, Any]] = None
