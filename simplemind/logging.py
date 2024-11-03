@@ -15,19 +15,51 @@ def logger(func: Callable[..., Any]) -> Callable[..., Any]:
         if not settings.logging.is_enabled:
             return func(*args, **kwargs)
 
-        logfire.info(f"Calling {func.__name__} with args: {args}, kwargs: {kwargs}")
-        t1 = time.perf_counter()
+        # See logfire manual tracing docs: https://logfire.pydantic.dev/docs/guides/onboarding-checklist/add-manual-tracing/#exceptions
+        with logfire.span("{event}", event="function called", function=func.__name__, args=args, kwargs=kwargs):
+            
+            t1 = time.perf_counter()
 
-        try:
-            result = func(*args, **kwargs)
-            t2 = time.perf_counter()
-            logfire.info(f"{func.__name__} returned: {result} in {t2-t1} seconds")
+            try:
+                is_streaming = "generate_stream_text" in func.__name__ or kwargs.get("stream")
+                if is_streaming:
+                    chunks = []
+                    for chunk in func(*args, **kwargs):
+                        chunks.append(chunk)
+                        yield chunk
+                    result = "".join(chunks)
+                    # note: no need to log the function name here, as it's already in the span
+                    logfire.info(
+                        "{event}",
+                        event="function completed",
+                        result=result[:2000],
+                        chunk_count=len(chunks),
+                        duration=time.perf_counter() - t1
+                    )
+                else:
+                    result = func(*args, **kwargs)
+                    logfire.info(
+                        "{event}",
+                        event="function completed",
+                        result=str(result)[:2000],
+                        duration=time.perf_counter() - t1
+                    )
+                    return result
 
-            return result
+            if not settings.logging.is_enabled:
+                return func(*args, **kwargs)
 
-        except Exception as e:
-            t2 = time.perf_counter()
-            logfire.error(f"Error in {func.__name__}: {e} in {t2-t1} seconds")
-            raise e
+            chunks = []
+            try:
+                is_streaming = "generate_stream_text" in func.__name__ or kwargs.get("stream")
+                logfire.error(
+                    "{event}",
+                    event="function failed",
+                    error=str(e),
+                    duration=time.perf_counter() - t1,
+                    streamed_chunks=len(chunks) if chunks else None,
+                    partial_streaming_result="".join(chunks)[:2000] if chunks else None,
+                )
+                raise e
 
     return wrapper
