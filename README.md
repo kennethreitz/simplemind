@@ -35,7 +35,7 @@ The APIs remain identical between all supported providers / models:
     <tr>
       <td><a href="https://aws.amazon.com/bedrock/">Amazon's Bedrock</a></td>
       <td><code>"amazon"</code></td>
-      <td><code>"anthropic.claude-3-sonnet-20240229-v1:0"</code></td>
+      <td><code>"anthropic.claude-3-5-sonnet-20241022-v2:0"</code></td>
     </tr>
     <tr>
       <td><a href="https://gemini.google/">Google's Gemini</a></td>
@@ -93,7 +93,7 @@ import simplemind as sm
 
 ## Examples
 
-Here are some examples of how to use Simplemind. 
+Here are some examples of how to use Simplemind.
 
 **Please note**: Most of the calls seen here optionally accept `llm_provider` and `llm_model` parameters, which you provide as strings.
 
@@ -188,7 +188,7 @@ response = gpt_4o_mini.generate_text("Hello!")
 conversation = gpt_4o_mini.create_conversation()
 ```
 
-This maintains the simplicity of the original API while reducing repetition. 
+This maintains the simplicity of the original API while reducing repetition.
 
 The session object also supports overriding defaults on a per-call basis:
 
