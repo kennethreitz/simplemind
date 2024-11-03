@@ -4,6 +4,7 @@ Release History
 ## 0.2.3 (2024-11-03)
 
 - Update default model for Amazon provider.
+- Improved logging to handle streaming functions.
 
 ## 0.2.2 (2024-11-02)
 
