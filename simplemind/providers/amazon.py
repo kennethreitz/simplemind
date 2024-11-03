@@ -10,7 +10,7 @@ from ..settings import settings
 T = TypeVar("T", bound=BaseModel)
 
 PROVIDER_NAME = "amazon"
-DEFAULT_MODEL = "anthropic.claude-3-sonnet-20240229-v1:0"
+DEFAULT_MODEL = "anthropic.claude-3-5-sonnet-20241022-v2:0"
 DEFAULT_MAX_TOKENS = 5_000
 
 
