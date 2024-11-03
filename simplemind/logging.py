@@ -46,14 +46,19 @@ def logger(func: Callable[..., Any]) -> Callable[..., Any]:
                     )
                     return result
 
-            except Exception as e:
+            if not settings.logging.is_enabled:
+                return func(*args, **kwargs)
+
+            chunks = []
+            try:
+                is_streaming = "generate_stream_text" in func.__name__ or kwargs.get("stream")
                 logfire.error(
                     "{event}",
                     event="function failed",
                     error=str(e),
                     duration=time.perf_counter() - t1,
-                    streamed_chunks=len(chunks) if is_streaming else None,
-                    partial_streaming_result="".join(chunks)[:2000] if is_streaming else None,
+                    streamed_chunks=len(chunks) if chunks else None,
+                    partial_streaming_result="".join(chunks)[:2000] if chunks else None,
                 )
                 raise e
 
