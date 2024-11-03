@@ -1,6 +1,10 @@
 Release History
 ===============
 
+## 0.2.3 (2024-11-03)
+
+- Update default model for Amazon provider.
+
 ## 0.2.2 (2024-11-02)
 
 - Add streaming support (set `stream=True` to `generate_text`).
