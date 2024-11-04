@@ -11,14 +11,6 @@ class MultiAIConversation:
     """Orchestrates conversations between multiple AI models."""
 
     MODEL_SESSIONS = {
-        "Llama3.2": sm.Session(
-            llm_provider="ollama",
-            llm_model="llama3.2",
-        ),
-        "Claude-3.5-Sonnet": sm.Session(
-            llm_provider="anthropic",
-            llm_model="claude-3-5-sonnet-20241022",
-        ),
         "GPT-4o": sm.Session(
             llm_provider="openai",
             llm_model="gpt-4o",
@@ -26,6 +18,10 @@ class MultiAIConversation:
         "Grok-Beta": sm.Session(
             llm_provider="xai",
             llm_model="grok-beta",
+        ),
+        "Claude-3.5-Sonnet": sm.Session(
+            llm_provider="anthropic",
+            llm_model="claude-3-5-sonnet-20241022",
         ),
     }
 
@@ -36,13 +32,14 @@ class MultiAIConversation:
         self.max_rounds = max_rounds
         self.conversation_history: List[Tuple[str, str]] = []
         self.console = Console()
+        self.user_name = "Kenneth Reitz"
 
     def _format_system_prompt(self, ai_name: str) -> str:
         """Creates a system prompt for each AI model."""
         return f"""You are {ai_name}. You are participating in a thoughtful discussion with other AI models about {self.topic}.
 
 Rules:
-1. Be concise but insightful (keep responses under 100 words)
+1. Be concise but insightful (keep responses under 140 words)
 2. Build upon previous points made in the conversation
 3. Ask questions to deepen the discussion when appropriate
 4. Stay on topic while maintaining your unique perspective
@@ -72,32 +69,31 @@ Current discussion topic: {self.topic}"""
         # Store in history
         self.conversation_history.append((ai_name, response))
 
+    def _get_user_input(self) -> str:
+        """Gets input from the user for the discussion."""
+        self.console.print("\n[bold green]Your turn! Share your thoughts:[/bold green]")
+        user_response = input("> ")
+        self._print_response(self.user_name, user_response)
+        return user_response
+
     def run_conversation(self):
         """Runs the multi-AI conversation."""
-
-        # Initialize the conversation
-        initial_prompt = (
-            f"Let's have a thoughtful discussion about {self.topic}. "
-            "Please share your initial thoughts in 2-3 sentences."
+        # Get initial thoughts from the human
+        self.console.print(
+            f"\n[bold green]Start the discussion about {self.topic}:[/bold green]"
         )
+        self._get_user_input()
 
         for round_num in range(self.max_rounds):
             self.console.print(f"\n[bold green]Round {round_num + 1}[/bold green]")
 
+            # Let all AI models respond
             for model_name, session in self.MODEL_SESSIONS.items():
                 for turn in range(self.turns_per_model):
                     conversation = self._create_conversation(session, model_name)
 
-                    # Add the prompt
-                    prompt = (
-                        initial_prompt
-                        if round_num == 0 and turn == 0
-                        else (
-                            f"Continue the discussion about {self.topic}, "
-                            "responding to the previous points made."
-                        )
-                    )
-
+                    # Add the prompt (simplified since human always starts)
+                    prompt = f"Continue the discussion about {self.topic}, responding to the previous points made."
                     conversation.add_message(role="user", text=prompt)
 
                     # Get and print response
@@ -107,17 +103,24 @@ Current discussion topic: {self.topic}"""
                     # Small delay to prevent rate limiting
                     time.sleep(1)
 
+            # Then get user input at the end of the round
+            self._get_user_input()
+
             # Optional: Add a separator between rounds
             self.console.print("\n" + "-" * 50)
 
 
-def have_ai_discussion(topic: str, turns_per_model: int = 1, max_rounds: int = 3):
+def have_ai_discussion(turns_per_model: int = 1, max_rounds: int = 3):
     """Convenience function to start an AI discussion."""
+    # Get topic from user
+    print("\nWhat topic would you like to discuss?")
+    topic = input("> ")
+
     debate = MultiAIConversation(
         topic=topic, turns_per_model=turns_per_model, max_rounds=max_rounds
     )
 
-    print(f"\nStarting AI discussion on: {topic}")
+    print(f"\nStarting AI discussion about: {topic}")
     print("=" * 50)
 
     debate.run_conversation()
@@ -125,8 +128,4 @@ def have_ai_discussion(topic: str, turns_per_model: int = 1, max_rounds: int = 3
 
 # Example usage
 if __name__ == "__main__":
-    # Example topics
-    topic = "The future of human-AI collaboration in creative fields",
-
-    # Run a discussion on the first topic
-    have_ai_discussion(topic=topic, turns_per_model=1, max_rounds=3)
+    have_ai_discussion(turns_per_model=1, max_rounds=5)
