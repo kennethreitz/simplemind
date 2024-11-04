@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import TYPE_CHECKING, Iterator, Type, TypeVar
+from typing import TYPE_CHECKING, Type, TypeVar, Iterator
 
 import instructor
 from pydantic import BaseModel
