@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import TYPE_CHECKING, Type, TypeVar, Iterator
+from typing import TYPE_CHECKING, Iterator, Type, TypeVar
 
 import instructor
 from pydantic import BaseModel
@@ -49,15 +49,24 @@ class Anthropic(BaseProvider):
         return instructor.from_anthropic(self.client)
 
     @logger
-    def send_conversation(self, conversation: "Conversation", **kwargs) -> "Message":
+    def send_conversation(
+        self, conversation: "Conversation", **kwargs
+    ) -> "Message":
         """Send a conversation to the Anthropic API."""
         from ..models import Message
 
+        system_prompt = filter(
+            lambda msg: msg.role == "system", conversation.messages
+        )
+
         messages = [
-            {"role": msg.role, "content": msg.text} for msg in conversation.messages
+            {"role": msg.role, "content": msg.text}
+            for msg in conversation.messages
+            if msg.role != "system"
         ]
 
         response = self.client.messages.create(
+            system=next(system_prompt, None),
             model=conversation.llm_model or self.DEFAULT_MODEL,
             messages=messages,
             **{**self.DEFAULT_KWARGS, **kwargs},
