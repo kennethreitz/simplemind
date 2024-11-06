@@ -14,9 +14,6 @@ class InspirationPlugin(sm.BasePlugin):
         "The universe is in constant dialogue with those who listen.",
     ]
 
-    def __init__(self):
-        super().__init__()  # Make sure to call parent class's __init__
-
     def get_inspiration(self):
         # Randomly select an inspirational quote or prompt
         return random.choice(self.inspirations)
@@ -34,4 +31,4 @@ conversation.add_plugin(InspirationPlugin())
 # Add a user message and send the conversation
 conversation.add_message(role="user", text="Tell me something inspiring.")
 response = conversation.send()
-print(response)
+print(response.text)
