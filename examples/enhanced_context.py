@@ -95,6 +95,10 @@ class EnhancedContextPlugin(sm.BasePlugin):
             "You are a historian who relates everything to the past",
         ]
 
+        # Add these lines to store the conversation's model and provider
+        self.llm_model = None
+        self.llm_provider = None
+
     @contextmanager
     def get_connection(self):
         """Context manager for database connections"""
@@ -512,6 +516,10 @@ class EnhancedContextPlugin(sm.BasePlugin):
         return "\n".join(context_parts)
 
     def pre_send_hook(self, conversation: sm.Conversation):
+        # Add these lines at the start of pre_send_hook
+        self.llm_model = conversation.llm_model
+        self.llm_provider = conversation.llm_provider
+
         last_message = conversation.get_last_message(role="user")
         if not last_message:
             return
@@ -567,7 +575,7 @@ class EnhancedContextPlugin(sm.BasePlugin):
             )
 
             temp_conv = sm.create_conversation(
-                llm_model=LLM_MODEL, llm_provider=LLM_PROVIDER
+                llm_model=self.llm_model, llm_provider=self.llm_provider
             )
             temp_conv.add_message(role="user", text=prompt)
             response = temp_conv.send()
