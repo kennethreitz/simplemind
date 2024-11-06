@@ -28,6 +28,9 @@ class BasePlugin(SMBaseModel):
     # Plugin metadata.
     meta: Dict[str, Any] = {}
 
+    class Config:
+        extra = "allow"
+
     def initialize_hook(self, conversation: "Conversation") -> Any:
         """Initialize a hook for the plugin."""
         raise NotImplementedError
