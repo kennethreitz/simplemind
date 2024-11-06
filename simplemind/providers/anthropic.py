@@ -55,9 +55,15 @@ class Anthropic(BaseProvider):
         """Send a conversation to the Anthropic API."""
         from ..models import Message
 
-        system_prompt = filter(
-            lambda msg: msg.role == "system", conversation.messages
-        )
+        system_messages = [
+            msg for msg in conversation.messages if msg.role == "system"
+        ]
+        if len(system_messages) > 1:
+            logger.warning(
+                "Multiple system messages found. Using the first one."
+            )
+
+        system_prompt = system_messages[0] if system_messages else None
 
         messages = [
             {"role": msg.role, "content": msg.text}
@@ -66,7 +72,7 @@ class Anthropic(BaseProvider):
         ]
 
         response = self.client.messages.create(
-            system=next(system_prompt, None),
+            system=system_prompt.text,
             model=conversation.llm_model or self.DEFAULT_MODEL,
             messages=messages,
             **{**self.DEFAULT_KWARGS, **kwargs},
