@@ -30,6 +30,7 @@ class BasePlugin(SMBaseModel):
 
     class Config:
         extra = "allow"
+        # allow_arbitrary_types = True
 
     def initialize_hook(self, conversation: "Conversation") -> Any:
         """Initialize a hook for the plugin."""

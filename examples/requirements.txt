@@ -3,3 +3,4 @@ openai
 pydantic
 faiss-cpu
 rich
+nltk
