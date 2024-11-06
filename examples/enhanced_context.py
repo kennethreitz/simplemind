@@ -95,6 +95,8 @@ class EnhancedContextPlugin(sm.BasePlugin):
         """Store or update entity mention with error handling"""
         try:
             with self.get_connection() as conn:
+                # Modified to store datetime in SQLite format
+                now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 conn.execute(
                     """
                     INSERT INTO memory (entity, last_mentioned, mention_count)
@@ -102,10 +104,11 @@ class EnhancedContextPlugin(sm.BasePlugin):
                     ON CONFLICT(entity) DO UPDATE SET
                         last_mentioned = ?,
                         mention_count = mention_count + 1
-                """,
-                    (entity, datetime.now(), datetime.now()),
+                    """,
+                    (entity, now, now),
                 )
-            self.logger.info(f"Stored entity: {entity}")
+                conn.commit()  # Added explicit commit
+                self.logger.info(f"Stored entity: {entity}")
         except sqlite3.Error as e:
             self.logger.error(f"Database error while storing entity {entity}: {e}")
 
@@ -114,14 +117,15 @@ class EnhancedContextPlugin(sm.BasePlugin):
         try:
             with self.get_connection() as conn:
                 cur = conn.cursor()
+                # Modified query to handle datetime strings properly
                 cur.execute(
                     """
                     SELECT entity, mention_count
                     FROM memory
-                    WHERE last_mentioned >= datetime('now', ?)
+                    WHERE last_mentioned >= datetime('now', ?, 'localtime')
                     ORDER BY mention_count DESC, last_mentioned DESC
                     LIMIT 5
-                """,
+                    """,
                     (f"-{days} days",),
                 )
 
@@ -246,16 +250,9 @@ class EnhancedContextPlugin(sm.BasePlugin):
                     (identity, now),
                 )
 
-                # Store in entities table with explicit timestamp
-                conn.execute(
-                    """
-                    INSERT INTO entities (name, type, timestamp)
-                    VALUES (?, 'identity', ?)
-                    """,
-                    (identity, now),
-                )
+                # Store in memory table instead of entities table
+                self.store_entity(identity)  # Use existing store_entity method
                 conn.commit()
-                self.logger.info(f"Stored identity in database: {identity}")
 
                 # Verify storage
                 cur = conn.cursor()
