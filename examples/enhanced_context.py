@@ -25,13 +25,21 @@ from rich.status import Status
 from concurrent.futures import ThreadPoolExecutor
 import random
 
+from docopt import docopt
+
 DB_PATH = "enhanced_context.db"
+AVAILABLE_PROVIDERS = ["xai", "openai", "anthropic", "ollama"]
 
-LLM_MODEL = "gpt-4o-mini"
-LLM_PROVIDER = "openai"
+__doc__ = """Enhanced Context Chat Interface
 
-# LLM_PROVIDER = "xai"
-# LLM_MODEL = "grok-beta"
+Usage:
+    enhanced_context.py [--provider=<provider>]
+    enhanced_context.py (-h | --help)
+
+Options:
+    -h --help                   Show this screen.
+    --provider=<provider>       LLM provider to use (openai/anthropic/xai/ollama)
+"""
 
 
 class EnhancedContextPlugin(sm.BasePlugin):
@@ -581,10 +589,20 @@ class EnhancedContextPlugin(sm.BasePlugin):
 
 # Replace the example usage code at the bottom with this chat interface:
 def main():
+    # Parse arguments
+    args = docopt(__doc__)
+    console = Console()
+
+    # Use command line provider if specified, otherwise use picker
+    if args["--provider"]:
+        provider = args["--provider"].lower()
+        model = None
+    else:
+        provider = None
+        model = None
+
     # Create a conversation and add the plugin
-    conversation = sm.create_conversation(
-        llm_model=LLM_MODEL, llm_provider=LLM_PROVIDER
-    )
+    conversation = sm.create_conversation(llm_model=model, llm_provider=provider)
     plugin = EnhancedContextPlugin(verbose=False)  # Set verbose here
     conversation.add_plugin(plugin)
 
