@@ -21,8 +21,8 @@ from rich.panel import Panel
 from rich.text import Text
 
 DB_PATH = "enhanced_context.db"
-LLM_PROVIDER = "openai"
-LLM_MODEL = "gpt-4o-mini"
+LLM_PROVIDER = "xai"
+LLM_MODEL = "grok-beta"
 
 
 class EnhancedContextPlugin(sm.BasePlugin):
