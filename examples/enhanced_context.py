@@ -515,6 +515,25 @@ class EnhancedContextPlugin(sm.BasePlugin):
 
         return "\n".join(context_parts)
 
+    def initialize_hook(self, conversation: sm.Conversation) -> None:
+        """Initialize the conversation with memory system awareness"""
+        memory_system_message = """Important: You have the ability to store long-term memories during our conversations.
+        Whenever you learn something significant about the user, context, or discussion:
+        1. End your response normally
+        2. Then on a new line, add one or more memories using this format:
+        MEMORY: [concise observation]
+
+        Example response:
+        "I understand you're interested in machine learning. Let me help with that.
+
+        MEMORY: User is interested in machine learning
+        MEMORY: User is learning about neural networks"
+
+        Use this actively to build context for future conversations."""
+
+        conversation.prepend_system_message(text=memory_system_message)
+        self.logger.info("Added memory system message to conversation")
+
     def pre_send_hook(self, conversation: sm.Conversation):
         # Add these lines at the start of pre_send_hook
         self.llm_model = conversation.llm_model
@@ -546,15 +565,30 @@ class EnhancedContextPlugin(sm.BasePlugin):
 
         return True
 
-    def post_response_hook(self, conversation: sm.Conversation):
-        """Process the LLM's response to extract and store entities"""
+    def post_response_hook(self, conversation: sm.Conversation) -> bool:
         last_response = conversation.get_last_message(role="assistant")
         if not last_response:
-            return
+            return False
 
         self.logger.info(f"Processing assistant response: {last_response.text}")
 
-        # Extract and store entities from the LLM's response with llm source
+        memory_created = False
+        # Check for explicit memory creation
+        if "MEMORY:" in last_response.text:
+            memory_parts = last_response.text.split("MEMORY:")
+            for part in memory_parts[1:]:
+                memory = part.split("\n")[0].strip()
+                self.store_entity(memory, source="llm")
+                self.logger.info(f"Stored explicit LLM memory: {memory}")
+                memory_created = True
+
+        # If no memories were created and it's been a while, remind the LLM
+        if not memory_created and len(conversation.messages) > 5:
+            reminder = """Remember: You can create memories about important information using the MEMORY: prefix.
+            Please use this feature to remember significant details about our conversation."""
+            conversation.add_message(role="user", text=reminder)
+
+        # Extract and store regular entities
         entities = self.extract_entities(last_response.text)
         for entity in entities:
             self.store_entity(entity, source="llm")
@@ -593,6 +627,33 @@ class EnhancedContextPlugin(sm.BasePlugin):
                 conversation_log.append(f"Speaker {i}: {response}")
 
         return "\n\n".join(conversation_log)
+
+    def store_llm_memory(self, conversation: sm.Conversation) -> None:
+        """Generate and store a memory from the LLM's perspective"""
+        prompt = """Based on the recent messages, what are the most important things to remember?
+        Format each memory on a new line starting with MEMORY:
+        For example:
+        MEMORY: User prefers Python over JavaScript
+        MEMORY: User is working on a machine learning project"""
+
+        temp_conv = sm.create_conversation(
+            llm_model=self.llm_model, llm_provider=self.llm_provider
+        )
+
+        # Add last few messages for context
+        for msg in conversation.messages[-3:]:  # Last 3 messages
+            temp_conv.add_message(role=msg.role, text=msg.text)
+
+        temp_conv.add_message(role="user", text=prompt)
+        response = temp_conv.send()
+
+        if response and response.text:
+            # Process each memory line
+            for line in response.text.split("\n"):
+                if line.strip().startswith("MEMORY:"):
+                    memory = line.replace("MEMORY:", "").strip()
+                    self.store_entity(memory, source="llm")
+                    self.logger.info(f"Stored LLM-generated memory: {memory}")
 
 
 # Replace the example usage code at the bottom with this chat interface:
