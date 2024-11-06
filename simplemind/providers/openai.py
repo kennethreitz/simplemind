@@ -15,8 +15,8 @@ T = TypeVar("T", bound=BaseModel)
 
 PROVIDER_NAME = "openai"
 DEFAULT_MODEL = "gpt-4o-mini"
-DEFAULT_MAX_TOKENS = 1_000
-DEFAULT_KWARGS = {"max_tokens": DEFAULT_MAX_TOKENS}
+DEFAULT_MAX_TOKENS = None
+DEFAULT_KWARGS = {}
 
 
 class OpenAI(BaseProvider):
