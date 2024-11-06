@@ -65,14 +65,17 @@ class EnhancedContextPlugin(sm.BasePlugin):
         if last_message:
             # Extract entities and store in memory
             entities = self.extract_entities(last_message.text)
+
             print(f"Extracted entities: {entities}")
             for entity in entities:
                 self.store_entity(entity)
 
             # Retrieve recent entities for context
             recent_entities = self.retrieve_recent_entities()
+
             if recent_entities:
                 print(f"Recent entities found: {recent_entities}")
+
                 context_message = f"Here are some topics recently discussed: {', '.join(recent_entities)}. Feel free to bring them up if relevant."
                 conversation.add_message(role="system", text=context_message)
 
