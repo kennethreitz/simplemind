@@ -1,6 +1,9 @@
+# python -m spacy download en_core_web_sm
+
 numpy
 openai
 pydantic
 faiss-cpu
 rich
 nltk
+spacy
