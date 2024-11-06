@@ -33,12 +33,13 @@ AVAILABLE_PROVIDERS = ["xai", "openai", "anthropic", "ollama"]
 __doc__ = """Enhanced Context Chat Interface
 
 Usage:
-    enhanced_context.py [--provider=<provider>]
+    enhanced_context.py [--provider=<provider>] [--model=<model>]
     enhanced_context.py (-h | --help)
 
 Options:
     -h --help                   Show this screen.
     --provider=<provider>       LLM provider to use (openai/anthropic/xai/ollama)
+    --model=<model>             Specific model to use (e.g. o1-preview)
 """
 
 
@@ -662,13 +663,9 @@ def main():
     args = docopt(__doc__)
     console = Console()
 
-    # Use command line provider if specified, otherwise use picker
-    if args["--provider"]:
-        provider = args["--provider"].lower()
-        model = None
-    else:
-        provider = None
-        model = None
+    # Use command line provider and model if specified
+    provider = args["--provider"].lower() if args["--provider"] else None
+    model = args["--model"] if args["--model"] else None
 
     # Create a conversation and add the plugin
     conversation = sm.create_conversation(llm_model=model, llm_provider=provider)
