@@ -72,7 +72,7 @@ class Anthropic(BaseProvider):
         ]
 
         response = self.client.messages.create(
-            system=system_prompt.text,
+            system=system_prompt.text if system_prompt else None,
             model=conversation.llm_model or self.DEFAULT_MODEL,
             messages=messages,
             **{**self.DEFAULT_KWARGS, **kwargs},
