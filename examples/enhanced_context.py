@@ -27,6 +27,10 @@ import random
 
 from docopt import docopt
 
+from prompt_toolkit import PromptSession
+from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.keys import Keys
+
 DB_PATH = "enhanced_context.db"
 AVAILABLE_PROVIDERS = ["xai", "openai", "anthropic", "ollama"]
 
@@ -523,6 +527,38 @@ class EnhancedContextPlugin(sm.BasePlugin):
         conversation.prepend_system_message(text=memory_system_message)
         self.logger.info("Added memory system message to conversation")
 
+    def summarize_memory(self, days: int = 30) -> str:
+        """Consolidate recent conversation memory into a summary"""
+        entities = self.retrieve_recent_entities(days=days)
+        if not entities:
+            return "No recent conversation history to consolidate."
+
+        # Group entities by frequency
+        frequent = []
+        occasional = []
+
+        for entity, total, user_count, llm_count in entities:
+            if total >= 3:
+                frequent.append(f"{entity} (mentioned {total} times)")
+            else:
+                occasional.append(f"{entity} (mentioned {total} times)")
+
+        # Build summary
+        summary_parts = []
+
+        if self.personal_identity:
+            summary_parts.append(f"User Identity: {self.personal_identity}")
+
+        if frequent:
+            summary_parts.append("Frequently Discussed Topics:")
+            summary_parts.extend([f"- {item}" for item in frequent])
+
+        if occasional:
+            summary_parts.append("Other Topics Mentioned:")
+            summary_parts.extend([f"- {item}" for item in occasional])
+
+        return "\n".join(summary_parts)
+
     def pre_send_hook(self, conversation: sm.Conversation):
         # Add these lines at the start of pre_send_hook
         self.llm_model = conversation.llm_model
@@ -531,6 +567,12 @@ class EnhancedContextPlugin(sm.BasePlugin):
         last_message = conversation.get_last_message(role="user")
         if not last_message:
             return
+
+        # Check for consolidate command
+        if last_message.text.strip().lower() == "/summary":
+            summary = self.summarize_memory()
+            conversation.add_message(role="assistant", text=summary)
+            return False  # Stop further processing
 
         self.logger.info(f"Processing user message: {last_message.text}")
 
@@ -630,6 +672,12 @@ class EnhancedContextPlugin(sm.BasePlugin):
 
 
 # Replace the example usage code at the bottom with this chat interface:
+def get_multiline_input() -> str:
+    """Get input from user. Press Enter to send."""
+    session = PromptSession()
+    return session.prompt("", multiline=False)
+
+
 def main():
     # Parse arguments
     args = docopt(__doc__)
@@ -641,7 +689,7 @@ def main():
 
     # Create a conversation and add the plugin
     conversation = sm.create_conversation(llm_model=model, llm_provider=provider)
-    plugin = EnhancedContextPlugin(verbose=False)  # Set verbose here
+    plugin = EnhancedContextPlugin(verbose=False)
     conversation.add_plugin(plugin)
 
     # Add initial context if available
@@ -653,35 +701,53 @@ def main():
 
     console = Console()
     md = """# Enhanced Context Chat Interface
-Type 'quit' to exit. Type 'go go go' for a special surprise!
+Type 'quit' to exit.
 
----"""
+Commands:
+- /summary: Show a summary of recent conversation topics.
+- /essence: Show user characteristics and preferences.
+- /perspectives: Show LLM perspectives on the conversation.
+"""
     console.print(Markdown(md))
 
     try:
         while True:
-            console.print(Markdown("**You:**"), end=" ")
-            user_input = input().strip()
+            # Simple prompt with > indicator
+            console.print("\n[bold blue]>[/] ", end="")
+            user_input = get_multiline_input().strip()
+
+            if not user_input:  # Skip empty messages
+                continue
 
             if user_input.lower() in ["quit", "exit", "q"]:
-                console.print(Markdown("**Goodbye!**"))
+                console.print("\n[bold]Goodbye![/]")
                 break
+
+            # Handle commands
+            if user_input.lower() == "/essence":
+                markers = plugin.retrieve_essence_markers()
+                if not markers:
+                    console.print("[italic]No essence markers found.[/]")
+                    continue
+
+                # Group markers by type
+                markers_by_type = {}
+                for marker_type, marker_text in markers:
+                    if marker_type not in markers_by_type:
+                        markers_by_type[marker_type] = []
+                    markers_by_type[marker_type].append(marker_text)
+
+                # Format output
+                console.print("\n[bold]User Characteristics:[/]")
+                for marker_type, markers in markers_by_type.items():
+                    console.print(f"\n[bold]{marker_type.title()}:[/]")
+                    for marker in markers:
+                        console.print(f"• {marker}")
+                continue
 
             # Easter egg handling
             if user_input.lower() == "go go go":
-                console.print(Markdown("## 🎉 Multi-LLM Discussion Initiated!"))
-                recent_entities = plugin.retrieve_recent_entities()
-                context = plugin.format_context_message(recent_entities)
-                conversation_result = plugin.simulate_llm_conversation(context)
-
-                console.print(
-                    Markdown(
-                        f"""### Discussion Results
-*{conversation_result}*
-
----"""
-                    )
-                )
+                console.print("\n[italic]Tip: Use /perspectives instead![/]")
                 continue
 
             # Regular conversation handling
@@ -689,29 +755,33 @@ Type 'quit' to exit. Type 'go go go' for a special surprise!
             should_continue = plugin.pre_send_hook(conversation)
 
             if should_continue is not False:
-                with Status("[bold blue]Thinking...", spinner="dots") as status:
+                with Status("[bold]Thinking...[/]", spinner="dots") as status:
                     response = conversation.send()
                     plugin.post_response_hook(conversation)
-                console.print(
-                    Markdown(
-                        f"""**Assistant:** *{response.text}*
 
----"""
-                    )
-                )
+                # Print assistant response with improved spacing
+                console.print()  # Add blank line before response
+                console.print("[bold green]Assistant:[/]")  # Move to new line
+                console.print(response.text)  # Response on its own line
             else:
                 response = conversation.get_last_message(role="assistant")
                 if response:
-                    console.print(
-                        Markdown(
-                            f"""**Assistant:** *{response.text}*
+                    console.print()  # Add blank line before response
+                    console.print("[bold green]Assistant:[/]")  # Move to new line
+                    console.print(response.text)  # Response on its own line
 
----"""
-                        )
-                    )
+            # Handle commands
+            if user_input.lower() == "/perspectives":
+                console.print("\n[bold]🎉 Different Perspectives:[/]")
+                recent_entities = plugin.retrieve_recent_entities()
+                context = plugin.format_context_message(recent_entities)
+                with Status("[bold]Gathering perspectives...[/]", spinner="dots"):
+                    conversation_result = plugin.simulate_llm_conversation(context)
+                console.print(f"\n{conversation_result}")
+                continue
 
     except KeyboardInterrupt:
-        console.print(Markdown("\n**Goodbye!**"))
+        console.print("\n[bold]Goodbye![/]")
         return
 
 
