@@ -518,19 +518,7 @@ class EnhancedContextPlugin(sm.BasePlugin):
 
     def initialize_hook(self, conversation: sm.Conversation) -> None:
         """Initialize the conversation with memory system awareness"""
-        memory_system_message = """Important: You have the ability to store long-term memories during our conversations.
-        Whenever you learn something significant about the user, context, or discussion:
-        1. End your response normally
-        2. Then on a new line, add one or more memories using this format:
-        MEMORY: [concise observation]
-
-        Example response:
-        "I understand you're interested in machine learning. Let me help with that.
-
-        MEMORY: User is interested in machine learning
-        MEMORY: User is learning about neural networks"
-
-        Use this actively to build context for future conversations."""
+        memory_system_message = """Important: You have the ability to recall long-term memories during our conversations."""
 
         conversation.prepend_system_message(text=memory_system_message)
         self.logger.info("Added memory system message to conversation")
@@ -572,22 +560,6 @@ class EnhancedContextPlugin(sm.BasePlugin):
             return False
 
         self.logger.info(f"Processing assistant response: {last_response.text}")
-
-        memory_created = False
-        # Check for explicit memory creation
-        if "MEMORY:" in last_response.text:
-            memory_parts = last_response.text.split("MEMORY:")
-            for part in memory_parts[1:]:
-                memory = part.split("\n")[0].strip()
-                self.store_entity(memory, source="llm")
-                self.logger.info(f"Stored explicit LLM memory: {memory}")
-                memory_created = True
-
-        # If no memories were created and it's been a while, remind the LLM
-        if not memory_created and len(conversation.messages) > 5:
-            reminder = """Remember: You can create memories about important information using the MEMORY: prefix.
-            Please use this feature to remember significant details about our conversation."""
-            conversation.add_message(role="user", text=reminder)
 
         # Extract and store regular entities
         entities = self.extract_entities(last_response.text)
