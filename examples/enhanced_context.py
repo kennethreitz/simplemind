@@ -131,7 +131,7 @@ class ContextDatabase:
                     WHERE last_mentioned >= datetime('now', ?, 'localtime')
                     GROUP BY entity
                     ORDER BY total_mentions DESC, MAX(last_mentioned) DESC
-                    LIMIT 5
+                    LIMIT 50
                     """,
                     (f"-{days} days",),
                 )
@@ -583,11 +583,7 @@ class EnhancedContextPlugin(sm.BasePlugin):
             return []
 
     def post_response_hook(self, conversation: sm.Conversation) -> None:
-        """Process assistant's response after it's received.
-
-        Args:
-            conversation: The conversation object containing message history
-        """
+        """Process assistant's response after it's received."""
         # Get the last assistant message
         last_message = conversation.get_last_message(role="assistant")
         if not last_message:
@@ -598,9 +594,8 @@ class EnhancedContextPlugin(sm.BasePlugin):
         for entity in entities:
             self.store_entity(entity, source="llm")
 
-        # Periodically generate and store LLM memories
-        if random.random() < 0.2:  # 20% chance to generate memories
-            self.store_llm_memory(conversation)
+        # Always generate and store LLM memories
+        self.store_llm_memory(conversation)
 
     def extract_identity(self, text: str) -> str | None:
         """Extract identity statements from text.
@@ -696,6 +691,23 @@ class EnhancedContextPlugin(sm.BasePlugin):
 
         return "\n".join(output_parts)
 
+    def get_memories(self) -> str:
+        """Retrieve and format all stored memories."""
+        entities = self.db.retrieve_recent_entities(
+            days=3650
+        )  # Retrieve entities from the last 10 years
+        if not entities:
+            return "No memories found."
+
+        memory_parts = ["## All Stored Memories"]
+
+        for entity, total, user_count, llm_count in entities:
+            memory_parts.append(
+                f"- **{entity}**: {total} mentions (User: {user_count}, AI: {llm_count})"
+            )
+
+        return "\n".join(memory_parts)
+
 
 class CommandCompleter(Completer):
     """Custom completer that only suggests commands when input starts with '/'"""
@@ -709,6 +721,7 @@ class CommandCompleter(Completer):
             "/copy",
             "/paste",
             "/lumina",
+            "/memories",
         ]
 
     def get_completions(self, document, complete_event):
@@ -779,6 +792,12 @@ Type 'quit' to exit. Type '/' to see a list of commands.
 
             # Handle all commands before any conversation processing
             if user_input.startswith("/"):
+                # Handle memories command
+                if user_input.lower() == "/memories":
+                    memories = plugin.get_memories()
+                    console.print(Markdown(memories))
+                    continue
+
                 # Handle copy command
                 if user_input.lower() == "/copy":
                     last_response = conversation.get_last_message(role="assistant")
