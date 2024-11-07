@@ -741,12 +741,7 @@ def main():
 Type 'quit' to exit.
 
 Commands:
-- `/summary`: Show a summary of recent conversation topics
-- `/topics`: Show detailed list of all conversation topics
-- `/essence`: Show user characteristics and preferences
-- `/perspectives`: Show LLM perspectives on the conversation
-- `/copy`: Copy last assistant response to clipboard
-- `/paste`: Paste clipboard content as user message
+- `/`: See a list of commands.
 """
     console.print(Markdown(md))
 
