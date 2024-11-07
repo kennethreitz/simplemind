@@ -8,3 +8,4 @@ rich
 nltk
 spacy
 docopt
+xerox
