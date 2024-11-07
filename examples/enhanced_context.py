@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 import logging
 import sqlite3
 from typing import List
@@ -15,10 +15,8 @@ import nltk
 from nltk.tokenize import word_tokenize
 from nltk.tag import pos_tag
 
-from rich import print
 from rich.console import Console
 from rich.panel import Panel
-from rich.text import Text
 from rich.markdown import Markdown
 from rich.status import Status
 
@@ -28,15 +26,16 @@ import random
 from docopt import docopt
 
 from prompt_toolkit import PromptSession
-from prompt_toolkit.key_binding import KeyBindings
-from prompt_toolkit.keys import Keys
-from prompt_toolkit.completion import WordCompleter, Completer, Completion
+from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 
 import xerox
 
 DB_PATH = "enhanced_context.db"
 AVAILABLE_PROVIDERS = ["xai", "openai", "anthropic", "ollama"]
+
+# Enable Logfire for debugging.
+# sm.enable_logfire()
 
 __doc__ = """Enhanced Context Chat Interface
 
