@@ -9,3 +9,4 @@ nltk
 spacy
 docopt
 xerox
+prompt_toolkit
