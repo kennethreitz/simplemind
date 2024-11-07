@@ -47,67 +47,16 @@ Options:
 """
 
 
-class EnhancedContextPlugin(sm.BasePlugin):
-    model_config = {"extra": "allow"}
-
-    def __init__(self, verbose: bool = False):
-        super().__init__()
-        # Set up logging
-        self.verbose = verbose
-        if verbose:
-            logging.basicConfig(
-                level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-            )
-        else:
-            logging.basicConfig(level=logging.WARNING)
-        self.logger = logging.getLogger(__name__)
-
-        # Initialize NLP model
-        try:
-            self.nlp = spacy.load("en_core_web_sm")
-        except OSError:
-            self.logger.error(
-                "Failed to load spaCy model. Please install it using: python -m spacy download en_core_web_sm"
-            )
-            raise
-
-        # Initialize database
+class ContextDatabase:
+    def __init__(self, db_path: str):
+        self.db_path = db_path
         self.init_db()
-        self.logger.info(f"EnhancedContextPlugin initialized with database: {DB_PATH}")
-
-        # Load identity from database
-        self.personal_identity = None
-        self.load_identity()
-
-        # Download required NLTK data silently
-        try:
-            with open(os.devnull, "w") as null_out:
-                with (
-                    contextlib.redirect_stdout(null_out),
-                    contextlib.redirect_stderr(null_out),
-                ):
-                    nltk.download("punkt", quiet=True)
-                    nltk.download("averaged_perceptron_tagger", quiet=True)
-        except LookupError as e:
-            self.logger.error(f"Error downloading NLTK data: {e}")
-
-        # Add LLM personality traits for easter egg
-        self.llm_personalities = [
-            "You are a wise philosopher who speaks in riddles",
-            "You are an excited scientist who loves discovering patterns",
-            "You are a detective who analyzes every detail",
-            "You are a poet who sees beauty in connections",
-            "You are a historian who relates everything to the past",
-        ]
-
-        # Add these lines to store the conversation's model and provider
-        self.llm_model = None
-        self.llm_provider = None
+        self.logger = logging.getLogger(__name__)
 
     @contextmanager
     def get_connection(self):
         """Context manager for database connections"""
-        conn = sqlite3.connect(DB_PATH)
+        conn = sqlite3.connect(self.db_path)
         try:
             yield conn
         finally:
@@ -116,20 +65,17 @@ class EnhancedContextPlugin(sm.BasePlugin):
     def init_db(self):
         """Initialize the database with proper schema"""
         with self.get_connection() as conn:
-            # Modify memory table to include source
             conn.execute(
                 """
                 CREATE TABLE IF NOT EXISTS memory (
                     entity TEXT,
-                    source TEXT,  -- 'user' or 'llm'
+                    source TEXT,
                     last_mentioned TIMESTAMP,
                     mention_count INTEGER DEFAULT 1,
                     PRIMARY KEY (entity, source)
                 )
             """
             )
-
-            # Create identity table
             conn.execute(
                 """
                 CREATE TABLE IF NOT EXISTS identity (
@@ -139,8 +85,6 @@ class EnhancedContextPlugin(sm.BasePlugin):
                 )
             """
             )
-
-            # Create essence markers table
             conn.execute(
                 """
                 CREATE TABLE IF NOT EXISTS essence_markers (
@@ -154,23 +98,19 @@ class EnhancedContextPlugin(sm.BasePlugin):
 
     def store_entity(self, entity: str, source: str = "user") -> None:
         """Store or update entity mention with source tracking"""
-        try:
-            with self.get_connection() as conn:
-                now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                conn.execute(
-                    """
-                    INSERT INTO memory (entity, source, last_mentioned, mention_count)
-                    VALUES (?, ?, ?, 1)
-                    ON CONFLICT(entity, source) DO UPDATE SET
-                        last_mentioned = ?,
-                        mention_count = mention_count + 1
-                    """,
-                    (entity, source, now, now),
-                )
-                conn.commit()
-                self.logger.info(f"Stored {source} entity: {entity}")
-        except sqlite3.Error as e:
-            self.logger.error(f"Database error while storing entity {entity}: {e}")
+        with self.get_connection() as conn:
+            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            conn.execute(
+                """
+                INSERT INTO memory (entity, source, last_mentioned, mention_count)
+                VALUES (?, ?, ?, 1)
+                ON CONFLICT(entity, source) DO UPDATE SET
+                    last_mentioned = ?,
+                    mention_count = mention_count + 1
+                """,
+                (entity, source, now, now),
+            )
+            conn.commit()
 
     def retrieve_recent_entities(self, days: int = 7) -> List[tuple]:
         """Retrieve recently mentioned entities with frequency and source"""
@@ -204,17 +144,142 @@ class EnhancedContextPlugin(sm.BasePlugin):
                             int(source_dict.get("llm", 0)),
                         )
                     )
-
-                self.logger.info(f"Retrieved recent entities: {entities}")
                 return entities
         except sqlite3.Error as e:
             self.logger.error(f"Database error while retrieving entities: {e}")
             return []
 
+    def store_identity(self, identity: str) -> None:
+        """Store personal identity in database"""
+        if not identity:
+            return
+
+        try:
+            with self.get_connection() as conn:
+                now = datetime.now()
+                # Store in identity table
+                conn.execute(
+                    """
+                    INSERT OR REPLACE INTO identity (id, name, last_updated)
+                    VALUES (1, ?, ?)
+                    """,
+                    (identity, now),
+                )
+
+                # Store in memory table
+                self.store_entity(identity)
+                conn.commit()
+        except sqlite3.Error as e:
+            self.logger.error(f"Database error while storing identity: {e}")
+
+    def load_identity(self) -> str | None:
+        """Load personal identity from database"""
+        try:
+            with self.get_connection() as conn:
+                cur = conn.cursor()
+                cur.execute("SELECT name FROM identity WHERE id = 1")
+                result = cur.fetchone()
+                return result[0] if result else None
+        except sqlite3.Error as e:
+            self.logger.error(f"Database error while loading identity: {e}")
+            return None
+
+    def store_essence_marker(self, marker_type: str, marker_text: str) -> None:
+        """Store essence marker in database"""
+        try:
+            with self.get_connection() as conn:
+                now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                conn.execute(
+                    """
+                    INSERT OR REPLACE INTO essence_markers
+                    (marker_type, marker_text, timestamp)
+                    VALUES (?, ?, ?)
+                    """,
+                    (marker_type, marker_text, now),
+                )
+                conn.commit()
+        except sqlite3.Error as e:
+            self.logger.error(f"Database error storing essence marker: {e}")
+
+    def retrieve_essence_markers(self, days: int = 30) -> List[tuple[str, str]]:
+        """Retrieve recent essence markers"""
+        try:
+            with self.get_connection() as conn:
+                cur = conn.cursor()
+                cur.execute(
+                    """
+                    SELECT DISTINCT marker_type, marker_text
+                    FROM essence_markers
+                    WHERE timestamp >= datetime('now', ?, 'localtime')
+                    ORDER BY timestamp DESC
+                    """,
+                    (f"-{days} days",),
+                )
+                return cur.fetchall()
+        except sqlite3.Error as e:
+            self.logger.error(f"Database error retrieving essence markers: {e}")
+            return []
+
+
+class EnhancedContextPlugin(sm.BasePlugin):
+    model_config = {"extra": "allow"}
+
+    def __init__(self, verbose: bool = False):
+        super().__init__()
+        # Set up logging
+        self.verbose = verbose
+        if verbose:
+            logging.basicConfig(
+                level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+            )
+        else:
+            logging.basicConfig(level=logging.WARNING)
+        self.logger = logging.getLogger(__name__)
+
+        # Initialize NLP model
+        try:
+            self.nlp = spacy.load("en_core_web_sm")
+        except OSError:
+            self.logger.error(
+                "Failed to load spaCy model. Please install it using: python -m spacy download en_core_web_sm"
+            )
+            raise
+
+        # Initialize database
+        self.db = ContextDatabase(DB_PATH)
+        self.logger.info(f"EnhancedContextPlugin initialized with database: {DB_PATH}")
+
+        # Load identity from database
+        self.personal_identity = self.db.load_identity()
+
+        # Download required NLTK data silently
+        try:
+            with open(os.devnull, "w") as null_out:
+                with (
+                    contextlib.redirect_stdout(null_out),
+                    contextlib.redirect_stderr(null_out),
+                ):
+                    nltk.download("punkt", quiet=True)
+                    nltk.download("averaged_perceptron_tagger", quiet=True)
+        except LookupError as e:
+            self.logger.error(f"Error downloading NLTK data: {e}")
+
+        # Add LLM personality traits for easter egg
+        self.llm_personalities = [
+            "You are a wise philosopher who speaks in riddles",
+            "You are an excited scientist who loves discovering patterns",
+            "You are a detective who analyzes every detail",
+            "You are a poet who sees beauty in connections",
+            "You are a historian who relates everything to the past",
+        ]
+
+        # Add these lines to store the conversation's model and provider
+        self.llm_model = None
+        self.llm_provider = None
+
     def extract_entities(self, text: str) -> List[str]:
         """Extract named entities with improved filtering"""
         doc = self.nlp(text)
-        entities = []
 
         # Define important entity types
         important_types = {
@@ -227,170 +292,58 @@ class EnhancedContextPlugin(sm.BasePlugin):
             "WORK_OF_ART",
         }
 
-        for ent in doc.ents:
+        entities = [
+            ent.text.strip()
+            for ent in doc.ents
             if (
                 ent.label_ in important_types
-                and len(ent.text.strip()) > 1  # Avoid single characters
+                and len(ent.text.strip()) > 1
                 and not ent.text.isnumeric()
-            ):  # Avoid pure numbers
-                entities.append(ent.text.strip())
+            )
+        ]
 
-        return list(set(entities))  # Remove duplicates
+        return list(set(entities))
 
     def format_context_message(
         self, entities: List[tuple], include_identity: bool = True
     ) -> str:
-        """Format context message with source awareness"""
+        """Format context message with essence markers"""
         context_parts = []
 
         # Add identity context
         if include_identity and self.personal_identity:
             context_parts.append(f"The user's name is {self.personal_identity}.")
 
-        # Add entity context with source awareness
-        if entities:
-            entity_strings = []
-            for entity, total, user_count, llm_count in entities:
-                source_info = []
-                if user_count > 0:
-                    source_info.append(f"{user_count} by user")
-                if llm_count > 0:
-                    source_info.append(f"{llm_count} by assistant")
-                entity_strings.append(f"{entity} (mentioned {', '.join(source_info)})")
+        # Add essence markers
+        essence_markers = self.retrieve_essence_markers()
+        if essence_markers:
+            markers_by_type = {}
+            for marker_type, marker_text in essence_markers:
+                markers_by_type.setdefault(marker_type, []).append(marker_text)
 
-            context_parts.append(
-                "Recent conversation topics: "
-                + (
-                    ", ".join(entity_strings[:-1]) + f" and {entity_strings[-1]}"
-                    if len(entity_strings) > 1
-                    else entity_strings[0]
-                )
+            context_parts.append("User characteristics:")
+            for marker_type, markers in markers_by_type.items():
+                context_parts.append(f"- {marker_type.title()}: {', '.join(markers)}")
+
+        # Add entity context
+        if entities:
+            entity_strings = [
+                f"{entity} (mentioned {total} {'times' if total > 1 else 'time'})"
+                for entity, total, _, _ in entities
+            ]
+
+            topics = (
+                ", ".join(entity_strings[:-1]) + f" and {entity_strings[-1]}"
+                if len(entity_strings) > 1
+                else entity_strings[0]
             )
 
-            # Add guidance for heavily mentioned entities
-            heavy_mentions = [(e, t) for e, t, _, _ in entities if t > 3]
-            if heavy_mentions:
-                context_parts.append(
-                    "Note: Be mindful not to overuse "
-                    + ", ".join(f"{e}" for e, _ in heavy_mentions)
-                    + " as they have been frequently discussed."
-                )
+            context_parts.append(f"Recent conversation topics: {topics}")
 
         return "\n".join(context_parts)
 
-    def extract_identity(self, text: str) -> str | None:
-        """Extract identity statements like 'I am X'"""
-        text = text.lower().strip()
-        if text.startswith("i am ") or text.startswith("my name is "):
-            identity = text.replace("i am ", "").replace("my name is ", "").strip()
-            return identity if identity else None
-        return None
-
-    def is_identity_question(self, text: str) -> bool:
-        """Use NLTK to detect identity questions"""
-        # Tokenize and tag parts of speech
-        tokens = word_tokenize(text.lower())
-        tagged = pos_tag(tokens)
-
-        # Extract key words and patterns
-        words = set(tokens)
-        has_question_word = any(word in ["who", "what"] for word in words)
-        has_identity_term = any(word in ["i", "me", "my", "name"] for word in words)
-        has_conversation_term = any(
-            word in ["talking", "speaking", "chatting"] for word in words
-        )
-
-        # Check for question structure
-        is_question = (
-            text.endswith("?")
-            or has_question_word
-            or any(
-                tag in ["WP", "WRB"] for word, tag in tagged
-            )  # WP = wh-pronoun, WRB = wh-adverb
-        )
-
-        # Combine conditions for identity questions
-        is_identity_question = is_question and (
-            (has_identity_term) or (has_question_word and has_conversation_term)
-        )
-
-        if is_identity_question:
-            self.logger.info(f"Detected identity question: {text}")
-
-        return is_identity_question
-
-    def store_identity(self, identity: str) -> None:
-        """Store personal identity in database and add to recent entities"""
-        if not identity:
-            return
-
-        try:
-            with self.get_connection() as conn:
-                now = datetime.now()
-
-                # Store in identity table
-                conn.execute(
-                    """
-                    INSERT OR REPLACE INTO identity (id, name, last_updated)
-                    VALUES (1, ?, ?)
-                    """,
-                    (identity, now),
-                )
-
-                # Store in memory table instead of entities table
-                self.store_entity(identity)  # Use existing store_entity method
-                conn.commit()
-
-                # Verify storage
-                cur = conn.cursor()
-                cur.execute("SELECT name FROM identity WHERE id = 1")
-                self.logger.info(f"Verified identity storage: {cur.fetchone()}")
-        except sqlite3.Error as e:
-            self.logger.error(f"Database error while storing identity: {e}")
-
-    def load_identity(self) -> str | None:
-        """Load personal identity from database"""
-        try:
-            with self.get_connection() as conn:
-                cur = conn.cursor()
-                cur.execute("SELECT name FROM identity WHERE id = 1")
-                result = cur.fetchone()
-                if result:
-                    self.personal_identity = result[0]
-                    self.logger.info(
-                        f"Loaded identity from database: {self.personal_identity}"
-                    )
-                else:
-                    self.logger.info("No identity found in database")
-                return self.personal_identity
-        except sqlite3.Error as e:
-            self.logger.error(f"Database error while loading identity: {e}")
-            return None
-
-    def is_memory_question(self, text: str) -> bool:
-        """Detect questions about memory and recall"""
-        text = text.lower().strip()
-
-        # Keywords related to memory and recall
-        memory_words = {
-            "remember",
-            "recall",
-            "memory",
-            "memories",
-            "mentioned",
-            "talked about",
-            "discussed",
-            "tell me about",
-            "what do you know",
-        }
-
-        return any(word in text for word in memory_words)
-
     def extract_essence_markers(self, text: str) -> List[tuple[str, str]]:
-        """Extract essence markers from text.
-        Returns list of tuples (marker_type, marker_text)"""
-
-        # Common patterns for essence markers
+        """Extract essence markers from text."""
         patterns = {
             "value": [
                 r"I (?:really )?(?:believe|think) (?:that )?(.+)",
@@ -418,114 +371,99 @@ class EnhancedContextPlugin(sm.BasePlugin):
         }
 
         markers = []
-
-        # Process with spaCy for better sentence splitting
         doc = self.nlp(text)
 
         for sent in doc.sents:
             sent_text = sent.text.strip().lower()
 
-            # Check each pattern type
             for marker_type, pattern_list in patterns.items():
                 for pattern in pattern_list:
-                    matches = re.finditer(pattern, sent_text, re.IGNORECASE)
-                    for match in matches:
+                    for match in re.finditer(pattern, sent_text, re.IGNORECASE):
                         marker_text = match.group(1).strip()
-                        # Filter out very short or common phrases
-                        if len(marker_text) > 3 and not any(
-                            w in marker_text for w in ["um", "uh", "like"]
-                        ):
+                        if self._is_valid_marker(marker_text):
                             markers.append((marker_type, marker_text))
 
         return markers
 
+    def _is_valid_marker(self, marker_text: str) -> bool:
+        """Helper method to validate essence markers"""
+        invalid_words = {"um", "uh", "like"}
+        return len(marker_text) > 3 and not any(w in marker_text for w in invalid_words)
+
+    def pre_send_hook(self, conversation: sm.Conversation) -> bool:
+        """Process user message before sending to LLM"""
+        self.llm_model = conversation.llm_model
+        self.llm_provider = conversation.llm_provider
+
+        last_message = conversation.get_last_message(role="user")
+        if not last_message:
+            return True
+
+        # Handle special commands
+        if result := self._handle_special_commands(conversation, last_message.text):
+            return result
+
+        self.logger.info(f"Processing user message: {last_message.text}")
+
+        # Process entities and markers
+        self._process_user_message(last_message.text)
+
+        # Add context
+        self._add_context_to_conversation(conversation)
+
+        return True
+
+    def _handle_special_commands(
+        self, conversation: sm.Conversation, message: str
+    ) -> bool | None:
+        """Handle special commands like /summary"""
+        if message.strip().lower() == "/summary":
+            summary = self.summarize_memory()
+            conversation.add_message(role="assistant", text=summary)
+            return False
+        elif message.strip().lower() == "/topics":
+            topics = self.get_all_topics()
+            conversation.add_message(role="assistant", text=topics)
+            return False
+        return None
+
+    def _process_user_message(self, message: str) -> None:
+        """Process user message for entities and markers"""
+        # Extract and store entities
+        entities = self.extract_entities(message)
+        for entity in entities:
+            self.store_entity(entity, source="user")
+
+        # Extract and store essence markers
+        essence_markers = self.extract_essence_markers(message)
+        for marker_type, marker_text in essence_markers:
+            self.store_essence_marker(marker_type, marker_text)
+            self.logger.info(f"Found essence marker: {marker_type} - {marker_text}")
+
+    def _add_context_to_conversation(self, conversation: sm.Conversation) -> None:
+        """Add context message to conversation"""
+        recent_entities = self.retrieve_recent_entities(days=30)
+        context_message = self.format_context_message(recent_entities)
+        if context_message:
+            conversation.add_message(role="user", text=context_message)
+            self.logger.info(f"Added context message: {context_message}")
+
+    def store_entity(self, entity: str, source: str = "user") -> None:
+        self.db.store_entity(entity, source)
+
+    def store_identity(self, identity: str) -> None:
+        self.db.store_identity(identity)
+        self.personal_identity = identity
+
+    def load_identity(self) -> str | None:
+        self.personal_identity = self.db.load_identity()
+        return self.personal_identity
+
     def store_essence_marker(self, marker_type: str, marker_text: str) -> None:
-        """Store essence marker in database"""
-        try:
-            with self.get_connection() as conn:
-                now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                conn.execute(
-                    """
-                    INSERT OR REPLACE INTO essence_markers (marker_type, marker_text, timestamp)
-                    VALUES (?, ?, ?)
-                    """,
-                    (marker_type, marker_text, now),
-                )
-                conn.commit()
-                self.logger.info(
-                    f"Stored essence marker: {marker_type} - {marker_text}"
-                )
-        except sqlite3.Error as e:
-            self.logger.error(f"Database error storing essence marker: {e}")
+        self.db.store_essence_marker(marker_type, marker_text)
 
     def retrieve_essence_markers(self, days: int = 30) -> List[tuple[str, str]]:
-        """Retrieve recent essence markers"""
-        try:
-            with self.get_connection() as conn:
-                cur = conn.cursor()
-                cur.execute(
-                    """
-                    SELECT DISTINCT marker_type, marker_text
-                    FROM essence_markers
-                    WHERE timestamp >= datetime('now', ?, 'localtime')
-                    ORDER BY timestamp DESC
-                """,
-                    (f"-{days} days",),
-                )
-
-                markers = cur.fetchall()
-                self.logger.info(f"Retrieved essence markers: {markers}")
-                return markers
-        except sqlite3.Error as e:
-            self.logger.error(f"Database error retrieving essence markers: {e}")
-            return []
-
-    def format_context_message(
-        self, entities: List[tuple], include_identity: bool = True
-    ) -> str:
-        """Format context message with essence markers"""
-        context_parts = []
-
-        # Add identity context
-        if include_identity and self.personal_identity:
-            context_parts.append(f"The user's name is {self.personal_identity}.")
-
-        # Add essence markers
-        essence_markers = self.retrieve_essence_markers()
-        if essence_markers:
-            markers_by_type = {}
-            for marker_type, marker_text in essence_markers:
-                if marker_type not in markers_by_type:
-                    markers_by_type[marker_type] = []
-                markers_by_type[marker_type].append(marker_text)
-
-            context_parts.append("User characteristics:")
-            for marker_type, markers in markers_by_type.items():
-                context_parts.append(f"- {marker_type.title()}: {', '.join(markers)}")
-
-        # Add entity context - Fixed tuple unpacking
-        if entities:
-            entity_strings = [
-                f"{entity} (mentioned {total} {'times' if total > 1 else 'time'})"
-                for entity, total, user_count, llm_count in entities
-            ]
-            context_parts.append(
-                "Recent conversation topics: "
-                + (
-                    ", ".join(entity_strings[:-1]) + f" and {entity_strings[-1]}"
-                    if len(entity_strings) > 1
-                    else entity_strings[0]
-                )
-            )
-
-        return "\n".join(context_parts)
-
-    def initialize_hook(self, conversation: sm.Conversation) -> None:
-        """Initialize the conversation with memory system awareness"""
-        memory_system_message = """Important: You have the ability to recall long-term memories during our conversations."""
-
-        conversation.prepend_system_message(text=memory_system_message)
-        self.logger.info("Added memory system message to conversation")
+        return self.db.retrieve_essence_markers(days)
 
     def summarize_memory(self, days: int = 30) -> str:
         """Consolidate recent conversation memory into a summary"""
@@ -558,57 +496,6 @@ class EnhancedContextPlugin(sm.BasePlugin):
             summary_parts.extend([f"- {item}" for item in occasional])
 
         return "\n".join(summary_parts)
-
-    def pre_send_hook(self, conversation: sm.Conversation):
-        # Add these lines at the start of pre_send_hook
-        self.llm_model = conversation.llm_model
-        self.llm_provider = conversation.llm_provider
-
-        last_message = conversation.get_last_message(role="user")
-        if not last_message:
-            return
-
-        # Check for consolidate command
-        if last_message.text.strip().lower() == "/summary":
-            summary = self.summarize_memory()
-            conversation.add_message(role="assistant", text=summary)
-            return False  # Stop further processing
-
-        self.logger.info(f"Processing user message: {last_message.text}")
-
-        # Extract and store entities with user source
-        entities = self.extract_entities(last_message.text)
-        for entity in entities:
-            self.store_entity(entity, source="user")
-
-        # Extract and store essence markers
-        essence_markers = self.extract_essence_markers(last_message.text)
-        for marker_type, marker_text in essence_markers:
-            self.store_essence_marker(marker_type, marker_text)
-            self.logger.info(f"Found essence marker: {marker_type} - {marker_text}")
-
-        # Add context message
-        recent_entities = self.retrieve_recent_entities(days=30)
-        context_message = self.format_context_message(recent_entities)
-        if context_message:
-            conversation.add_message(role="user", text=context_message)
-            self.logger.info(f"Added context message: {context_message}")
-
-        return True
-
-    def post_response_hook(self, conversation: sm.Conversation) -> bool:
-        last_response = conversation.get_last_message(role="assistant")
-        if not last_response:
-            return False
-
-        self.logger.info(f"Processing assistant response: {last_response.text}")
-
-        # Extract and store regular entities
-        entities = self.extract_entities(last_response.text)
-        for entity in entities:
-            self.store_entity(entity, source="llm")
-
-        return True
 
     def simulate_llm_conversation(self, context: str, num_turns: int = 3) -> str:
         """Simulate a conversation between multiple LLM personalities about the context"""
@@ -644,13 +531,18 @@ class EnhancedContextPlugin(sm.BasePlugin):
         return "\n\n".join(conversation_log)
 
     def store_llm_memory(self, conversation: sm.Conversation) -> None:
-        """Generate and store a memory from the LLM's perspective"""
+        """Generate and store memories from the LLM's perspective of the conversation.
+
+        Args:
+            conversation: The conversation object containing message history
+        """
         prompt = """Based on the recent messages, what are the most important things to remember?
         Format each memory on a new line starting with MEMORY:
         For example:
         MEMORY: User prefers Python over JavaScript
         MEMORY: User is working on a machine learning project"""
 
+        # Create temporary conversation for memory generation
         temp_conv = sm.create_conversation(
             llm_model=self.llm_model, llm_provider=self.llm_provider
         )
@@ -659,16 +551,139 @@ class EnhancedContextPlugin(sm.BasePlugin):
         for msg in conversation.messages[-3:]:  # Last 3 messages
             temp_conv.add_message(role=msg.role, text=msg.text)
 
+        # Get memories from LLM
         temp_conv.add_message(role="user", text=prompt)
         response = temp_conv.send()
 
+        # Process and store memories
         if response and response.text:
-            # Process each memory line
             for line in response.text.split("\n"):
                 if line.strip().startswith("MEMORY:"):
                     memory = line.replace("MEMORY:", "").strip()
                     self.store_entity(memory, source="llm")
                     self.logger.info(f"Stored LLM-generated memory: {memory}")
+
+    def retrieve_recent_entities(self, days: int = 7) -> List[tuple]:
+        """Retrieve recently mentioned entities with their frequency data.
+
+        Args:
+            days: Number of days to look back
+
+        Returns:
+            List of tuples containing (entity, total_mentions, user_mentions, llm_mentions)
+        """
+        try:
+            return self.db.retrieve_recent_entities(days)
+        except Exception as e:
+            self.logger.error(f"Error retrieving recent entities: {e}")
+            return []
+
+    def post_response_hook(self, conversation: sm.Conversation) -> None:
+        """Process assistant's response after it's received.
+
+        Args:
+            conversation: The conversation object containing message history
+        """
+        # Get the last assistant message
+        last_message = conversation.get_last_message(role="assistant")
+        if not last_message:
+            return
+
+        # Extract and store entities from assistant's response
+        entities = self.extract_entities(last_message.text)
+        for entity in entities:
+            self.store_entity(entity, source="llm")
+
+        # Periodically generate and store LLM memories
+        if random.random() < 0.2:  # 20% chance to generate memories
+            self.store_llm_memory(conversation)
+
+    def extract_identity(self, text: str) -> str | None:
+        """Extract identity statements from text.
+
+        Args:
+            text: The text to analyze
+
+        Returns:
+            The extracted identity or None if not found
+        """
+        text = text.lower().strip()
+
+        identity_patterns = [
+            (r"^i am (.+)$", 1),
+            (r"^my name is (.+)$", 1),
+            (r"^call me (.+)$", 1),
+        ]
+
+        for pattern, group in identity_patterns:
+            if match := re.match(pattern, text):
+                identity = match.group(group).strip()
+                return identity if identity else None
+
+        return None
+
+    def is_identity_question(self, text: str) -> bool:
+        """Detect if text contains a question about identity.
+
+        Args:
+            text: The text to analyze
+
+        Returns:
+            True if text contains an identity question
+        """
+        # Tokenize and tag parts of speech
+        tokens = word_tokenize(text.lower())
+        tagged = pos_tag(tokens)
+
+        # Extract key words and patterns
+        words = set(tokens)
+        has_question_word = any(word in ["who", "what"] for word in words)
+        has_identity_term = any(word in ["i", "me", "my", "name"] for word in words)
+        has_conversation_term = any(
+            word in ["talking", "speaking", "chatting"] for word in words
+        )
+
+        # Check for question structure
+        is_question = (
+            text.endswith("?")
+            or has_question_word
+            or any(tag in ["WP", "WRB"] for word, tag in tagged)
+        )
+
+        # Combine conditions for identity questions
+        is_identity_question = is_question and (
+            has_identity_term or (has_question_word and has_conversation_term)
+        )
+
+        if is_identity_question:
+            self.logger.info(f"Detected identity question: {text}")
+
+        return is_identity_question
+
+    def get_all_topics(self, days: int = 90) -> str:
+        """Get a comprehensive list of all conversation topics.
+
+        Args:
+            days: Number of days to look back (default: 90)
+
+        Returns:
+            Formatted string containing all topics and their mention counts
+        """
+        entities = self.retrieve_recent_entities(days=days)
+        if not entities:
+            return "No conversation topics found in the specified time period."
+
+        # Sort entities by total mentions
+        sorted_entities = sorted(entities, key=lambda x: x[1], reverse=True)
+
+        # Format output
+        output_parts = ["[bold]Conversation Topics:[/]"]
+
+        for entity, total, user_count, llm_count in sorted_entities:
+            source_breakdown = f"(User: {user_count}, AI: {llm_count})"
+            output_parts.append(f"• {entity}: {total} mentions {source_breakdown}")
+
+        return "\n".join(output_parts)
 
 
 # Replace the example usage code at the bottom with this chat interface:
@@ -705,6 +720,7 @@ Type 'quit' to exit.
 
 Commands:
 - /summary: Show a summary of recent conversation topics.
+- /topics: Show detailed list of all conversation topics.
 - /essence: Show user characteristics and preferences.
 - /perspectives: Show LLM perspectives on the conversation.
 """
