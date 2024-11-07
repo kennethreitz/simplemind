@@ -329,11 +329,11 @@ class EnhancedContextPlugin(sm.BasePlugin):
             for marker_type, markers in markers_by_type.items():
                 context_parts.append(f"- {marker_type.title()}: {', '.join(markers)}")
 
-        # Add entity context
+        # Add entity context with user/llm breakdown
         if entities:
             entity_strings = [
-                f"{entity} (mentioned {total} {'times' if total > 1 else 'time'})"
-                for entity, total, _, _ in entities
+                f"{entity} (mentioned {total} times - User: {user_count}, AI: {llm_count})"
+                for entity, total, user_count, llm_count in entities
             ]
 
             topics = (
