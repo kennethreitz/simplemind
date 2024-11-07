@@ -683,10 +683,15 @@ class EnhancedContextPlugin(sm.BasePlugin):
             source_breakdown = f"(User: {user_count}, AI: {llm_count})"
             output_parts.append(f"• {entity}: {total} mentions {source_breakdown}")
 
+        # Add list of all topics
+        all_topics = [entity[0] for entity in sorted_entities]
+        if all_topics:
+            output_parts.append("\n[bold]All Topics Mentioned:[/]")
+            output_parts.append(", ".join(all_topics))
+
         return "\n".join(output_parts)
 
 
-# Replace the example usage code at the bottom with this chat interface:
 def get_multiline_input() -> str:
     """Get input from user. Press Enter to send."""
     session = PromptSession()
