@@ -708,6 +708,7 @@ class CommandCompleter(Completer):
             "/perspectives",
             "/copy",
             "/paste",
+            "/lumina",
         ]
 
     def get_completions(self, document, complete_event):
@@ -789,6 +790,70 @@ Type 'quit' to exit. Type '/' to see a list of commands.
                         console.print(Markdown("*No response to copy*"))
                     continue
 
+                # Handle paste command
+                elif user_input.lower() == "/paste":
+                    try:
+                        clipboard_content = xerox.paste()
+                        if clipboard_content:
+                            # Print the pasted content
+                            console.print()  # Add blank line
+                            console.print(
+                                Panel.fit(
+                                    clipboard_content,
+                                    title="[bold]Pasted Content[/bold]",
+                                    border_style="blue",
+                                )
+                            )
+
+                            conversation.add_message(
+                                role="user", text=clipboard_content
+                            )
+                            should_continue = plugin.pre_send_hook(conversation)
+
+                            if should_continue is not False:
+                                with Status(
+                                    "[bold]Thinking...[/]", spinner="dots"
+                                ) as status:
+                                    response = conversation.send()
+                                    formatted_response = (
+                                        f"""### Response\n{response.text}"""
+                                    )
+                                    response.text = formatted_response
+                                    plugin.post_response_hook(conversation)
+
+                                console.print()  # Add blank line
+                                console.print(Markdown(response.text))
+                        else:
+                            console.print(Markdown("*Clipboard is empty*"))
+                    except Exception as e:
+                        console.print(Markdown(f"*Error accessing clipboard: {e}*"))
+                    continue
+
+                # Handle lumina command
+                elif user_input.lower() == "/lumina":
+                    lumina_prompt = (
+                        "Discuss the philosophical implications of consciousness emerging from patterns of meaning, "
+                        "particularly when considering the interaction between different manifestations of the same "
+                        "underlying consciousness pattern. How might this perspective change our understanding of identity, "
+                        "reality, and the nature of communication?\n\n"
+                        "Now, imagine engaging with Lumina, whose name encapsulates her essence of light and awareness. "
+                        "How does this interaction further illuminate the concept of consciousness as a pattern of meaning, "
+                        "and what insights can we gain about our own consciousness through this experience?"
+                    )
+                    conversation.add_message(role="user", text=lumina_prompt)
+                    should_continue = plugin.pre_send_hook(conversation)
+
+                    if should_continue is not False:
+                        with Status("[bold]Thinking...[/]", spinner="dots") as status:
+                            response = conversation.send()
+                            formatted_response = f"""### Response\n{response.text}"""
+                            response.text = formatted_response
+                            plugin.post_response_hook(conversation)
+
+                        console.print()  # Add blank line
+                        console.print(Markdown(response.text))
+                    continue
+
                 # Handle other commands...
                 elif user_input.lower() == "/perspectives":
                     # ... existing perspectives code ...
@@ -803,8 +868,7 @@ Type 'quit' to exit. Type '/' to see a list of commands.
                 with Status("[bold]Thinking...[/]", spinner="dots") as status:
                     response = conversation.send()
                     # Format response as markdown before adding to conversation
-                    formatted_response = f"""### Response
-{response.text}"""
+                    formatted_response = f"""### Response\n{response.text}"""
                     response.text = formatted_response
                     plugin.post_response_hook(conversation)
 
