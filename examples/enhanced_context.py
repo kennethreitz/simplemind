@@ -30,7 +30,7 @@ from docopt import docopt
 from prompt_toolkit import PromptSession
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.keys import Keys
-from prompt_toolkit.completion import WordCompleter
+from prompt_toolkit.completion import WordCompleter, Completer, Completion
 from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
 
 import xerox
@@ -697,17 +697,37 @@ class EnhancedContextPlugin(sm.BasePlugin):
         return "\n".join(output_parts)
 
 
+class CommandCompleter(Completer):
+    """Custom completer that only suggests commands when input starts with '/'"""
+
+    def __init__(self):
+        self.commands = [
+            "/summary",
+            "/topics",
+            "/essence",
+            "/perspectives",
+            "/copy",
+            "/paste",
+        ]
+
+    def get_completions(self, document, complete_event):
+        # Only provide suggestions if text starts with '/'
+        text = document.text
+        if text.startswith("/"):
+            word = text.lstrip("/")
+            for command in self.commands:
+                if command.lstrip("/").startswith(word):
+                    yield Completion(
+                        command,
+                        start_position=-len(text),  # Replace the entire input
+                    )
+
+
 def get_multiline_input() -> str:
     """Get input from user with command autocompletion."""
-    # Define available commands
-    commands = ["/summary", "/topics", "/essence", "/perspectives", "/copy", "/paste"]
-
-    # Create command completer
-    command_completer = WordCompleter(commands, ignore_case=True)
-
-    # Create session with autocompletion and history
+    # Create session with custom completer and history
     session = PromptSession(
-        completer=command_completer,
+        completer=CommandCompleter(),
         auto_suggest=AutoSuggestFromHistory(),
         complete_while_typing=True,
     )
@@ -738,10 +758,7 @@ def main():
 
     console = Console()
     md = """# Enhanced Context Chat Interface
-Type 'quit' to exit.
-
-Commands:
-- `/`: See a list of commands.
+Type 'quit' to exit. Type '/' to see a list of commands.
 """
     console.print(Markdown(md))
 
