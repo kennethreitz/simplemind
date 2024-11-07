@@ -676,17 +676,18 @@ class EnhancedContextPlugin(sm.BasePlugin):
         # Sort entities by total mentions
         sorted_entities = sorted(entities, key=lambda x: x[1], reverse=True)
 
-        # Format output
-        output_parts = ["[bold]Conversation Topics:[/]"]
+        # Format output using markdown
+        output_parts = ["## Conversation Topics"]
 
+        # Add top mentions with details
         for entity, total, user_count, llm_count in sorted_entities:
             source_breakdown = f"(User: {user_count}, AI: {llm_count})"
-            output_parts.append(f"• {entity}: {total} mentions {source_breakdown}")
+            output_parts.append(f"- **{entity}**: {total} mentions {source_breakdown}")
 
         # Add list of all topics
         all_topics = [entity[0] for entity in sorted_entities]
         if all_topics:
-            output_parts.append("\n[bold]All Topics Mentioned:[/]")
+            output_parts.append("\n## All Topics Mentioned")
             output_parts.append(", ".join(all_topics))
 
         return "\n".join(output_parts)
@@ -724,10 +725,10 @@ def main():
 Type 'quit' to exit.
 
 Commands:
-- /summary: Show a summary of recent conversation topics.
-- /topics: Show detailed list of all conversation topics.
-- /essence: Show user characteristics and preferences.
-- /perspectives: Show LLM perspectives on the conversation.
+- `/summary`: Show a summary of recent conversation topics
+- `/topics`: Show detailed list of all conversation topics
+- `/essence`: Show user characteristics and preferences
+- `/perspectives`: Show LLM perspectives on the conversation
 """
     console.print(Markdown(md))
 
@@ -741,14 +742,14 @@ Commands:
                 continue
 
             if user_input.lower() in ["quit", "exit", "q"]:
-                console.print("\n[bold]Goodbye![/]")
+                console.print(Markdown("**Goodbye!**"))
                 break
 
             # Handle commands
             if user_input.lower() == "/essence":
                 markers = plugin.retrieve_essence_markers()
                 if not markers:
-                    console.print("[italic]No essence markers found.[/]")
+                    console.print(Markdown("*No essence markers found.*"))
                     continue
 
                 # Group markers by type
@@ -758,17 +759,18 @@ Commands:
                         markers_by_type[marker_type] = []
                     markers_by_type[marker_type].append(marker_text)
 
-                # Format output
-                console.print("\n[bold]User Characteristics:[/]")
+                # Format output as markdown
+                output = ["## User Characteristics"]
                 for marker_type, markers in markers_by_type.items():
-                    console.print(f"\n[bold]{marker_type.title()}:[/]")
+                    output.append(f"\n### {marker_type.title()}")
                     for marker in markers:
-                        console.print(f"• {marker}")
+                        output.append(f"- {marker}")
+                console.print(Markdown("\n".join(output)))
                 continue
 
             # Easter egg handling
             if user_input.lower() == "go go go":
-                console.print("\n[italic]Tip: Use /perspectives instead![/]")
+                console.print(Markdown("*Tip: Use /perspectives instead!*"))
                 continue
 
             # Regular conversation handling
@@ -778,31 +780,37 @@ Commands:
             if should_continue is not False:
                 with Status("[bold]Thinking...[/]", spinner="dots") as status:
                     response = conversation.send()
+                    # Format response as markdown before adding to conversation
+                    formatted_response = f"""### Response
+{response.text}"""
+                    response.text = formatted_response
                     plugin.post_response_hook(conversation)
 
-                # Print assistant response with improved spacing
+                # Print assistant response with markdown formatting
                 console.print()  # Add blank line before response
-                console.print("[bold green]Assistant:[/]")  # Move to new line
-                console.print(response.text)  # Response on its own line
+                console.print(Markdown(response.text))  # Response as markdown
             else:
                 response = conversation.get_last_message(role="assistant")
                 if response:
                     console.print()  # Add blank line before response
-                    console.print("[bold green]Assistant:[/]")  # Move to new line
-                    console.print(response.text)  # Response on its own line
+                    console.print(Markdown(response.text))  # Response as markdown
 
-            # Handle commands
+            # Handle perspectives command
             if user_input.lower() == "/perspectives":
-                console.print("\n[bold]🎉 Different Perspectives:[/]")
+                console.print(Markdown("\n## 🎉 Different Perspectives"))
                 recent_entities = plugin.retrieve_recent_entities()
                 context = plugin.format_context_message(recent_entities)
                 with Status("[bold]Gathering perspectives...[/]", spinner="dots"):
                     conversation_result = plugin.simulate_llm_conversation(context)
-                console.print(f"\n{conversation_result}")
+                # Format conversation result as markdown
+                formatted_result = conversation_result.replace(
+                    "Speaker", "\n### Speaker"
+                )
+                console.print(Markdown(formatted_result))
                 continue
 
     except KeyboardInterrupt:
-        console.print("\n[bold]Goodbye![/]")
+        console.print(Markdown("**Goodbye!**"))
         return
 
 
