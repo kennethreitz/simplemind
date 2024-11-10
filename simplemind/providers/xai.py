@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import TYPE_CHECKING, Type, TypeVar, Iterator
+from typing import TYPE_CHECKING, Iterator, Type, TypeVar
 
 import instructor
 from pydantic import BaseModel
@@ -14,22 +14,17 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound=BaseModel)
 
 
-PROVIDER_NAME = "xai"
-DEFAULT_MODEL = "grok-beta"
-BASE_URL = "https://api.x.ai/v1"
-DEFAULT_MAX_TOKENS = 1000
-DEFAULT_KWARGS = {"max_tokens": DEFAULT_MAX_TOKENS}
-
-
 class XAI(BaseProvider):
-    NAME = PROVIDER_NAME
-    DEFAULT_MODEL = DEFAULT_MODEL
-    DEFAULT_KWARGS = DEFAULT_KWARGS
+    NAME = "xai"
+    DEFAULT_MODEL = "grok-beta"
+    DEFAULT_MAX_TOKENS = 1000
+    DEFAULT_KWARGS = {"max_tokens": DEFAULT_MAX_TOKENS}
+    BASE_URL = "https://api.x.ai/v1"
     supports_streaming = True
     supports_structured_responses = False
 
     def __init__(self, api_key: str | None = None):
-        self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
+        self.api_key = api_key or settings.get_api_key(self.NAME)
 
     @cached_property
     def client(self):
@@ -44,7 +39,7 @@ class XAI(BaseProvider):
             ) from exc
         return oa.OpenAI(
             api_key=self.api_key,
-            base_url=BASE_URL,
+            base_url=self.BASE_URL,
         )
 
     @cached_property
@@ -76,7 +71,7 @@ class XAI(BaseProvider):
             text=assistant_message.content,
             raw=response,
             llm_model=conversation.llm_model or self.DEFAULT_MODEL,
-            llm_provider=PROVIDER_NAME,
+            llm_provider=self.NAME,
         )
 
     @logger

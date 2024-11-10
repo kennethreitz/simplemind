@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import TYPE_CHECKING, Type, TypeVar, Iterator
+from typing import TYPE_CHECKING, Iterator, Type, TypeVar
 
 import instructor
 from pydantic import BaseModel
@@ -14,20 +14,15 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound=BaseModel)
 
 
-PROVIDER_NAME = "groq"
-DEFAULT_MODEL = "llama3-8b-8192"
-DEFAULT_MAX_TOKENS = 1_000
-DEFAULT_KWARGS = {"max_tokens": DEFAULT_MAX_TOKENS}
-
-
 class Groq(BaseProvider):
-    NAME = PROVIDER_NAME
-    DEFAULT_MODEL = DEFAULT_MODEL
-    DEFAULT_KWARGS = DEFAULT_KWARGS
+    NAME = "groq"
+    DEFAULT_MODEL = "llama3-8b-8192"
+    DEFAULT_MAX_TOKENS = 1_000
+    DEFAULT_KWARGS = {"max_tokens": DEFAULT_MAX_TOKENS}
     supports_streaming = True
 
     def __init__(self, api_key: str | None = None):
-        self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
+        self.api_key = api_key or settings.get_api_key(self.NAME)
 
     @cached_property
     def client(self):
@@ -75,7 +70,7 @@ class Groq(BaseProvider):
             text=assistant_message.content or "",
             raw=response,
             llm_model=conversation.llm_model or self.DEFAULT_MODEL,
-            llm_provider=PROVIDER_NAME,
+            llm_provider=self.NAME,
         )
 
     @logger
