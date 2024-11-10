@@ -1,10 +1,9 @@
 import time
 from typing import List, Tuple
 
+from _context import sm
 from rich.console import Console
 from rich.markdown import Markdown
-
-from _context import sm
 
 
 class MultiAIConversation:

@@ -1,35 +1,28 @@
-from datetime import datetime
-import logging
-import sqlite3
-from typing import List
-import re
-import os
 import contextlib
-
-import spacy
+import logging
+import os
+import random
+import re
+import sqlite3
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
-
-from _context import simplemind as sm
+from datetime import datetime
+from typing import List
 
 import nltk
-from nltk.tokenize import word_tokenize
-from nltk.tag import pos_tag
-
-from rich.console import Console
-from rich.panel import Panel
-from rich.markdown import Markdown
-from rich.status import Status
-
-from concurrent.futures import ThreadPoolExecutor
-import random
-
-from docopt import docopt
-
-from prompt_toolkit import PromptSession
-from prompt_toolkit.completion import Completer, Completion
-from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
-
+import spacy
 import xerox
+from _context import simplemind as sm
+from docopt import docopt
+from nltk.tag import pos_tag
+from nltk.tokenize import word_tokenize
+from prompt_toolkit import PromptSession
+from prompt_toolkit.auto_suggest import AutoSuggestFromHistory
+from prompt_toolkit.completion import Completer, Completion
+from rich.console import Console
+from rich.markdown import Markdown
+from rich.panel import Panel
+from rich.status import Status
 
 DB_PATH = "enhanced_context.db"
 AVAILABLE_PROVIDERS = ["xai", "openai", "anthropic", "ollama"]

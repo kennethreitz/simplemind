@@ -1,7 +1,7 @@
 import nltk
+from _context import simplemind as sm
 from nltk.sentiment import SentimentIntensityAnalyzer
 from rich.console import Console
-from _context import simplemind as sm
 
 nltk.download("vader_lexicon")
 
