@@ -33,7 +33,7 @@ class Ollama(BaseProvider):
             import openai
         except ImportError as exc:
             raise ImportError(
-                "Please install the `ollama` package: `pip install ollama`"
+                "Please install the `openai` package: `pip install openai`"
             ) from exc
         return openai.OpenAI(base_url=f"{self.host_url}/v1", api_key="ollama")
 
