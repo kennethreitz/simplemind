@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import TYPE_CHECKING, Type, TypeVar, Iterator
+from typing import TYPE_CHECKING, Callable, Iterator, Type, TypeVar
 
 import instructor
 from pydantic import BaseModel
@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from ..logging import logger
 from ..settings import settings
 from ._base import BaseProvider
+from ._base_tools import BaseTool
 
 if TYPE_CHECKING:
     from ..models import Conversation, Message
@@ -18,6 +19,19 @@ PROVIDER_NAME = "anthropic"
 DEFAULT_MODEL = "claude-3-5-sonnet-20241022"
 DEFAULT_MAX_TOKENS = 1_000
 DEFAULT_KWARGS = {"max_tokens": DEFAULT_MAX_TOKENS}
+
+
+class AntrhopicTool(BaseTool):
+    def get_schema(self):
+        return {
+            "name": self.name,
+            "description": self.description,
+            "input_schema": {
+                "type": "object",
+                "properties": self.get_properties_schema(),
+                "required": self.required,
+            },
+        }
 
 
 class Anthropic(BaseProvider):
@@ -49,17 +63,24 @@ class Anthropic(BaseProvider):
         return instructor.from_anthropic(self.client)
 
     @logger
-    def send_conversation(self, conversation: "Conversation", **kwargs) -> "Message":
+    def send_conversation(
+        self,
+        conversation: "Conversation",
+        tools: list[Callable] | None = None,
+        **kwargs,
+    ) -> "Message":
         """Send a conversation to the Anthropic API."""
         from ..models import Message
 
         messages = [
-            {"role": msg.role, "content": msg.text} for msg in conversation.messages
+            {"role": msg.role, "content": msg.text}
+            for msg in conversation.messages
         ]
 
         response = self.client.messages.create(
             model=conversation.llm_model or self.DEFAULT_MODEL,
             messages=messages,
+            tools=self.make_tools(tools),
             **{**self.DEFAULT_KWARGS, **kwargs},
         )
 
@@ -127,3 +148,8 @@ class Anthropic(BaseProvider):
             # Yield each chunk of text from the stream.
             for chunk in stream.text_stream:
                 yield chunk
+
+    @cached_property
+    def tool(self) -> Type[BaseTool]:
+        """The tool implementation for Antrhopic."""
+        return AntrhopicTool

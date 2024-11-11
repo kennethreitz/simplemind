@@ -1,12 +1,14 @@
 from functools import cached_property
-from typing import TYPE_CHECKING, Type, TypeVar, Iterator
+from typing import TYPE_CHECKING, Iterator, Type, TypeVar
 
 import instructor
+from google.generativeai.responder import Callable
 from pydantic import BaseModel
 
 from ..logging import logger
 from ..settings import settings
 from ._base import BaseProvider
+from ._base_tools import BaseTool
 
 if TYPE_CHECKING:
     from ..models import Conversation, Message
@@ -17,6 +19,23 @@ PROVIDER_NAME = "openai"
 DEFAULT_MODEL = "gpt-4o-mini"
 DEFAULT_MAX_TOKENS = None
 DEFAULT_KWARGS = {}
+
+
+class OpenAITool(BaseTool):
+    def get_schema(self):
+        return {
+            "type": "function",
+            "function": {
+                "name": self.name,
+                "description": self.description,
+                "parameters": {
+                    "type": "object",
+                    "properties": self.get_properties_schema(),
+                    "required": self.required,
+                    "additionalProperties": False,
+                },
+            },
+        }
 
 
 class OpenAI(BaseProvider):
@@ -47,17 +66,24 @@ class OpenAI(BaseProvider):
         return instructor.from_openai(self.client)
 
     @logger
-    def send_conversation(self, conversation: "Conversation", **kwargs) -> "Message":
+    def send_conversation(
+        self,
+        conversation: "Conversation",
+        tools: list[Callable] | None = None,
+        **kwargs,
+    ) -> "Message":
         """Send a conversation to the OpenAI API."""
         from ..models import Message
 
         messages = [
-            {"role": msg.role, "content": msg.text} for msg in conversation.messages
+            {"role": msg.role, "content": msg.text}
+            for msg in conversation.messages
         ]
 
         response = self.client.chat.completions.create(
             model=conversation.llm_model or DEFAULT_MODEL,
             messages=messages,
+            tools=self.make_tools(tools),
             **{**self.DEFAULT_KWARGS, **kwargs},
         )
 
@@ -96,7 +122,9 @@ class OpenAI(BaseProvider):
         return response_model.model_validate(response)
 
     @logger
-    def generate_text(self, prompt: str, *, llm_model: str | None = None, **kwargs):
+    def generate_text(
+        self, prompt: str, *, llm_model: str | None = None, **kwargs
+    ):
         """Generate text using the OpenAI API."""
         messages = [
             {"role": "user", "content": prompt},
