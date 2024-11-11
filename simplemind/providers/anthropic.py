@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import TYPE_CHECKING, Type, TypeVar, Iterator
+from typing import TYPE_CHECKING, Iterator, Type, TypeVar
 
 import instructor
 from pydantic import BaseModel
@@ -14,20 +14,15 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound=BaseModel)
 
 
-PROVIDER_NAME = "anthropic"
-DEFAULT_MODEL = "claude-3-5-sonnet-20241022"
-DEFAULT_MAX_TOKENS = 1_000
-DEFAULT_KWARGS = {"max_tokens": DEFAULT_MAX_TOKENS}
-
-
 class Anthropic(BaseProvider):
-    NAME = PROVIDER_NAME
-    DEFAULT_MODEL = DEFAULT_MODEL
-    DEFAULT_KWARGS = DEFAULT_KWARGS
+    NAME = "anthropic"
+    DEFAULT_MODEL = "claude-3-5-sonnet-20241022"
+    DEFAULT_MAX_TOKENS = 1_000
+    DEFAULT_KWARGS = {"max_tokens": DEFAULT_MAX_TOKENS}
     supports_streaming = True
 
     def __init__(self, api_key: str | None = None):
-        self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
+        self.api_key = api_key or settings.get_api_key(self.NAME)
 
     @cached_property
     def client(self):
@@ -72,7 +67,7 @@ class Anthropic(BaseProvider):
             text=assistant_message,
             raw=response,
             llm_model=conversation.llm_model or self.DEFAULT_MODEL,
-            llm_provider=PROVIDER_NAME,
+            llm_provider=self.NAME,
         )
 
     @logger

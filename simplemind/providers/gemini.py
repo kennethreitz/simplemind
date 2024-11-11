@@ -2,7 +2,7 @@
 # IT is not currently working as desired.
 
 from functools import cached_property
-from typing import TYPE_CHECKING, Type, TypeVar, Iterator
+from typing import TYPE_CHECKING, Iterator, Type, TypeVar
 
 import instructor
 from pydantic import BaseModel
@@ -17,18 +17,14 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound=BaseModel)
 
 
-PROVIDER_NAME = "gemini"
-DEFAULT_MODEL = "models/gemini-1.5-flash-latest"
-
-
 class Gemini(BaseProvider):
-    NAME = PROVIDER_NAME
-    DEFAULT_MODEL = DEFAULT_MODEL
+    NAME = "gemini"
+    DEFAULT_MODEL = "models/gemini-1.5-flash-latest"
     supports_streaming = True
 
     def __init__(self, api_key: str | None = None):
-        self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
-        self.model_name = DEFAULT_MODEL
+        self.api_key = api_key or settings.get_api_key(self.NAME)
+        self.model_name = self.DEFAULT_MODEL
 
     def set_model(self, model_name: str):
         self.model_name = model_name
@@ -76,7 +72,7 @@ class Gemini(BaseProvider):
             text=response.text,
             raw=response,
             llm_model=self.model_name,
-            llm_provider=PROVIDER_NAME,
+            llm_provider=self.NAME,
         )
 
     @logger

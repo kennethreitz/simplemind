@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 # Note: you should probably be using textblob for this.
 
+
 class SentimentAnalysis(BaseModel):
     sentiment: Literal["positive", "negative", "neutral"]
     confidence: float

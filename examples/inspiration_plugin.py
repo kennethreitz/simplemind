@@ -1,4 +1,5 @@
 import random
+
 from _context import simplemind as sm
 
 
