@@ -42,6 +42,12 @@ class BaseTool(BaseModel, ABC):
     properties: dict[str, BaseToolProperty]
     required: list[str] | None = None
     config: ClassVar[BaseToolConfig] = BaseToolConfig()
+    raw_func: Callable
+    tool_id: str | None = None
+    function_result: str | None = None
+
+    def is_executed(self) -> bool:
+        return self.function_result is not None
 
     @classmethod
     def convert_type(cls, field_type) -> str:
@@ -104,7 +110,14 @@ class BaseTool(BaseModel, ABC):
             description=(func.__doc__ or "").strip(),
             properties=properties,
             required=required,
+            raw_func=func,
         )
 
     @abstractmethod
-    def get_schema(self) -> Any: ...
+    def get_input_schema(self) -> Any: ...
+
+    @abstractmethod
+    def handle(self, message) -> None: ...
+
+    @abstractmethod
+    def get_response_schema(self) -> Any: ...

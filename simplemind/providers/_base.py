@@ -34,12 +34,18 @@ class BaseProvider(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def send_conversation(self, conversation: "Conversation") -> "Message":
+    def send_conversation(
+        self,
+        conversation: "Conversation",
+        tools: list[Callable] | None = None,
+    ) -> "Message":
         """Send a conversation to the provider."""
         raise NotImplementedError
 
     @abstractmethod
-    def structured_response(self, prompt: str, response_model: Type[T], **kwargs) -> T:
+    def structured_response(
+        self, prompt: str, response_model: Type[T], **kwargs
+    ) -> T:
         """Get a structured response."""
         raise NotImplementedError
 
@@ -64,3 +70,5 @@ class BaseProvider(ABC):
     def make_tools(self, tools: list[Callable] | None):
         if tools is not None:
             return [self.tool.from_function(func) for func in tools]
+        else:
+            return []
