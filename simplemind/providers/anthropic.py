@@ -15,13 +15,6 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound=BaseModel)
 
 
-
-PROVIDER_NAME = "anthropic"
-DEFAULT_MODEL = "claude-3-5-sonnet-20241022"
-DEFAULT_MAX_TOKENS = 1_000
-DEFAULT_KWARGS = {"max_tokens": DEFAULT_MAX_TOKENS}
-
-
 class AnthropicTool(BaseTool):
     def get_response_schema(self) -> Any:
         assert self.is_executed, f"Tool {self.name} was not executed."
@@ -65,7 +58,6 @@ class AnthropicTool(BaseTool):
                 "required": self.required,
             },
         }
-
 
 
 class Anthropic(BaseProvider):
