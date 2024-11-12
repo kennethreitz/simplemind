@@ -15,11 +15,6 @@ if TYPE_CHECKING:
 
 T = TypeVar("T", bound=BaseModel)
 
-PROVIDER_NAME = "openai"
-DEFAULT_MODEL = "gpt-4o-mini"
-DEFAULT_MAX_TOKENS = None
-DEFAULT_KWARGS = {}
-
 
 class OpenAITool(BaseTool):
     def get_schema(self):
@@ -39,13 +34,14 @@ class OpenAITool(BaseTool):
 
 
 class OpenAI(BaseProvider):
-    NAME = PROVIDER_NAME
-    DEFAULT_MODEL = DEFAULT_MODEL
-    DEFAULT_KWARGS = DEFAULT_KWARGS
+    NAME = "openai"
+    DEFAULT_MODEL = "gpt-4o-mini"
+    DEFAULT_MAX_TOKENS = None
+    DEFAULT_KWARGS = {}
     supports_streaming = True
 
     def __init__(self, api_key: str | None = None):
-        self.api_key = api_key or settings.get_api_key(PROVIDER_NAME)
+        self.api_key = api_key or settings.get_api_key(self.NAME)
 
     @cached_property
     def client(self):
@@ -81,7 +77,7 @@ class OpenAI(BaseProvider):
         ]
 
         response = self.client.chat.completions.create(
-            model=conversation.llm_model or DEFAULT_MODEL,
+            model=conversation.llm_model or self.DEFAULT_MODEL,
             messages=messages,
             tools=self.make_tools(tools),
             **{**self.DEFAULT_KWARGS, **kwargs},
@@ -95,8 +91,8 @@ class OpenAI(BaseProvider):
             role="assistant",
             text=assistant_message.content or "",
             raw=response,
-            llm_model=conversation.llm_model or DEFAULT_MODEL,
-            llm_provider=PROVIDER_NAME,
+            llm_model=conversation.llm_model or self.DEFAULT_MODEL,
+            llm_provider=self.NAME,
         )
 
     @logger
