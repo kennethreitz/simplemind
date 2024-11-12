@@ -261,6 +261,50 @@ The universe is never done.
 
 Simple, yet effective.
 
+### Tools (Function calling)
+Tools (also known as functions) let you call any Python function from your AI conversations. Here's an example:
+
+```python
+def get_weather(
+    location: Annotated[
+        str, Field(description="The city and state, e.g. San Francisco, CA")
+    ],
+    unit: Annotated[
+        Literal["celcius", "fahrenheit"],
+        Field(
+            description="The unit of temperature, either 'celsius' or 'fahrenheit'"
+        ),
+    ] = "celcius",
+):
+    """
+    Get the current weather in a given location
+    """
+    return f"42 {unit}"
+
+# Add your function as a tool
+conversation = sm.create_conversation()
+conversation.add_message("user", "What's the weather in San Francisco?")
+response = conversation.send(tools=[get_weather])
+```
+
+Note how we're using Python's `Annotated` feature combined with `Field` to provide additional context to our function parameters. This helps the AI understand the intention and constraints of each parameter, making tool calls more accurate and reliable.
+You can alos ommit `Annotated` and just pass the `Field` parameter.
+```python
+def get_weather(
+    location: str = Field(description="The city and state, e.g. San Francisco, CA"),
+    unit:Literal["celcius", "fahrenheit"]= Field(
+        default="celcius",
+        description="The unit of temperature, either 'celsius' or 'fahrenheit'"
+        ),
+):
+    """
+    Get the current weather in a given location
+    """
+    return f"42 {unit}"
+```
+
+Functions can be defined with type hints and Pydantic models for validation. The AI will intelligently choose when to call the functions and incorporate the results into its responses.
+
 ### Logging
 
 Simplemind uses [Logfire](https://pydantic.dev/logfire) for logging. To enable logging, call `sm.enable_logfire()`.
