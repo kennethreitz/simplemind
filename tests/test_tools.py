@@ -5,6 +5,7 @@ from pydantic import Field
 
 import simplemind as sm
 from simplemind.providers import Anthropic
+from simplemind.providers._base_tools import BaseTool
 
 MODELS = [
     Anthropic,
@@ -102,3 +103,17 @@ def test_multiple_tools(provider_cls):
     data = conv.send(tools=[get_location, get_weather])
     assert "San Francisco" in data.text
     assert "42" in data.text
+
+
+@pytest.mark.parametrize(
+    "provider_cls",
+    MODELS,
+)
+def test_tool_decorator(provider_cls):
+    @sm.tool(llm_provider=provider_cls.NAME)
+    def exchange_rate(currency_pair: str) -> float:
+        return 7.9
+
+    assert isinstance(exchange_rate, BaseTool)
+    assert exchange_rate.name == "exchange_rate"
+    assert list(exchange_rate.properties.keys()) == ["currency_pair"]
