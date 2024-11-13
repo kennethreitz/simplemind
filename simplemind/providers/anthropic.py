@@ -106,42 +106,48 @@ class Anthropic(BaseProvider):
         """Send a conversation to the Anthropic API."""
         from ..models import Message
 
-        messages = [
+        # Format messages from conversation
+        formatted_messages = [
             {"role": msg.role, "content": msg.text}
             for msg in conversation.messages
         ]
 
+        # Set up tools if provided
         converted_tools = self.make_tools(tools)
-        tools_kwarg = (
-            {}
-            if tools is None
-            else {"tools": [t.get_input_schema() for t in converted_tools]}
+        tools_config = (
+            {"tools": [t.get_input_schema() for t in converted_tools]}
+            if tools is not None
+            else {}
         )
 
-        response = self.client.messages.create(
-            model=conversation.llm_model or self.DEFAULT_MODEL,
-            messages=messages,
-            **{**self.DEFAULT_KWARGS, **kwargs, **tools_kwarg},
-        )
+        # Merge all kwargs
+        request_kwargs = {
+            **self.DEFAULT_KWARGS,
+            **kwargs,
+            **tools_config,
+            "model": conversation.llm_model or self.DEFAULT_MODEL,
+            "messages": formatted_messages,
+        }
 
+        # Make initial API call
+        response = self.client.messages.create(**request_kwargs)
+
+        # Handle tool responses if needed
         while response.content[-1].type != "text":
-            print(response)
+            # Continue handling tools if the LLM is doing
+            # multiple sub-seqequent/sequential tool calls
             for tool in converted_tools:
-                tool.handle(response, messages)
+                tool.handle(response, formatted_messages)
                 if tool.is_executed():
-                    response = self.client.messages.create(
-                        model=conversation.llm_model or self.DEFAULT_MODEL,
-                        messages=messages,
-                        **{**self.DEFAULT_KWARGS, **kwargs, **tools_kwarg},
-                    )
+                    response = self.client.messages.create(**request_kwargs)
+                    # Resetting the tool results in case this tool gets used again
                     tool.reset_result()
 
-        assistant_message = response.content[-1].text
+        final_message = response.content[-1].text
 
-        # Create and return a properly formatted Message instance
         return Message(
             role="assistant",
-            text=assistant_message,
+            text=final_message,
             raw=response,
             llm_model=conversation.llm_model or self.DEFAULT_MODEL,
             llm_provider=self.NAME,
