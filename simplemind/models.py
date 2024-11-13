@@ -1,10 +1,11 @@
 import uuid
 from datetime import datetime
 from types import TracebackType
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Callable, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field
 
+from .providers._base_tools import BaseTool
 from .utils import find_provider
 
 MESSAGE_ROLE = Literal["system", "user", "assistant"]
@@ -40,7 +41,9 @@ class BasePlugin(SMBaseModel):
         """Cleanup a hook for the plugin."""
         raise NotImplementedError
 
-    def add_message_hook(self, conversation: "Conversation", message: "Message") -> Any:
+    def add_message_hook(
+        self, conversation: "Conversation", message: "Message"
+    ) -> Any:
         """Add a message hook for the plugin."""
         raise NotImplementedError
 
@@ -48,7 +51,9 @@ class BasePlugin(SMBaseModel):
         """Pre-send hook for the plugin."""
         raise NotImplementedError
 
-    def post_send_hook(self, conversation: "Conversation", response: "Message") -> Any:
+    def post_send_hook(
+        self, conversation: "Conversation", response: "Message"
+    ) -> Any:
         """Post-send hook for the plugin."""
         raise NotImplementedError
 
@@ -120,7 +125,9 @@ class Conversation(SMBaseModel):
                 except NotImplementedError:
                     pass
 
-    def prepend_system_message(self, text: str, meta: Dict[str, Any] | None = None):
+    def prepend_system_message(
+        self, text: str, meta: Dict[str, Any] | None = None
+    ):
         """Prepend a system message to the conversation."""
         self.messages = [
             Message(role="system", text=text, meta=meta or {})
@@ -158,6 +165,7 @@ class Conversation(SMBaseModel):
         self,
         llm_model: str | None = None,
         llm_provider: str | None = None,
+        tools: list[Callable | BaseTool] | None = None,
     ) -> Message:
         """Send the conversation to the LLM."""
 
@@ -173,7 +181,7 @@ class Conversation(SMBaseModel):
 
         # Find the provider and send the conversation.
         provider = find_provider(llm_provider or self.llm_provider)
-        response = provider.send_conversation(self)
+        response = provider.send_conversation(self, tools=tools)
 
         # Execute all post-send hooks.
         for plugin in self.plugins:
@@ -184,13 +192,17 @@ class Conversation(SMBaseModel):
                     pass
 
         # Add the response to the conversation.
-        self.add_message(role="assistant", text=response.text, meta=response.meta)
+        self.add_message(
+            role="assistant", text=response.text, meta=response.meta
+        )
 
         return response
 
     def get_last_message(self, role: MESSAGE_ROLE) -> Message | None:
         """Get the last message with the given role."""
-        return next((m for m in reversed(self.messages) if m.role == role), None)
+        return next(
+            (m for m in reversed(self.messages) if m.role == role), None
+        )
 
     def add_plugin(self, plugin: BasePlugin) -> None:
         """Add a plugin to the conversation."""

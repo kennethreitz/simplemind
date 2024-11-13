@@ -26,6 +26,7 @@ class BaseToolConfig(BaseModel):
     TYPE_CONVERSION: dict[type, str] = {
         str: "string",
         int: "integer",
+        float: "number",
         bool: "boolean",
     }
 
@@ -42,12 +43,19 @@ class BaseTool(BaseModel, ABC):
     properties: dict[str, BaseToolProperty]
     required: list[str] | None = None
     config: ClassVar[BaseToolConfig] = BaseToolConfig()
-    raw_func: Callable
+    raw_func: Any | None = None
     tool_id: str | None = None
     function_result: str | None = None
 
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        assert self.raw_func is not None
+        return self.raw_func(*args, **kwargs)
+
     def is_executed(self) -> bool:
         return self.function_result is not None
+
+    def reset_result(self) -> None:
+        self.function_result = None
 
     @classmethod
     def convert_type(cls, field_type) -> str:
@@ -68,7 +76,11 @@ class BaseTool(BaseModel, ABC):
         }
 
     @classmethod
-    def from_function(cls, func: Callable):
+    def from_function(cls, func: Callable | "BaseTool"):
+        # Check if the func passed is an instace of BaseTool
+        if hasattr(func, "raw_func"):
+            return func
+
         annotations = getattr(func, "__annotations__", {})
         properties = {}
         required = []
@@ -76,34 +88,39 @@ class BaseTool(BaseModel, ABC):
         func_signature = inspect.signature(func)
 
         for n, (arg_name, arg_type) in enumerate(annotations.items()):
-            # Check if argument has metadata (from Annotated)
-            if hasattr(arg_type, "__metadata__"):
-                field = arg_type.__metadata__[0]  # Get Field info from metadata
-                field_type = arg_type.__origin__  # Get actual type
-            # Check if argument has a default value in signature
-            elif (
-                sig_param := func_signature.parameters[arg_name]
-            ).default is not inspect.Parameter.empty:
-                field = sig_param.default  # Use default as Field
-                field_type = arg_type  # Use plain type annotation
-            else:
-                # Raise error if no Field annotation found
-                raise ValueError(
-                    f"Please add a Field annotation to `{func.__name__}.{arg_name}` parameter"
+            if (  # Skipping 'return' annotation (i.e.```-> str```)
+                arg_name != "return"
+            ):
+                # Check if argument has metadata (from Annotated)
+                if hasattr(arg_type, "__metadata__"):
+                    field = arg_type.__metadata__[
+                        0
+                    ]  # Get Field info from metadata
+                    field_type = arg_type.__origin__  # Get actual type
+                # Check if argument has a default value in signature
+                elif (
+                    sig_param := func_signature.parameters[arg_name]
+                ).default is not inspect.Parameter.empty:
+                    field = sig_param.default  # Use default as Field
+                    field_type = arg_type  # Use plain type annotation
+                else:
+                    # Raise error if no Field annotation found
+                    raise ValueError(
+                        f"Please add a Field annotation to `{func.__name__}.{arg_name}` parameter"
+                    )
+
+                field_type_converted = cls.convert_type(field_type)
+
+                if _is_literal(field_type):
+                    enum_values = [str(x) for x in field_type.__args__]
+
+                properties[arg_name] = BaseToolProperty(
+                    type=field_type_converted,
+                    description=field.description,
+                    enum=enum_values,
                 )
-
-            field_type_converted = cls.convert_type(field_type)
-
-            if _is_literal(field_type):
-                enum_values = [str(x) for x in field_type.__args__]
-
-            properties[arg_name] = BaseToolProperty(
-                type=field_type_converted,
-                description=field.description,
-                enum=enum_values,
-            )
-            if _is_required(field, func_signature, arg_name):
-                required.append(arg_name)
+                if _is_required(field, func_signature, arg_name):
+                    required.append(arg_name)
 
         return cls(
             name=func.__name__,

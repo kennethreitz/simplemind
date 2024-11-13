@@ -37,7 +37,7 @@ class BaseProvider(ABC):
     def send_conversation(
         self,
         conversation: "Conversation",
-        tools: list[Callable] | None = None,
+        tools: list[Callable | BaseTool] | None = None,
     ) -> "Message":
         """Send a conversation to the provider."""
         raise NotImplementedError
@@ -54,7 +54,7 @@ class BaseProvider(ABC):
         self,
         prompt: str,
         *,
-        tools: list[Callable] | None = None,
+        tools: list[Callable | BaseTool] | None = None,
         stream: bool = False,
         **kwargs,
     ) -> str:
@@ -67,7 +67,7 @@ class BaseProvider(ABC):
         """The tool implementation for the provider."""
         raise NotImplementedError
 
-    def make_tools(self, tools: list[Callable] | None):
+    def make_tools(self, tools: list[Callable | BaseTool] | None):
         if tools is not None:
             return [self.tool.from_function(func) for func in tools]
         else:

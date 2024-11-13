@@ -1,6 +1,7 @@
 from typing import List, Type
 
 from ._base import BaseProvider
+from ._base_tools import BaseTool
 from .amazon import Amazon
 from .anthropic import Anthropic
 from .gemini import Gemini
@@ -29,4 +30,5 @@ __all__ = [
     "Amazon",
     "providers",
     "BaseProvider",
+    "BaseTool",
 ]

@@ -18,6 +18,9 @@ T = TypeVar("T", bound=BaseModel)
 class AnthropicTool(BaseTool):
     def get_response_schema(self) -> Any:
         assert self.is_executed, f"Tool {self.name} was not executed."
+        assert isinstance(
+            self.tool_id, str
+        ), f"Expected str for `tool_id` got {self.tool_id!r}"
         return {
             "type": "tool_result",
             "tool_use_id": self.tool_id,
@@ -28,6 +31,7 @@ class AnthropicTool(BaseTool):
     def handle(self, response, messages) -> None:
         """Handle the tool execution result from an API response."""
         msg = {"role": "assistant", "content": []}
+        tool_used = False
         for content in response.content:
             if content.type == "tool_use" and content.name == self.name:
                 msg["content"].append(
@@ -41,12 +45,15 @@ class AnthropicTool(BaseTool):
                 # Function execution:
                 self.function_result = str(self.raw_func(**content.input))
                 self.tool_id = content.id
-            else:
+                tool_used = True
+            elif content.type == "text":
                 msg["content"].append({"type": "text", "text": content.text})
-        messages.append(msg)
-        messages.append(
-            {"role": "user", "content": [self.get_response_schema()]}
-        )
+
+        if tool_used:
+            messages.append(msg)
+            messages.append(
+                {"role": "user", "content": [self.get_response_schema()]}
+            )
 
     def get_input_schema(self):
         return {
@@ -93,7 +100,7 @@ class Anthropic(BaseProvider):
     def send_conversation(
         self,
         conversation: "Conversation",
-        tools: list[Callable] | None = None,
+        tools: list[Callable | BaseTool] | None = None,
         **kwargs,
     ) -> "Message":
         """Send a conversation to the Anthropic API."""
@@ -117,16 +124,19 @@ class Anthropic(BaseProvider):
             **{**self.DEFAULT_KWARGS, **kwargs, **tools_kwarg},
         )
 
-        for tool in converted_tools:
-            tool.handle(response, messages)
-            if tool.is_executed():
-                response = self.client.messages.create(
-                    model=conversation.llm_model or self.DEFAULT_MODEL,
-                    messages=messages,
-                    **{**self.DEFAULT_KWARGS, **kwargs, **tools_kwarg},
-                )
+        while response.content[-1].type != "text":
+            print(response)
+            for tool in converted_tools:
+                tool.handle(response, messages)
+                if tool.is_executed():
+                    response = self.client.messages.create(
+                        model=conversation.llm_model or self.DEFAULT_MODEL,
+                        messages=messages,
+                        **{**self.DEFAULT_KWARGS, **kwargs, **tools_kwarg},
+                    )
+                    tool.reset_result()
 
-        assistant_message = response.content[0].text
+        assistant_message = response.content[-1].text
 
         # Create and return a properly formatted Message instance
         return Message(
