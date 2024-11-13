@@ -4,8 +4,7 @@ import pytest
 from pydantic import Field
 
 import simplemind as sm
-from simplemind.providers import Anthropic
-from simplemind.providers._base_tools import BaseTool
+from simplemind.providers import Anthropic, BaseTool
 
 MODELS = [
     Anthropic,
