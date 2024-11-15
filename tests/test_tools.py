@@ -4,12 +4,12 @@ import pytest
 from pydantic import Field
 
 import simplemind as sm
-from simplemind.providers import Anthropic, BaseTool
+from simplemind.providers import Anthropic, BaseTool, OpenAI
 
 MODELS = [
     Anthropic,
     # Gemini,
-    # OpenAI,
+    OpenAI,
     # Groq,
     # Ollama,
     # Amazon
