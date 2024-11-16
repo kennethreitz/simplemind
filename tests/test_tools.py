@@ -4,7 +4,9 @@ import pytest
 from pydantic import Field
 
 import simplemind as sm
-from simplemind.providers import Anthropic, BaseTool, OpenAI
+
+from simplemind.providers import Anthropic, OpenAI
+from simplemind.providers._base_tools import BaseTool
 
 MODELS = [
     Anthropic,
@@ -22,9 +24,7 @@ def get_weather(
     ],
     unit: Annotated[
         Literal["celcius", "fahrenheit"],
-        Field(
-            description="The unit of temperature, either 'celsius' or 'fahrenheit'"
-        ),
+        Field(description="The unit of temperature, either 'celsius' or 'fahrenheit'"),
     ] = "celcius",
 ):
     """
