@@ -53,17 +53,21 @@ class Ollama(BaseProvider):
         messages = [
             {"role": msg.role, "content": msg.text} for msg in conversation.messages
         ]
-        response = self.client.chat(
-            model=conversation.llm_model or self.DEFAULT_MODEL,
-            messages=messages,
-            **{**self.DEFAULT_KWARGS, **kwargs},
-        )
-        assistant_message = response.get("message")
+
+        request_kwargs = {
+            **self.DEFAULT_KWARGS,
+            **kwargs,
+            "model": conversation.llm_model or self.DEFAULT_MODEL,
+            "messages": messages,
+        }
+
+        response = self.client.chat.completions.create(**request_kwargs)
+        assistant_message = response.choices[0].message
 
         # Create and return a properly formatted Message instance
         return Message(
             role="assistant",
-            text=assistant_message.get("content"),
+            text=assistant_message.content or "",
             raw=response,
             llm_model=conversation.llm_model or self.DEFAULT_MODEL,
             llm_provider=self.NAME,
@@ -100,13 +104,13 @@ class Ollama(BaseProvider):
             {"role": "user", "content": prompt},
         ]
 
-        response = self.client.chat(
+        response = self.client.chat.completions.create(
             messages=messages,
             model=llm_model or self.DEFAULT_MODEL,
             **{**self.DEFAULT_KWARGS, **kwargs},
         )
 
-        return response.get("message", {}).get("content", "")
+        return response.choices[0].message.content
 
     @logger
     def generate_stream_text(
@@ -117,7 +121,7 @@ class Ollama(BaseProvider):
             {"role": "user", "content": prompt},
         ]
 
-        response = self.client.chat(
+        response = self.client.chat.completions.create(
             messages=messages,
             model=llm_model or self.DEFAULT_MODEL,
             stream=True,
@@ -126,4 +130,5 @@ class Ollama(BaseProvider):
 
         # Iterate over the response and yield the content.
         for chunk in response:
-            yield chunk["message"]["content"]
+            if chunk.choices[0].delta.content is not None:
+                yield chunk.choices[0].delta.content
