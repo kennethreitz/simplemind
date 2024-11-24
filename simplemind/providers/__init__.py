@@ -1,4 +1,4 @@
-from typing import List, Type
+from typing import List, Type, Literal
 
 from ._base import BaseProvider
 from ._base_tools import BaseTool
@@ -18,6 +18,10 @@ providers: List[Type[BaseProvider]] = [
     Ollama,
     XAI,
     Amazon,
+]
+
+_llm_providers = Literal[
+    "anthropic", "gemini", "groq", "openai", "ollama", "xai", "amazon"
 ]
 
 __all__ = [
