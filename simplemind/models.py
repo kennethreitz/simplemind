@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from os import PathLike
 from types import TracebackType
 from typing import Any, Dict, List, Literal, Optional
 
@@ -40,7 +41,9 @@ class BasePlugin(SMBaseModel):
         """Cleanup a hook for the plugin."""
         raise NotImplementedError
 
-    def add_message_hook(self, conversation: "Conversation", message: "Message") -> Any:
+    def add_message_hook(
+        self, conversation: "Conversation", message: "Message"
+    ) -> Any:
         """Add a message hook for the plugin."""
         raise NotImplementedError
 
@@ -48,7 +51,9 @@ class BasePlugin(SMBaseModel):
         """Pre-send hook for the plugin."""
         raise NotImplementedError
 
-    def post_send_hook(self, conversation: "Conversation", response: "Message") -> Any:
+    def post_send_hook(
+        self, conversation: "Conversation", response: "Message"
+    ) -> Any:
         """Post-send hook for the plugin."""
         raise NotImplementedError
 
@@ -59,7 +64,7 @@ class Message(SMBaseModel):
     role: MESSAGE_ROLE
     text: str
     meta: Dict[str, Any] = {}
-    raw: Optional[Any] = None
+    raw: Optional[Any] = Field(default=None, exclude=True)
     llm_model: Optional[str] = None
     llm_provider: Optional[str] = None
 
@@ -90,7 +95,7 @@ class Conversation(SMBaseModel):
     messages: List[Message] = []
     llm_model: Optional[str] = None
     llm_provider: Optional[str] = None
-    plugins: List[BasePlugin] = []
+    plugins: List[BasePlugin] = Field(default_factory=list, exclude=True)
 
     def __str__(self):
         return f"<Conversation id={self.id!r}>"
@@ -120,7 +125,9 @@ class Conversation(SMBaseModel):
                 except NotImplementedError:
                     pass
 
-    def prepend_system_message(self, text: str, meta: Dict[str, Any] | None = None):
+    def prepend_system_message(
+        self, text: str, meta: Dict[str, Any] | None = None
+    ):
         """Prepend a system message to the conversation."""
         self.messages = [
             Message(role="system", text=text, meta=meta or {})
@@ -184,14 +191,29 @@ class Conversation(SMBaseModel):
                     pass
 
         # Add the response to the conversation.
-        self.add_message(role="assistant", text=response.text, meta=response.meta)
+        self.add_message(
+            role="assistant", text=response.text, meta=response.meta
+        )
 
         return response
 
     def get_last_message(self, role: MESSAGE_ROLE) -> Message | None:
         """Get the last message with the given role."""
-        return next((m for m in reversed(self.messages) if m.role == role), None)
+        return next(
+            (m for m in reversed(self.messages) if m.role == role), None
+        )
 
     def add_plugin(self, plugin: BasePlugin) -> None:
         """Add a plugin to the conversation."""
         self.plugins.append(plugin)
+
+    def save(self, path: PathLike | str) -> None:
+        """Save the conversation to a JSON file."""
+        with open(path, "w") as f:
+            f.write(self.model_dump_json())
+
+    @classmethod
+    def load(cls, path: PathLike | str) -> "Conversation":
+        """Load a conversation from a JSON file."""
+        with open(path, "r") as f:
+            return cls.model_validate_json(f.read())
