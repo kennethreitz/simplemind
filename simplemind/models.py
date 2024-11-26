@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from os import PathLike
 from types import TracebackType
 from typing import Any, Callable, Dict, List, Literal, Optional
 
@@ -64,7 +65,7 @@ class Message(SMBaseModel):
     role: MESSAGE_ROLE
     text: str
     meta: Dict[str, Any] = {}
-    raw: Optional[Any] = None
+    raw: Optional[Any] = Field(default=None, exclude=True)
     llm_model: Optional[str] = None
     llm_provider: Optional[str] = None
 
@@ -95,7 +96,7 @@ class Conversation(SMBaseModel):
     messages: List[Message] = []
     llm_model: Optional[str] = None
     llm_provider: Optional[str] = None
-    plugins: List[BasePlugin] = []
+    plugins: List[BasePlugin] = Field(default_factory=list, exclude=True)
 
     def __str__(self):
         return f"<Conversation id={self.id!r}>"
@@ -207,3 +208,14 @@ class Conversation(SMBaseModel):
     def add_plugin(self, plugin: BasePlugin) -> None:
         """Add a plugin to the conversation."""
         self.plugins.append(plugin)
+
+    def save(self, path: PathLike | str) -> None:
+        """Save the conversation to a JSON file."""
+        with open(path, "w") as f:
+            f.write(self.model_dump_json())
+
+    @classmethod
+    def load(cls, path: PathLike | str) -> "Conversation":
+        """Load a conversation from a JSON file."""
+        with open(path, "r") as f:
+            return cls.model_validate_json(f.read())
