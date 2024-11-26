@@ -261,6 +261,113 @@ The universe is never done.
 
 Simple, yet effective.
 
+### Tools (Function calling)
+Tools (also known as functions) let you call any Python function from your AI conversations. Here's an example:
+
+```python
+def get_weather(
+    location: Annotated[
+        str, Field(description="The city and state, e.g. San Francisco, CA")
+    ],
+    unit: Annotated[
+        Literal["celcius", "fahrenheit"],
+        Field(
+            description="The unit of temperature, either 'celsius' or 'fahrenheit'"
+        ),
+    ] = "celcius",
+):
+    """
+    Get the current weather in a given location
+    """
+    return f"42 {unit}"
+
+# Add your function as a tool
+conversation = sm.create_conversation()
+conversation.add_message("user", "What's the weather in San Francisco?")
+response = conversation.send(tools=[get_weather])
+```
+
+Note how we're using Python's `Annotated` feature combined with `Field` to provide additional context to our function parameters. This helps the AI understand the intention and constraints of each parameter, making tool calls more accurate and reliable.
+You can alos ommit `Annotated` and just pass the `Field` parameter.
+```python
+def get_weather(
+    location: str = Field(description="The city and state, e.g. San Francisco, CA"),
+    unit:Literal["celcius", "fahrenheit"]= Field(
+        default="celcius",
+        description="The unit of temperature, either 'celsius' or 'fahrenheit'"
+        ),
+):
+    """
+    Get the current weather in a given location
+    """
+    return f"42 {unit}"
+```
+
+Functions can be defined with type hints and Pydantic models for validation. The LLM will intelligently choose when to call the functions and incorporate the results into its responses.
+
+#### 🪄 Using LLM for automatic tool definition (Experimental)
+
+Simplemind provides a decorator to automatically transform Python functions into tools with AI-generated metadata. Simply use the `@simplemind.tool` decorator to have the LLM analyze your function and generate appropriate descriptions and schema:
+
+```python
+@simplemind.tool(llm_provider="anthropic")
+def haversine(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    r = 6371
+    phi1 = math.radians(lat1)
+    phi2 = math.radians(lat2)
+    delta_phi = math.radians(lat2 - lat1)
+    delta_lambda = math.radians(lon2 - lon1)
+
+    a = (
+        math.sin(delta_phi / 2) ** 2
+        + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda / 2) ** 2
+    )
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    d = r * c
+    return d
+```
+Notice how we have not added any docstrings or `Field` for the function.
+The decorator will use the specified LLM provider to generate the tool schema, including descriptions and parameter details:
+
+```json
+{
+    "name": "haversine",
+    "description": "Calculates the great-circle distance between two points on Earth given their latitude and longitude coordinates",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "lat1": {
+                "type": "number",
+                "description": "Latitude of the first point in decimal degrees",
+            },
+            "lon1": {
+                "type": "number",
+                "description": "Longitude of the first point in decimal degrees",
+            },
+            "lat2": {
+                "type": "number",
+                "description": "Latitude of the second point in decimal degrees",
+            },
+            "lon2": {
+                "type": "number",
+                "description": "Longitude of the second point in decimal degrees",
+            }
+        },
+        "required": ["lat1", "lon1", "lat2", "lon2"],
+    },
+}
+```
+
+The decorated function can then be used like any other tool with the conversation API.
+
+```python
+conversation = sm.create_conversation()
+conversation.add_message("user", "How far is London from my location")
+response = conversation.send(tools=[get_location, get_coords, haversine]) # Multiple tools can be passed
+```
+
+See [examples/distance_calculator.py](examples/distance_calculator.py) for more.
+
 ### Logging
 
 Simplemind uses [Logfire](https://pydantic.dev/logfire) for logging. To enable logging, call `sm.enable_logfire()`.

@@ -14,8 +14,9 @@ class LoggingConfig(BaseSettings):
         """Enable logging for the application."""
         # adding imports here to avoid forced dependencies
         try:
-            import logfire
             from logging import basicConfig
+
+            import logfire
         except ImportError as e:
             raise ImportError(
                 "To enable logging, please install logfire: `pip install logfire`"

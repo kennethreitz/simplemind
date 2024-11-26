@@ -1,8 +1,7 @@
 from functools import cached_property
-from typing import TYPE_CHECKING, Type, TypeVar, Iterator
+from typing import TYPE_CHECKING, Iterator, Type, TypeVar
 
 import instructor
-from openai import OpenAI
 from pydantic import BaseModel
 
 from ..logging import logger
@@ -15,17 +14,11 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound=BaseModel)
 
 
-PROVIDER_NAME = "ollama"
-DEFAULT_MODEL = "llama3.2"
-DEFAULT_TIMEOUT = 60
-DEFAULT_KWARGS = {}
-
-
 class Ollama(BaseProvider):
-    NAME = PROVIDER_NAME
-    DEFAULT_MODEL = DEFAULT_MODEL
-    DEFAULT_KWARGS = DEFAULT_KWARGS
-    TIMEOUT = DEFAULT_TIMEOUT
+    NAME = "ollama"
+    DEFAULT_MODEL = "llama3.2"
+    DEFAULT_TIMEOUT = 60
+    DEFAULT_KWARGS = {}
     supports_streaming = True
 
     def __init__(self, host_url: str | None = None):
@@ -37,21 +30,18 @@ class Ollama(BaseProvider):
         if not self.host_url:
             raise ValueError("No ollama host url provided")
         try:
-            import ollama as ol
+            import openai
         except ImportError as exc:
             raise ImportError(
-                "Please install the `ollama` package: `pip install ollama`"
+                "Please install the `openai` package: `pip install openai`"
             ) from exc
-        return ol.Client(timeout=self.TIMEOUT, host=self.host_url)
+        return openai.OpenAI(base_url=f"{self.host_url}/v1", api_key="ollama")
 
     @cached_property
     def structured_client(self) -> instructor.Instructor:
         """A client patched with Instructor."""
         return instructor.from_openai(
-            OpenAI(
-                base_url=f"{self.host_url}/v1",
-                api_key="ollama",
-            ),
+            self.client,
             mode=instructor.Mode.JSON,
         )
 
@@ -63,20 +53,24 @@ class Ollama(BaseProvider):
         messages = [
             {"role": msg.role, "content": msg.text} for msg in conversation.messages
         ]
-        response = self.client.chat(
-            model=conversation.llm_model or DEFAULT_MODEL,
-            messages=messages,
-            **{**self.DEFAULT_KWARGS, **kwargs},
-        )
-        assistant_message = response.get("message")
+
+        request_kwargs = {
+            **self.DEFAULT_KWARGS,
+            **kwargs,
+            "model": conversation.llm_model or self.DEFAULT_MODEL,
+            "messages": messages,
+        }
+
+        response = self.client.chat.completions.create(**request_kwargs)
+        assistant_message = response.choices[0].message
 
         # Create and return a properly formatted Message instance
         return Message(
             role="assistant",
-            text=assistant_message.get("content"),
+            text=assistant_message.content or "",
             raw=response,
             llm_model=conversation.llm_model or self.DEFAULT_MODEL,
-            llm_provider=PROVIDER_NAME,
+            llm_provider=self.NAME,
         )
 
     @logger
@@ -110,13 +104,13 @@ class Ollama(BaseProvider):
             {"role": "user", "content": prompt},
         ]
 
-        response = self.client.chat(
+        response = self.client.chat.completions.create(
             messages=messages,
             model=llm_model or self.DEFAULT_MODEL,
             **{**self.DEFAULT_KWARGS, **kwargs},
         )
 
-        return response.get("message", {}).get("content", "")
+        return response.choices[0].message.content
 
     @logger
     def generate_stream_text(
@@ -127,7 +121,7 @@ class Ollama(BaseProvider):
             {"role": "user", "content": prompt},
         ]
 
-        response = self.client.chat(
+        response = self.client.chat.completions.create(
             messages=messages,
             model=llm_model or self.DEFAULT_MODEL,
             stream=True,
@@ -136,4 +130,5 @@ class Ollama(BaseProvider):
 
         # Iterate over the response and yield the content.
         for chunk in response:
-            yield chunk["message"]["content"]
+            if chunk.choices[0].delta.content is not None:
+                yield chunk.choices[0].delta.content

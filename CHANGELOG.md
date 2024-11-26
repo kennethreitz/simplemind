@@ -1,6 +1,15 @@
 Release History
 ===============
 
+
+## 0.2.4 (2024-11-11)
+
+- General improvements.
+
+## 0.2.3 (2024-11-04)
+
+- Remove default max-tokens for OpenAI provider.
+
 ## 0.2.3 (2024-11-03)
 
 - Update default model for Amazon provider.

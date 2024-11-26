@@ -1,5 +1,5 @@
-from pydantic import BaseModel
 from _context import simplemind as sm
+from pydantic import BaseModel
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table

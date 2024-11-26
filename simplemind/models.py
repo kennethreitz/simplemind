@@ -2,10 +2,11 @@ import uuid
 from datetime import datetime
 from os import PathLike
 from types import TracebackType
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Callable, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field
 
+from .providers._base_tools import BaseTool
 from .utils import find_provider
 
 MESSAGE_ROLE = Literal["system", "user", "assistant"]
@@ -165,6 +166,7 @@ class Conversation(SMBaseModel):
         self,
         llm_model: str | None = None,
         llm_provider: str | None = None,
+        tools: list[Callable | BaseTool] | None = None,
     ) -> Message:
         """Send the conversation to the LLM."""
 
@@ -180,7 +182,7 @@ class Conversation(SMBaseModel):
 
         # Find the provider and send the conversation.
         provider = find_provider(llm_provider or self.llm_provider)
-        response = provider.send_conversation(self)
+        response = provider.send_conversation(self, tools=tools)
 
         # Execute all post-send hooks.
         for plugin in self.plugins:
