@@ -9,8 +9,8 @@ class Deepseek(OpenAI):
     DEFAULT_MODEL = "deepseek-chat"
 
     def __init__(self, api_key: str | None = None):
+        api_key = api_key or os.getenv("DEEPSEEK_API_KEY")
         super().__init__(api_key=api_key)
-        self.api_key = os.getenv("DEEPSEEK_API_KEY")
         self.endpoint = "https://api.deepseek.com/v1"
 
     @cached_property
