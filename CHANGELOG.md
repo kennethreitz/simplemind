@@ -1,6 +1,9 @@
 Release History
 ===============
 
+## 0.3.0 (2024-11-12)
+
+- Introduce save / load functionality for `Conversation`.
 
 ## 0.2.4 (2024-11-11)
 
