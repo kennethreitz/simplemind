@@ -38,6 +38,11 @@ The APIs remain identical between all supported providers / models:
       <td><code>"anthropic.claude-3-5-sonnet-20241022-v2:0"</code></td>
     </tr>
     <tr>
+      <td><a href="https://www.deepseek.com">Deepseek</a></td>
+      <td><code>"deepseek"</code></td>
+      <td><code>"deepseek-chat"</code></td>
+    </tr>
+    <tr>
       <td><a href="https://gemini.google/">Google's Gemini</a></td>
       <td><code>"gemini"</code></td>
       <td><code>"models/gemini-1.5-pro"</code></td>
