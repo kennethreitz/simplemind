@@ -9,6 +9,7 @@ from .groq import Groq
 from .ollama import Ollama
 from .openai import OpenAI
 from .xai import XAI
+from .deepseek import Deepseek
 
 providers: List[Type[BaseProvider]] = [
     Anthropic,
@@ -18,6 +19,7 @@ providers: List[Type[BaseProvider]] = [
     Ollama,
     XAI,
     Amazon,
+    Deepseek,
 ]
 
 __all__ = [
@@ -31,4 +33,5 @@ __all__ = [
     "providers",
     "BaseProvider",
     "BaseTool",
+    "Deepseek"
 ]
