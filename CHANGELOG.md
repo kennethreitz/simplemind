@@ -1,6 +1,10 @@
 Release History
 ===============
 
+## 0.3.2 (2024-01-27)
+
+- Improve Deepseek provider.
+
 ## 0.3.1 (2024-01-27)
 
 - Introduce Deepseek provider.
