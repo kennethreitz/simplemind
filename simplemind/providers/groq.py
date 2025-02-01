@@ -1,5 +1,5 @@
 from functools import cached_property
-from typing import TYPE_CHECKING, Iterator, Type, TypeVar
+from typing import TYPE_CHECKING, Callable, Iterator, Type, TypeVar
 
 import instructor
 from pydantic import BaseModel
@@ -7,12 +7,85 @@ from pydantic import BaseModel
 from ..logging import logger
 from ..settings import settings
 from ._base import BaseProvider
+from ._base_tools import BaseTool
 
 if TYPE_CHECKING:
     from ..models import Conversation, Message
 
 T = TypeVar("T", bound=BaseModel)
 
+
+class GroqTool(BaseTool):
+    def get_response_schema(self):
+        assert self.is_executed, f"Tool {self.name} was not executed."
+        assert isinstance(
+            self.tool_id, str
+        ), f"Expected str for `tool_id` got {self.tool_id!r}"
+
+        return {
+            "role": "tool",
+            "tool_call_id": self.tool_id,
+            "content": self.function_result,
+        }
+
+    @logger
+    def handle(self, response, messages) -> None:
+        """Handle the tool execution result from an API response."""
+        tool_used = False
+
+        # Get the message from the response
+        assistant_message = response.choices[0].message
+
+        # Check if there's a tool call
+        if assistant_message.tool_calls:
+            tool_call = assistant_message.tool_calls[
+                0
+            ]  # Get the first tool call
+            if tool_call.function.name == self.name:
+                # Execute the function
+                import json
+
+                function_args = json.loads(tool_call.function.arguments)
+                self.function_result = str(self.raw_func(**function_args))
+                self.tool_id = tool_call.id
+                tool_used = True
+
+                # Add assistant's message with tool call
+                messages.append(
+                    {
+                        "role": "assistant",
+                        "content": None,
+                        "tool_calls": [
+                            {
+                                "id": tool_call.id,
+                                "type": "function",
+                                "function": {
+                                    "name": tool_call.function.name,
+                                    "arguments": tool_call.function.arguments,
+                                },
+                            }
+                        ],
+                    }
+                )
+
+            if tool_used:
+                # Add tool response message
+                messages.append(self.get_response_schema())
+
+    def get_input_schema(self):
+        return {
+            "type": "function",
+            "function": {
+                "name": self.name,
+                "description": self.description,
+                "parameters": {
+                    "type": "object",
+                    "properties": self.get_properties_schema(),
+                    "required": self.required,
+                    "additionalProperties": False,
+                },
+            },
+        }
 
 class Groq(BaseProvider):
     NAME = "groq"
@@ -46,28 +119,56 @@ class Groq(BaseProvider):
     def send_conversation(
         self,
         conversation: "Conversation",
+        tools: list[Callable | BaseTool] | None = None,
         **kwargs,
     ) -> "Message":
         """Send a conversation to the Groq API."""
         from ..models import Message
 
-        messages = [
-            {"role": msg.role, "content": msg.text} for msg in conversation.messages
+        # Format messages from conversation
+        formatted_messages = [
+            {"role": msg.role, "content": msg.text}
+            for msg in conversation.messages
         ]
 
-        response = self.client.chat.completions.create(
-            model=conversation.llm_model or self.DEFAULT_MODEL,
-            messages=messages,
-            **{**self.DEFAULT_KWARGS, **kwargs},
+        # Set up tools if provided
+        converted_tools = self.make_tools(tools)
+        tools_config = (
+            [t.get_input_schema() for t in converted_tools] if tools else None
         )
 
-        # Get the response content from the Groq response
-        assistant_message = response.choices[0].message
+        # Merge all kwargs
+        request_kwargs = {
+            **self.DEFAULT_KWARGS,
+            **kwargs,
+            "model": conversation.llm_model or self.DEFAULT_MODEL,
+            "messages": formatted_messages,
+        }
 
-        # Create and return a properly formatted Message instance
+        if tools_config:
+            request_kwargs["tools"] = tools_config
+
+        # Make initial API call
+        response = self.client.chat.completions.create(**request_kwargs)
+
+        # Handle tool responses if needed
+        while response.choices[0].message.tool_calls:
+            print(response)
+            # Handle each tool call
+            for tool in converted_tools:
+                tool.handle(response, formatted_messages)
+                if tool.is_executed():
+                    # Make another API call with the updated messages
+                    response = self.client.chat.completions.create(
+                        **request_kwargs
+                    )
+                    tool.reset_result()
+
+        final_message = response.choices[0].message.content
+
         return Message(
             role="assistant",
-            text=assistant_message.content or "",
+            text=final_message or "",
             raw=response,
             llm_model=conversation.llm_model or self.DEFAULT_MODEL,
             llm_provider=self.NAME,
@@ -136,3 +237,8 @@ class Groq(BaseProvider):
             raise RuntimeError(
                 f"Failed to generate streaming text with Groq API: {e}"
             ) from e
+
+    @cached_property
+    def tool(self) -> Type[BaseTool]:
+        """The tool implementation for Groq."""
+        return GroqTool
