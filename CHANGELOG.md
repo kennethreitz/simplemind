@@ -1,6 +1,10 @@
 Release History
 ===============
 
+## 0.3.3 (2024-02-08)
+
+- Improve openai provider by removing debug print statements.
+
 ## 0.3.2 (2024-01-27)
 
 - Improve Deepseek provider.
