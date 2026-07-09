@@ -58,6 +58,11 @@ The APIs remain identical between all supported providers / models:
       <td><code>"llama3.2"</code></td>
     </tr>
     <tr>
+      <td><a href="https://platform.minimax.io/docs/api-reference/api-overview">MiniMax</a></td>
+      <td><code>"minimax"</code> / <code>"minimax-anthropic"</code></td>
+      <td><code>"MiniMax-M3"</code></td>
+    </tr>
+    <tr>
       <td><a href="https://openai.com/gpt">OpenAI's GPT</a></td>
       <td><code>"openai"</code></td>
       <td><code>"gpt-4o-mini"</code></td>
@@ -69,6 +74,8 @@ The APIs remain identical between all supported providers / models:
     </tr>
   </tbody>
 </table>
+
+MiniMax supports the `MiniMax-M3` and `MiniMax-M2.7` model IDs. The `minimax` provider uses its OpenAI-compatible API and `minimax-anthropic` uses its Anthropic-compatible API. Set `MINIMAX_API_REGION` to `global_en` (the default) for `https://api.minimax.io/v1` and `https://api.minimax.io/anthropic/v1`, or to `cn_zh` for `https://api.minimaxi.com/v1` and `https://api.minimaxi.com/anthropic/v1`. See the [global](https://platform.minimax.io/docs) or [mainland China](https://platform.minimaxi.com/docs) documentation for details.
 
 To specify a specific provider or model, you can use the `llm_provider` and `llm_model` parameters when calling: `generate_text`, `generate_data`, or `create_conversation`.
 
@@ -88,7 +95,7 @@ First, authenticate your API keys by setting them in the environment variables:
 $ export OPENAI_API_KEY="sk-..."
 ```
 
-This pattern allows you to keep your API keys private and out of your codebase. Other supported environment variables: `ANTHROPIC_API_KEY`, `XAI_API_KEY`, `DEEPSEEK_API_KEY`, `GROQ_API_KEY`, and `GEMINI_API_KEY`.
+This pattern allows you to keep your API keys private and out of your codebase. Other supported environment variables: `ANTHROPIC_API_KEY`, `XAI_API_KEY`, `DEEPSEEK_API_KEY`, `GROQ_API_KEY`, `GEMINI_API_KEY`, and `MINIMAX_API_KEY`.
 
 Next, import Simplemind and start using it:
 

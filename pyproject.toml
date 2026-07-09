@@ -21,6 +21,7 @@ gemini = ["google-generativeai", "jsonref"]
 groq = ["groq"]
 ollama = ["openai"]
 openai = ["openai"]
+minimax = ["openai", "anthropic"]
 xai = ["openai"]
 deepseek = ["openai"]
 
