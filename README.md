@@ -75,7 +75,7 @@ The APIs remain identical between all supported providers / models:
   </tbody>
 </table>
 
-MiniMax supports the `MiniMax-M3` and `MiniMax-M2.7` model IDs. The `minimax` provider uses its OpenAI-compatible API and `minimax-anthropic` uses its Anthropic-compatible API. Set `MINIMAX_API_REGION` to `global_en` (the default) for `https://api.minimax.io/v1` and `https://api.minimax.io/anthropic/v1`, or to `cn_zh` for `https://api.minimaxi.com/v1` and `https://api.minimaxi.com/anthropic/v1`. See the [global](https://platform.minimax.io/docs) or [mainland China](https://platform.minimaxi.com/docs) documentation for details.
+MiniMax supports the `MiniMax-M3` and `MiniMax-M2.7` model IDs. The `minimax` provider uses its OpenAI-compatible API and `minimax-anthropic` uses its Anthropic-compatible API. Set `MINIMAX_API_REGION` to `global_en` (the default) for `https://api.minimax.io/v1` and `https://api.minimax.io/anthropic`, or to `cn_zh` for `https://api.minimaxi.com/v1` and `https://api.minimaxi.com/anthropic`. See the [global](https://platform.minimax.io/docs) or [mainland China](https://platform.minimaxi.com/docs) documentation for details.
 
 To specify a specific provider or model, you can use the `llm_provider` and `llm_model` parameters when calling: `generate_text`, `generate_data`, or `create_conversation`.
 

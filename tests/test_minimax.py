@@ -13,13 +13,13 @@ from simplemind.utils import find_provider
             MiniMaxAnthropic,
             "anthropic",
             "global_en",
-            "https://api.minimax.io/anthropic/v1",
+            "https://api.minimax.io/anthropic",
         ),
         (
             MiniMaxAnthropic,
             "anthropic",
             "cn_zh",
-            "https://api.minimaxi.com/anthropic/v1",
+            "https://api.minimaxi.com/anthropic",
         ),
     ],
 )
