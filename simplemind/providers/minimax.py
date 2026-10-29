@@ -6,7 +6,7 @@ from .openai import OpenAI
 
 
 class _MiniMaxConfig:
-    MODEL_IDS = ("MiniMax-M3", "MiniMax-M2.7")
+    MODEL_IDS = ("MiniMax-M3.1-Flash", "MiniMax-M3")
     ENDPOINTS = {
         "global_en": {
             "openai": "https://api.minimax.io/v1",
@@ -28,7 +28,7 @@ class _MiniMaxConfig:
 
 class MiniMax(_MiniMaxConfig, OpenAI):
     NAME = "minimax"
-    DEFAULT_MODEL = "MiniMax-M3"
+    DEFAULT_MODEL = "MiniMax-M3.1-Flash"
 
     def __init__(self, api_key: str | None = None, region: str | None = None):
         self._configure(api_key, region)
@@ -52,7 +52,7 @@ class MiniMax(_MiniMaxConfig, OpenAI):
 
 class MiniMaxAnthropic(_MiniMaxConfig, Anthropic):
     NAME = "minimax-anthropic"
-    DEFAULT_MODEL = "MiniMax-M3"
+    DEFAULT_MODEL = "MiniMax-M3.1-Flash"
 
     def __init__(self, api_key: str | None = None, region: str | None = None):
         self._configure(api_key, region)

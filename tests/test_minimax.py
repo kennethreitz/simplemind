@@ -26,7 +26,8 @@ from simplemind.utils import find_provider
 def test_minimax_endpoints(provider_cls, protocol, region, expected_url):
     provider = provider_cls(api_key="test-key", region=region)
 
-    assert provider.MODEL_IDS == ("MiniMax-M3", "MiniMax-M2.7")
+    assert provider.MODEL_IDS == ("MiniMax-M3.1-Flash", "MiniMax-M3")
+    assert provider.DEFAULT_MODEL == "MiniMax-M3.1-Flash"
     assert provider.ENDPOINTS[region][protocol] == expected_url
 
 
