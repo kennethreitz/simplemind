@@ -45,7 +45,7 @@ The APIs remain identical between all supported providers / models:
     <tr>
       <td><a href="https://gemini.google/">Google's Gemini</a></td>
       <td><code>"gemini"</code></td>
-      <td><code>"models/gemini-1.5-pro"</code></td>
+      <td><code>"models/gemini-3.8-flash"</code></td>
     </tr>
     <tr>
       <td><a href="https://groq.com/">Groq's Groq</a></td>

@@ -1,7 +1,6 @@
 # TODO: this is a placeholder file for the Gemini provider
 # IT is not currently working as desired.
 
-from functools import cached_property
 from typing import TYPE_CHECKING, Callable, Iterator, Type, TypeVar
 
 import instructor
@@ -20,33 +19,41 @@ T = TypeVar("T", bound=BaseModel)
 
 class Gemini(BaseProvider):
     NAME = "gemini"
-    DEFAULT_MODEL = "models/gemini-1.5-flash-latest"
+    DEFAULT_MODEL = "models/gemini-3.8-flash"
     supports_streaming = True
 
     def __init__(self, api_key: str | None = None):
         self.api_key = api_key or settings.get_api_key(self.NAME)
         self.model_name = self.DEFAULT_MODEL
+        self._clients = {}
 
     def set_model(self, model_name: str):
         self.model_name = model_name
 
-    @cached_property
-    def client(self):
-        """The raw Gemini client."""
-        if not self.api_key:
-            raise ValueError("Gemini API key is required")
-        try:
-            import google.generativeai as genai
-        except ImportError as exc:
-            raise ImportError(
-                "Please install the `google-generativeai` package: `pip install google-generativeai`"
-            ) from exc
-        genai.configure(api_key=self.api_key)
-        return genai.GenerativeModel(model_name=self.model_name)
+    def _get_client(self, model_name: str | None = None):
+        """The raw Gemini client for a model, or for the default model if omitted."""
+        model_name = model_name or self.model_name
+        if model_name not in self._clients:
+            if not self.api_key:
+                raise ValueError("Gemini API key is required")
+            try:
+                import google.generativeai as genai
+            except ImportError as exc:
+                raise ImportError(
+                    "Please install the `google-generativeai` package: `pip install google-generativeai`"
+                ) from exc
+            genai.configure(api_key=self.api_key)
+            self._clients[model_name] = genai.GenerativeModel(model_name=model_name)
+        return self._clients[model_name]
 
-    @cached_property
+    @property
+    def client(self):
+        """The raw Gemini client for the default model."""
+        return self._get_client()
+
+    @property
     def structured_client(self):
-        """A Gemini client patched with Instructor."""
+        """A Gemini client for the default model, patched with Instructor."""
         return instructor.from_gemini(self.client)
 
     @logger
@@ -61,8 +68,10 @@ class Gemini(BaseProvider):
         if tools:
             raise NotImplementedError("Tool calling is not yet supported for Gemini.")
 
+        model_name = conversation.llm_model or self.model_name
+
         # Convert messages to Gemini's format
-        chat = self.client.start_chat()
+        chat = self._get_client(model_name).start_chat()
 
         # Send all previous messages to establish context
         for msg in conversation.messages[:-1]:  # All messages except the last one
@@ -79,18 +88,18 @@ class Gemini(BaseProvider):
             role="assistant",
             text=response.text,
             raw=response,
-            llm_model=self.model_name,
+            llm_model=model_name,
             llm_provider=self.NAME,
         )
 
     @logger
     def structured_response(self, prompt: str, response_model: Type[T], **kwargs) -> T:
         """Send a structured response to the Gemini API."""
-        # Only try to pop if the key exists
-        kwargs.pop("llm_model", None)  # Add default value of None
+        llm_model = kwargs.pop("llm_model", None)
 
         try:
-            response = self.structured_client.chat.completions.create(
+            structured_client = instructor.from_gemini(self._get_client(llm_model))
+            response = structured_client.chat.completions.create(
                 messages=[{"role": "user", "content": prompt}],
                 response_model=response_model,
                 **kwargs,
@@ -105,9 +114,9 @@ class Gemini(BaseProvider):
     @logger
     def generate_text(self, prompt: str, **kwargs) -> str:
         """Generate text using the Gemini API."""
-        kwargs.pop("llm_model")
+        llm_model = kwargs.pop("llm_model", None)
         try:
-            response = self.client.generate_content(prompt, **kwargs)
+            response = self._get_client(llm_model).generate_content(prompt, **kwargs)
         except Exception as e:
             # Handle the exception appropriately, e.g., log the error or raise a custom exception
             raise RuntimeError(f"Failed to generate text with Gemini API: {e}") from e
@@ -116,9 +125,11 @@ class Gemini(BaseProvider):
     @logger
     def generate_stream_text(self, prompt: str, **kwargs) -> Iterator[str]:
         """Generate streaming text using the Gemini API."""
-        kwargs.pop("llm_model", None)
+        llm_model = kwargs.pop("llm_model", None)
         try:
-            response = self.client.generate_content(prompt, stream=True, **kwargs)
+            response = self._get_client(llm_model).generate_content(
+                prompt, stream=True, **kwargs
+            )
             for chunk in response:
                 if chunk.text:
                     yield chunk.text
