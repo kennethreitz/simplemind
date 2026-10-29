@@ -2,7 +2,7 @@
 # IT is not currently working as desired.
 
 from functools import cached_property
-from typing import TYPE_CHECKING, Iterator, Type, TypeVar
+from typing import TYPE_CHECKING, Callable, Iterator, Type, TypeVar
 
 import instructor
 from pydantic import BaseModel
@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from ..logging import logger
 from ..settings import settings
 from ._base import BaseProvider
+from ._base_tools import BaseTool
 
 if TYPE_CHECKING:
     from ..models import Conversation, Message
@@ -49,9 +50,16 @@ class Gemini(BaseProvider):
         return instructor.from_gemini(self.client)
 
     @logger
-    def send_conversation(self, conversation: "Conversation") -> "Message":
+    def send_conversation(
+        self,
+        conversation: "Conversation",
+        tools: list[Callable | BaseTool] | None = None,
+    ) -> "Message":
         """Send a conversation to the Gemini API."""
         from ..models import Message
+
+        if tools:
+            raise NotImplementedError("Tool calling is not yet supported for Gemini.")
 
         # Convert messages to Gemini's format
         chat = self.client.start_chat()
