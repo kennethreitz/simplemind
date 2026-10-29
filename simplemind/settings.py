@@ -50,6 +50,10 @@ class Settings(BaseSettings):
     GROQ_API_KEY: Optional[SecretStr] = Field(None, description="API key for Groq")
     GEMINI_API_KEY: Optional[SecretStr] = Field(None, description="API key for Gemini")
     OPENAI_API_KEY: Optional[SecretStr] = Field(None, description="API key for OpenAI")
+    MINIMAX_API_KEY: Optional[SecretStr] = Field(None, description="API key for MiniMax")
+    MINIMAX_API_REGION: str = Field(
+        "global_en", description="MiniMax API region (global_en or cn_zh)"
+    )
     OLLAMA_HOST_URL: Optional[str] = Field(
         "http://127.0.0.1:11434", description="Fully qualified host URL for Ollama"
     )

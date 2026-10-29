@@ -6,6 +6,7 @@ from .amazon import Amazon
 from .anthropic import Anthropic
 from .gemini import Gemini
 from .groq import Groq
+from .minimax import MiniMax, MiniMaxAnthropic
 from .ollama import Ollama
 from .openai import OpenAI
 from .xai import XAI
@@ -20,6 +21,8 @@ providers: List[Type[BaseProvider]] = [
     XAI,
     Amazon,
     Deepseek,
+    MiniMax,
+    MiniMaxAnthropic,
 ]
 
 __all__ = [
@@ -33,5 +36,7 @@ __all__ = [
     "providers",
     "BaseProvider",
     "BaseTool",
-    "Deepseek"
+    "Deepseek",
+    "MiniMax",
+    "MiniMaxAnthropic",
 ]
