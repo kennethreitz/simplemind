@@ -177,6 +177,7 @@ class OpenAI(BaseProvider):
         *,
         llm_model: str | None = None,
         image_url: str | None = None,
+        video_url: str | None = None,
         **kwargs,
     ) -> T:
         """Get a structured response from the OpenAI API."""
@@ -189,6 +190,12 @@ class OpenAI(BaseProvider):
         if image_url:
             messages[0]["content"].append(
                 {"type": "image_url", "image_url": {"url": image_url}}
+            )
+
+        # Add a video (url or base64-encoded) to the message if provided.
+        if video_url:
+            messages[0]["content"].append(
+                {"type": "video_url", "video_url": {"url": video_url}}
             )
 
         response = self.structured_client.chat.completions.create(
@@ -206,6 +213,7 @@ class OpenAI(BaseProvider):
         *,
         llm_model: str | None = None,
         image_url: str | None = None,
+        video_url: str | None = None,
         **kwargs,
     ):
         """Generate text using the OpenAI API."""
@@ -217,6 +225,12 @@ class OpenAI(BaseProvider):
         if image_url:
             messages[0]["content"].append(
                 {"type": "image_url", "image_url": {"url": image_url}}
+            )
+
+        # Add a video (url or base64-encoded) to the message if provided.
+        if video_url:
+            messages[0]["content"].append(
+                {"type": "video_url", "video_url": {"url": video_url}}
             )
 
         response = self.client.chat.completions.create(
@@ -233,6 +247,7 @@ class OpenAI(BaseProvider):
         *,
         llm_model: str | None = None,
         image_url: str | None = None,
+        video_url: str | None = None,
         **kwargs,
     ) -> Iterator[str]:
         """Generate streaming text using the OpenAI API.
@@ -247,6 +262,12 @@ class OpenAI(BaseProvider):
         if image_url:
             messages[0]["content"].append(
                 {"type": "image_url", "image_url": {"url": image_url}}
+            )
+
+        # Add a video (url or base64-encoded) to the message if provided.
+        if video_url:
+            messages[0]["content"].append(
+                {"type": "video_url", "video_url": {"url": video_url}}
             )
 
         response = self.client.chat.completions.create(
