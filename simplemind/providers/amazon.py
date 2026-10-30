@@ -15,7 +15,7 @@ T = TypeVar("T", bound=BaseModel)
 
 class Amazon(BaseProvider):
     NAME = "amazon"
-    DEFAULT_MODEL = "anthropic.claude-sonnet-5-5"
+    DEFAULT_MODEL = "us.anthropic.claude-sonnet-5-5"
     DEFAULT_MAX_TOKENS = 5_000
     supports_streaming = True
 

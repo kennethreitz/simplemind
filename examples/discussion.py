@@ -18,7 +18,7 @@ class MultiAIConversation:
             llm_provider="xai",
             llm_model="grok-beta",
         ),
-        "Claude-3.5-Sonnet": sm.Session(
+        "Claude-Sonnet-5.5": sm.Session(
             llm_provider="anthropic",
             llm_model="claude-sonnet-5-5",
         ),
