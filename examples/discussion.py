@@ -20,7 +20,7 @@ class MultiAIConversation:
         ),
         "Claude-3.5-Sonnet": sm.Session(
             llm_provider="anthropic",
-            llm_model="claude-3-5-sonnet-20241022",
+            llm_model="claude-sonnet-5-5",
         ),
     }
 

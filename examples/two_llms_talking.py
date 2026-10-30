@@ -13,7 +13,7 @@ def have_conversation(rounds: int = 3):
     # Create two conversations - one for each AI
     with (
         sm.create_conversation(
-            llm_model="claude-3-5-sonnet-20241022", llm_provider="anthropic"
+            llm_model="claude-sonnet-5-5", llm_provider="anthropic"
         ) as claude_conv,
         sm.create_conversation(
             llm_model="llama3.2", llm_provider="ollama"
