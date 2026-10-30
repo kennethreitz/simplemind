@@ -69,7 +69,7 @@ class AnthropicTool(BaseTool):
 
 class Anthropic(BaseProvider):
     NAME = "anthropic"
-    DEFAULT_MODEL = "claude-3-5-sonnet-20241022"
+    DEFAULT_MODEL = "claude-sonnet-5-5"
     DEFAULT_MAX_TOKENS = 1_000
     DEFAULT_KWARGS = {"max_tokens": DEFAULT_MAX_TOKENS}
     supports_streaming = True
