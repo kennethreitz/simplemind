@@ -59,6 +59,9 @@ class Settings(BaseSettings):
     )
     XAI_API_KEY: Optional[SecretStr] = Field(None, description="API key for xAI")
     DEFAULT_LLM_PROVIDER: str = Field("openai", description="The default LLM provider")
+    DEFAULT_LLM_MODEL: Optional[str] = Field(
+        None, description="The default LLM model, used when no model is passed"
+    )
 
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", case_sensitive=True, extra="ignore"

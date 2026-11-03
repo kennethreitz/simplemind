@@ -66,7 +66,7 @@ def create_conversation(
 
     # Create the conversation.
     conv = Conversation(
-        llm_model=llm_model,
+        llm_model=llm_model or settings.DEFAULT_LLM_MODEL,
         llm_provider=llm_provider or settings.DEFAULT_LLM_PROVIDER,
     )
 
@@ -93,7 +93,7 @@ def generate_data(
     # Generate the data.
     return provider.structured_response(
         prompt=prompt,
-        llm_model=llm_model,
+        llm_model=llm_model or settings.DEFAULT_LLM_MODEL,
         response_model=response_model,
         **kwargs,
     )
@@ -113,6 +113,7 @@ def generate_text(
     provider = find_provider(llm_provider or settings.DEFAULT_LLM_PROVIDER)
 
     # Generate the text.
+    llm_model = llm_model or settings.DEFAULT_LLM_MODEL
     if stream:
         if not provider.supports_streaming:
             raise ValueError(f"{provider} does not support streaming.")
