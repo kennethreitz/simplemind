@@ -1,9 +1,29 @@
+import logging
 import time
 from typing import Any, Callable
 
 import logfire
 
 from .settings import settings
+
+_verbose_logger = logging.getLogger("simplemind")
+
+
+def log_verbose(message: str, enabled: bool | None = None) -> None:
+    """Log a message at INFO level when verbose mode is on.
+
+    `enabled` is a per-call override; when it is None, `settings.VERBOSE` decides.
+    Messages go to the stdlib logger "simplemind". If nothing in the logger's
+    chain has a handler yet, a stderr handler is added to that logger, so the
+    root logger is left alone.
+    """
+    if not (settings.VERBOSE if enabled is None else enabled):
+        return
+
+    if not _verbose_logger.hasHandlers():
+        _verbose_logger.addHandler(logging.StreamHandler())
+    _verbose_logger.setLevel(logging.INFO)
+    _verbose_logger.info(message)
 
 
 def logger(func: Callable[..., Any]) -> Callable[..., Any]:

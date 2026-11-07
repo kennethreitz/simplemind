@@ -1,6 +1,7 @@
 import inspect
-from typing import Callable, List, Type
+from typing import Callable, Iterator, List, Type
 
+from .logging import log_verbose
 from .models import BaseModel, BasePlugin, Conversation
 from .settings import settings
 from .utils import find_provider
@@ -83,6 +84,7 @@ def generate_data(
     llm_model: str | None = None,
     llm_provider: str | None = None,
     response_model: Type[BaseModel],
+    verbose: bool | None = None,
     **kwargs,
 ) -> BaseModel:
     """Generate structured data from a given prompt."""
@@ -91,12 +93,19 @@ def generate_data(
     provider = find_provider(llm_provider or settings.DEFAULT_LLM_PROVIDER)
 
     # Generate the data.
-    return provider.structured_response(
+    log_verbose(
+        f"generate_data provider={provider.NAME} model={llm_model or 'default'} "
+        f"response_model={response_model.__name__}",
+        verbose,
+    )
+    data = provider.structured_response(
         prompt=prompt,
         llm_model=llm_model,
         response_model=response_model,
         **kwargs,
     )
+    log_verbose(f"generate_data response: {data!r}", verbose)
+    return data
 
 
 def generate_text(
@@ -105,23 +114,45 @@ def generate_text(
     llm_model: str | None = None,
     llm_provider: str | None = None,
     stream: bool = False,
+    verbose: bool | None = None,
     **kwargs,
-) -> str:
-    """Generate text from a given prompt."""
+) -> str | Iterator[str]:
+    """Generate text from a given prompt.
+
+    With `stream=True`, returns an iterator of text chunks. The streamed
+    text is logged in verbose mode once the stream is fully consumed.
+    """
 
     # Find the provider.
     provider = find_provider(llm_provider or settings.DEFAULT_LLM_PROVIDER)
 
     # Generate the text.
+    log_verbose(
+        f"generate_text provider={provider.NAME} model={llm_model or 'default'} "
+        f"stream={stream}",
+        verbose,
+    )
     if stream:
         if not provider.supports_streaming:
             raise ValueError(f"{provider} does not support streaming.")
 
-        return provider.generate_stream_text(
+        chunks = provider.generate_stream_text(
             prompt=prompt, llm_model=llm_model, **kwargs
         )
+        return _log_stream(chunks, verbose)
     else:
-        return provider.generate_text(prompt=prompt, llm_model=llm_model, **kwargs)
+        text = provider.generate_text(prompt=prompt, llm_model=llm_model, **kwargs)
+        log_verbose(f"generate_text response: {text}", verbose)
+        return text
+
+
+def _log_stream(chunks: Iterator[str], verbose: bool | None) -> Iterator[str]:
+    """Yield stream chunks unchanged, then log the full text when done."""
+    parts = []
+    for chunk in chunks:
+        parts.append(chunk)
+        yield chunk
+    log_verbose(f"generate_text stream response: {''.join(parts)}", verbose)
 
 
 def enable_logfire() -> None:

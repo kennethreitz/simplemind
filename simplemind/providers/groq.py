@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Callable, Iterator, Type, TypeVar
 import instructor
 from pydantic import BaseModel
 
-from ..logging import logger
+from ..logging import log_verbose, logger
 from ..settings import settings
 from ._base import BaseProvider
 from ._base_tools import BaseTool
@@ -153,7 +153,7 @@ class Groq(BaseProvider):
 
         # Handle tool responses if needed
         while response.choices[0].message.tool_calls:
-            print(response)
+            log_verbose(f"groq tool call response: {response}")
             # Handle each tool call
             for tool in converted_tools:
                 tool.handle(response, formatted_messages)

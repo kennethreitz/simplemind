@@ -6,6 +6,7 @@ from typing import Any, Callable, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field
 
+from .logging import log_verbose
 from .providers._base_tools import BaseTool
 from .utils import find_provider
 
@@ -167,6 +168,7 @@ class Conversation(SMBaseModel):
         llm_model: str | None = None,
         llm_provider: str | None = None,
         tools: list[Callable | BaseTool] | None = None,
+        verbose: bool | None = None,
     ) -> Message:
         """Send the conversation to the LLM."""
 
@@ -182,7 +184,12 @@ class Conversation(SMBaseModel):
 
         # Find the provider and send the conversation.
         provider = find_provider(llm_provider or self.llm_provider)
+        log_verbose(
+            f"send provider={provider.NAME} model={self.llm_model or 'default'}",
+            verbose,
+        )
         response = provider.send_conversation(self, tools=tools)
+        log_verbose(f"send response: {response.text}", verbose)
 
         # Execute all post-send hooks.
         for plugin in self.plugins:
