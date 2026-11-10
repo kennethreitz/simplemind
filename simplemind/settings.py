@@ -58,6 +58,12 @@ class Settings(BaseSettings):
         "http://127.0.0.1:11434", description="Fully qualified host URL for Ollama"
     )
     XAI_API_KEY: Optional[SecretStr] = Field(None, description="API key for xAI")
+    LITELLM_API_KEY: Optional[SecretStr] = Field(
+        None, description="Optional API key for LiteLLM (e.g. a LiteLLM proxy key)"
+    )
+    LITELLM_API_BASE: Optional[str] = Field(
+        None, description="Optional base URL for LiteLLM (e.g. a LiteLLM proxy)"
+    )
     DEFAULT_LLM_PROVIDER: str = Field("openai", description="The default LLM provider")
 
     model_config = SettingsConfigDict(
