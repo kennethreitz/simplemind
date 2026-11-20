@@ -116,3 +116,22 @@ def test_tool_decorator(provider_cls):
     assert isinstance(exchange_rate, BaseTool)
     assert exchange_rate.name == "exchange_rate"
     assert list(exchange_rate.properties.keys()) == ["currency_pair"]
+
+
+def test_enum_values_only_apply_to_literal_parameters():
+    from simplemind.providers.openai import OpenAITool
+
+    def forecast(
+        unit: Annotated[
+            Literal["celsius", "fahrenheit"], Field(description="The unit")
+        ] = "celsius",
+        days: Annotated[int, Field(description="Number of days")] = 1,
+        location: Annotated[str, Field(description="The city")] = "SF",
+    ):
+        """Get a forecast"""
+
+    properties = OpenAITool.from_function(forecast).properties
+
+    assert properties["unit"].enum == ["celsius", "fahrenheit"]
+    assert properties["days"].enum is None
+    assert properties["location"].enum is None

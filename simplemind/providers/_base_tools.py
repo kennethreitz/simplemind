@@ -84,7 +84,6 @@ class BaseTool(BaseModel, ABC):
         annotations = getattr(func, "__annotations__", {})
         properties = {}
         required = []
-        enum_values = None
         func_signature = inspect.signature(func)
 
         for n, (arg_name, arg_type) in enumerate(annotations.items()):
@@ -111,8 +110,11 @@ class BaseTool(BaseModel, ABC):
 
                 field_type_converted = cls.convert_type(field_type)
 
-                if _is_literal(field_type):
-                    enum_values = [str(x) for x in field_type.__args__]
+                enum_values = (
+                    [str(x) for x in field_type.__args__]
+                    if _is_literal(field_type)
+                    else None
+                )
 
                 properties[arg_name] = BaseToolProperty(
                     type=field_type_converted,
