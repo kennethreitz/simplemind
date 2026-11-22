@@ -4,6 +4,7 @@ from ._base import BaseProvider
 from ._base_tools import BaseTool
 from .amazon import Amazon
 from .anthropic import Anthropic
+from .atlascloud import AtlasCloud
 from .gemini import Gemini
 from .groq import Groq
 from .minimax import MiniMax, MiniMaxAnthropic
@@ -23,6 +24,7 @@ providers: List[Type[BaseProvider]] = [
     Deepseek,
     MiniMax,
     MiniMaxAnthropic,
+    AtlasCloud,
 ]
 
 __all__ = [
@@ -39,4 +41,5 @@ __all__ = [
     "Deepseek",
     "MiniMax",
     "MiniMaxAnthropic",
+    "AtlasCloud",
 ]
