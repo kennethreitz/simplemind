@@ -38,6 +38,11 @@ The APIs remain identical between all supported providers / models:
       <td><code>"us.anthropic.claude-sonnet-5-5"</code></td>
     </tr>
     <tr>
+      <td><a href="https://www.atlascloud.ai/docs">Atlas Cloud</a></td>
+      <td><code>"atlascloud"</code></td>
+      <td><code>"deepseek-ai/deepseek-v4-flash"</code></td>
+    </tr>
+    <tr>
       <td><a href="https://www.deepseek.com">Deepseek</a></td>
       <td><code>"deepseek"</code></td>
       <td><code>"deepseek-chat"</code></td>
@@ -95,7 +100,7 @@ First, authenticate your API keys by setting them in the environment variables:
 $ export OPENAI_API_KEY="sk-..."
 ```
 
-This pattern allows you to keep your API keys private and out of your codebase. Other supported environment variables: `ANTHROPIC_API_KEY`, `XAI_API_KEY`, `DEEPSEEK_API_KEY`, `GROQ_API_KEY`, `GEMINI_API_KEY`, and `MINIMAX_API_KEY`.
+This pattern allows you to keep your API keys private and out of your codebase. Other supported environment variables: `ANTHROPIC_API_KEY`, `XAI_API_KEY`, `DEEPSEEK_API_KEY`, `GROQ_API_KEY`, `GEMINI_API_KEY`, `MINIMAX_API_KEY`, and `ATLASCLOUD_API_KEY`.
 
 Next, import Simplemind and start using it:
 

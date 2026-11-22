@@ -22,6 +22,7 @@ groq = ["groq"]
 ollama = ["openai"]
 openai = ["openai"]
 minimax = ["openai", "anthropic"]
+atlascloud = ["openai"]
 xai = ["openai"]
 deepseek = ["openai"]
 
